@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "medievalstuff",
+	"version": "${version}",
+	"name": "Medieval Stuff",
+	"description": "This is a small mod focused around some cool things.",
+	"authors": [
+		"MrWooly357"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/medieval-stuff",
+		"sources": "https://github.com/MrWooly125/MedievalStuff-1.21.1-Fabric"
+	},
+	"license": "MIT",
+	"icon": "assets/medievalstuff/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.mrwooly357.medievalstuff.MedievalStuff"
+		],
+		"fabric-datagen": [
+			"net.mrwooly357.medievalstuff.MedievalStuffDataGenerator"
+		],
+		"client": [
+			"net.mrwooly357.medievalstuff.MedievalStuffClient"
+		],
+		"terrablender": [
+			"net.mrwooly357.medievalstuff.MedievalStuff"
+		]
+	},
+	"mixins": [
+		"medievalstuff.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"wool": ">=1.0.0"
+	},
+	"accessWidener": "medievalstuff.accessWidener"
+}
