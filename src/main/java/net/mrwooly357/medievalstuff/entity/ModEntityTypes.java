@@ -3,14 +3,12 @@ package net.mrwooly357.medievalstuff.entity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntity;
 import net.mrwooly357.medievalstuff.entity.mob.passive.jelly.JellyEntity;
 import net.mrwooly357.medievalstuff.entity.projectile.khopesh.ThrownCopperKhopeshEntity;
-import net.mrwooly357.medievalstuff.registry.EntityTypeRegistryHelper;
+import net.mrwooly357.wool.registry.EntityTypeRegistryHelper;
 
 public class ModEntityTypes {
 

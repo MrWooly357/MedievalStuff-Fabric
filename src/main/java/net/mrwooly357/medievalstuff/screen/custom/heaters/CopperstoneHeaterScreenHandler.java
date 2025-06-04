@@ -7,7 +7,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.block.entity.custom.heaters.HeaterBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heaters.HeaterBlockEntity;
 import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
 import net.mrwooly357.medievalstuff.util.ModTags;
 

@@ -5,6 +5,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -20,8 +21,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.entity.custom.forge_controllers.ForgeControllerBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controllers.ForgeControllerBlockEntity;
 import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprint;
+import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprintHolder;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ForgeControllerBlock extends BlockWithEntity {
@@ -74,6 +77,19 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
     }
 
     @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        boolean bl = stack.getItem() instanceof MultiblockConstructionBlueprintHolder holder && holder.getBlueprint() == getRequiredBlueprint();
+
+        if (bl && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity) {
+            entity.setCanStartBuilding(true);
+        }
+
+        stack.damage(1, player, EquipmentSlot.MAINHAND);
+
+        return bl ? ItemActionResult.SUCCESS : ItemActionResult.FAIL;
+    }
+
+    @Override
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
@@ -111,4 +127,6 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
     protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
+
+    protected abstract MultiblockConstructionBlueprint getRequiredBlueprint();
 }

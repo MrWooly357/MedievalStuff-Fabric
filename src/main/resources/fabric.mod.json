@@ -35,10 +35,9 @@
 		"fabricloader": ">=0.16.14",
 		"minecraft": "~1.21.1",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"wool": "1.0.0-alpha-1.21.1-fabric"
 	},
-	"suggests": {
-		"wool": ">=1.0.0"
-	},
+	"suggests": {},
 	"accessWidener": "medievalstuff.accessWidener"
 }

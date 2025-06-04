@@ -34,7 +34,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
-import net.mrwooly357.medievalstuff.block.entity.custom.tanks.TankBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tanks.TankBlockEntity;
 import net.mrwooly357.medievalstuff.util.ItemStackUtils;
 import net.mrwooly357.medievalstuff.util.ModTags;
 import org.jetbrains.annotations.Nullable;

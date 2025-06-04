@@ -41,20 +41,18 @@ public class ModEnUSTranslationProvider extends FabricLanguageProvider {
         translationBuilder.add(ModItems.SILVER_AXE, "Silver Axe");
         translationBuilder.add(ModItems.SILVER_SHOVEL, "Silver Shovel");
         translationBuilder.add(ModItems.SILVER_HOE, "Silver Hoe");
-
         translationBuilder.add(ModItems.SILVER_SWORD, "Silver Sword");
         translationBuilder.add(ModItems.SILVER_DAGGER, "Silver Dagger");
         translationBuilder.add(ModItems.COPPER_KHOPESH, "Copper Khopesh");
         translationBuilder.add(ModItems.WEIGHTLESS_DAGGER_TIER_1, "Weightless Dagger");
         translationBuilder.add(ModItems.WEIGHTLESS_DAGGER_TIER_2, "Weightless Dagger");
-
         translationBuilder.add(ModItems.SHORT_COPPER_BOW, "Short Copper Bow");
         translationBuilder.add(ModItems.TWOBOW, "Twobow");
-
         translationBuilder.add(ModItems.SILVER_HELMET, "Silver Helmet");
         translationBuilder.add(ModItems.SILVER_CHESTPLATE, "Silver Chestplate");
         translationBuilder.add(ModItems.SILVER_LEGGINGS, "Silver Leggings");
         translationBuilder.add(ModItems.SILVER_BOOTS, "Silver Boots");
+        translationBuilder.add(ModItems.COPPERSTONE_FORGE_BLUEPRINT, "Filled Blueprint");
 
         translationBuilder.add(ModItems.JELLY_SPAWN_EGG, "Jelly Spawn Egg");
         translationBuilder.add(ModItems.FALLEN_KNIGHT_SPAWN_EGG, "Fallen Knight Spawn Egg");
@@ -111,6 +109,7 @@ public class ModEnUSTranslationProvider extends FabricLanguageProvider {
         addTooltip("weightless_dagger_tier_2.tooltip", "§3 Tier 2", translationBuilder);
         addTooltip("weightless_dagger_tier_2.additional_tooltip_1", "§3 Tier 2", translationBuilder);
         addTooltip("weightless_dagger_tier_2.description", "§8The feeling is stronger. You start to feel a bit uncomfortable. The dagger wants something...", translationBuilder);
+        addTooltip("copperstone_forge_blueprint.tooltip", "§7Copperstone Forge", translationBuilder);
 
 
         // Death messages

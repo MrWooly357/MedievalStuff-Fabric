@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:copper_ingot"
+    },
+    "B": {
+      "item": "medievalstuff:copperstone_bricks"
+    },
+    "C": {
+      "item": "minecraft:campfire"
+    },
+    "D": {
+      "tag": "medievalstuff:heater_crafting_recipe_fuel"
+    }
+  },
+  "pattern": [
+    "AAA",
+    "BCB",
+    "BDB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "medievalstuff:copperstone_heater"
+  }
+}

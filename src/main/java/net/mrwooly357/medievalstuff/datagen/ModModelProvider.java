@@ -17,7 +17,7 @@ public class ModModelProvider extends FabricModelProvider {
 
     @Override
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-        // Common
+        // Items
         itemModelGenerator.register(
                 ModItems.RAW_SILVER, Models.GENERATED
         );
@@ -42,28 +42,23 @@ public class ModModelProvider extends FabricModelProvider {
                 ModItems.WILD_BLUEBERRIES, Models.GENERATED
         );
 
-        //Common tools and weapons
+        // Equipment
         itemModelGenerator.register(ModItems.SILVER_SWORD, Models.HANDHELD);
         itemModelGenerator.register(ModItems.SILVER_PICKAXE, Models.HANDHELD);
         itemModelGenerator.register(ModItems.SILVER_AXE, Models.HANDHELD);
         itemModelGenerator.register(ModItems.SILVER_SHOVEL, Models.HANDHELD);
         itemModelGenerator.register(ModItems.SILVER_HOE, Models.HANDHELD);
-
-        //Common weapons
         itemModelGenerator.register(ModItems.COPPER_KHOPESH, Models.HANDHELD);
-
-        //Advanced tools and weapons
         itemModelGenerator.register(ModItems.SILVER_DAGGER, Models.HANDHELD);
         itemModelGenerator.register(ModItems.WEIGHTLESS_DAGGER_TIER_1, Models.HANDHELD);
         itemModelGenerator.register(ModItems.WEIGHTLESS_DAGGER_TIER_2, Models.HANDHELD);
-
-        //Armor
         itemModelGenerator.register(ModItems.SILVER_HELMET, Models.GENERATED);
         itemModelGenerator.register(ModItems.SILVER_CHESTPLATE, Models.GENERATED);
         itemModelGenerator.register(ModItems.SILVER_LEGGINGS, Models.GENERATED);
         itemModelGenerator.register(ModItems.SILVER_BOOTS, Models.GENERATED);
+        itemModelGenerator.register(ModItems.COPPERSTONE_FORGE_BLUEPRINT, Models.GENERATED);
 
-        //Spawn items
+        // Spawn items
         itemModelGenerator.register(
                 ModItems.JELLY_SPAWN_EGG, new Model(
                         Optional.of(Identifier.of("item/template_spawn_egg")), Optional.empty()

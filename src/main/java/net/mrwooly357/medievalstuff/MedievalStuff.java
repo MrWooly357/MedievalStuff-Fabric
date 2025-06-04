@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.mrwooly357.medievalstuff.block.ModBlocks;
+import net.mrwooly357.medievalstuff.block.custom.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
 import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
@@ -50,6 +51,7 @@ public class MedievalStuff implements ModInitializer, TerraBlenderApi {
 
 		//Blocks
 		ModBlocks.init();
+		ModMultiblockConstructionBlueprints.init();
 
 		//Block entities
 		ModBlockEntities.registerModBlockEntities();

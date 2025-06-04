@@ -6,8 +6,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.ModBlocks;
+import net.mrwooly357.medievalstuff.block.custom.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
 import net.mrwooly357.medievalstuff.item.custom.*;
+import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FilledBlueprintItem;
 import net.mrwooly357.medievalstuff.item.custom.food_and_drinks.JarOfJellyItem;
 import net.mrwooly357.medievalstuff.item.custom.AdvancedSweepMeleeWeaponItem;
 import net.mrwooly357.medievalstuff.item.custom.food_and_drinks.PieceOfJellyItem;
@@ -18,8 +20,8 @@ import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.sword_l
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.RangedWeaponMaterials;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.TwobowItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.advanced_bows.short_bows.ShortBowItem;
-import net.mrwooly357.medievalstuff.registry.ItemRegistryHelper;
 import net.mrwooly357.medievalstuff.util.ModUtil;
+import net.mrwooly357.wool.registry.ItemRegistryHelper;
 
 public class ModItems {
 
@@ -242,6 +244,14 @@ public class ModItems {
                     ModArmorMaterials.SOULSTEEL, ArmorItem.Type.BOOTS, new Item.Settings()
                     .maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(16))
             )
+    );
+
+    public static final Item COPPERSTONE_FORGE_BLUEPRINT = register(
+            "copperstone_forge_blueprint", new FilledBlueprintItem(
+                    new Item.Settings()
+                            .maxDamage(4), ModMultiblockConstructionBlueprints.COPPERSTONE_FORGE
+            )
+                    .tooltipKey("medievalstuff.copperstone_forge_blueprint.tooltip")
     );
 
 

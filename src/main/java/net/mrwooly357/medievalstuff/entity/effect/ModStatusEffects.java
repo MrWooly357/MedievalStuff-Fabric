@@ -10,7 +10,7 @@ import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.entity.effect.custom.ReachStatusEffect;
 import net.mrwooly357.medievalstuff.entity.effect.custom.SoulDecayStatusEffect;
 import net.mrwooly357.medievalstuff.entity.effect.custom.SoulProtectionStatusEffect;
-import net.mrwooly357.medievalstuff.registry.StatusEffectRegistryHelper;
+import net.mrwooly357.wool.registry.StatusEffectRegistryHelper;
 
 public class ModStatusEffects {
 
@@ -45,6 +45,6 @@ public class ModStatusEffects {
     }
 
     public static void init()  {
-        MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + "status effects");
+        MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " status effects");
     }
 }

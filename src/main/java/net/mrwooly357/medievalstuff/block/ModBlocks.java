@@ -11,7 +11,7 @@ import net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controllers.Co
 import net.mrwooly357.medievalstuff.block.custom.metallurgy.heaters.CopperstoneHeaterBlock;
 import net.mrwooly357.medievalstuff.block.custom.nature.WildBlueberryBushBlock;
 import net.mrwooly357.medievalstuff.block.custom.metallurgy.tanks.CopperTankBlock;
-import net.mrwooly357.medievalstuff.registry.BlockRegistryHelper;
+import net.mrwooly357.wool.registry.BlockRegistryHelper;
 
 import java.util.function.ToIntFunction;
 

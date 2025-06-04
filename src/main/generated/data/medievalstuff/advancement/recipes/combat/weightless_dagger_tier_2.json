@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "medievalstuff:weightless_dagger_tier_2"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_weightless_dagger_tier_1": {
+      "conditions": {
+        "items": [
+          {
+            "items": "medievalstuff:weightless_dagger_tier_1"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_weightless_dagger_tier_1"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "medievalstuff:weightless_dagger_tier_2"
+    ]
+  }
+}

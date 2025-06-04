@@ -24,7 +24,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.entity.custom.heaters.HeaterBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heaters.HeaterBlockEntity;
 import net.mrwooly357.medievalstuff.util.ModTags;
 import org.jetbrains.annotations.Nullable;
 

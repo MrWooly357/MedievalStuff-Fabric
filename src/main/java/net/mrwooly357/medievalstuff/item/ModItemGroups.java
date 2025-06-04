@@ -45,46 +45,22 @@ public class ModItemGroups {
                     .displayName(Text.translatable("itemgroup.medievalstuff.medievalstuff_equipment"))
                     .icon(() -> new ItemStack(ModItems.WEIGHTLESS_DAGGER_TIER_1))
                     .entries((displayContext, entries) -> {
-                        // Common tools
-
-                        //Advanced tools
                         entries.add(ModItems.SILVER_AXE);
                         entries.add(ModItems.SILVER_PICKAXE);
                         entries.add(ModItems.SILVER_HOE);
                         entries.add(ModItems.SILVER_SHOVEL);
-
-
-
-                        //Common melee weapons
                         entries.add(ModItems.SILVER_SWORD);
                         entries.add(ModItems.SILVER_DAGGER);
-
-                        //Advanced melee weapons
                         entries.add(ModItems.WEIGHTLESS_DAGGER_TIER_1);
                         entries.add(ModItems.WEIGHTLESS_DAGGER_TIER_2);
-
-
-                        //Common hybrid weapons
                         entries.add(ModItems.COPPER_KHOPESH);
-
-                        //Advanced hybrid weapons
-
-
-                        //Common ranged weapons
                         entries.add(ModItems.SHORT_COPPER_BOW);
-
-                        //Advanced ranged weapons
                         entries.add(ModItems.TWOBOW);
-
-
-
-                        //Common armor
                         entries.add(ModItems.SILVER_HELMET);
                         entries.add(ModItems.SILVER_CHESTPLATE);
                         entries.add(ModItems.SILVER_LEGGINGS);
                         entries.add(ModItems.SILVER_BOOTS);
-
-                        //Advanced armor
+                        entries.add(ModItems.COPPERSTONE_FORGE_BLUEPRINT);
                     }).build());
 
     public static final ItemGroup MEDIEVALSTUFF_BLOCKS = Registry.register(Registries.ITEM_GROUP,

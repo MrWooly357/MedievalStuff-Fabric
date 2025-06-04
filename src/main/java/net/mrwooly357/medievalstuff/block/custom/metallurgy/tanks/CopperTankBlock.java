@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.block.entity.custom.tanks.CopperTankBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tanks.CopperTankBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class CopperTankBlock extends TankBlock {

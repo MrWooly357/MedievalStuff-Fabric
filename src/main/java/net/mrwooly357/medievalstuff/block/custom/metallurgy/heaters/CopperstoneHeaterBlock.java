@@ -9,7 +9,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
-import net.mrwooly357.medievalstuff.block.entity.custom.heaters.CopperstoneHeaterBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heaters.CopperstoneHeaterBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class CopperstoneHeaterBlock extends HeaterBlock {
