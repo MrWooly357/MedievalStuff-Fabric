@@ -28,6 +28,7 @@ import net.mrwooly357.medievalstuff.world.gen.ModWorldGeneration;
 import net.mrwooly357.medievalstuff.events.HammerAdditionalBlocksBreakEvent;
 import net.mrwooly357.medievalstuff.events.TreechopperAdditionalBlocksBreakEvent;
 import net.mrwooly357.medievalstuff.world.gen.structure.ModStructureKeys;
+import net.mrwooly357.wool.config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import terrablender.api.SurfaceRuleManager;

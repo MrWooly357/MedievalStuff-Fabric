@@ -5,6 +5,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.ExtendedRangedWeaponItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.RangedWeaponMaterial;
@@ -13,9 +16,15 @@ import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.Ex
 
 import java.util.List;
 
-import static net.mrwooly357.medievalstuff.config.ModConfigValues.Items.Weapons.Ranged.Bows.AdvancedBows.AdvancedBow.*;
+import static net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.TwobowItem.USE_SOUND_PITCH;
 
 public abstract class AdvancedBowItem extends ExtendedBowItem {
+
+    public static SoundEvent USE_SOUND = SoundEvents.ENTITY_ARROW_SHOOT;
+    public static SoundCategory USE_SOUND_CATEGORY = SoundCategory.PLAYERS;
+    public static float MIN_PULL_REQUIREMENT = 0.1F;
+    public static float USE_SOUND_VOLUME = 1.0F;
+    public static float BASE_DIVERGENCE = 1.0F;
 
     public AdvancedBowItem(Settings settings, RangedWeaponSubclass weaponSubclass, RangedWeaponMaterial weaponMaterial) {
         super(settings, weaponSubclass, weaponMaterial);
