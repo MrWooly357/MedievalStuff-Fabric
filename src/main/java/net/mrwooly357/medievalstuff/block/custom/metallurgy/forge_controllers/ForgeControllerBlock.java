@@ -81,7 +81,7 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
         boolean bl = stack.getItem() instanceof MultiblockConstructionBlueprintHolder holder && holder.getBlueprint() == getRequiredBlueprint();
 
         if (bl && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity) {
-            entity.setCanStartBuilding(true);
+            entity.setCanCheck(true);
         }
 
         stack.damage(1, player, EquipmentSlot.MAINHAND);

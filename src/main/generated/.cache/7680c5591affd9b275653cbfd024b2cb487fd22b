@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-02T21:30:35.4017347	Medieval Stuff/Model Definitions
+// 1.21.1	2025-06-05T18:11:23.8262573	Medieval Stuff/Model Definitions
 db1b026aaac5be6bb70216e1923c5f54a5f71561 assets\medievalstuff\models\item\silver_hoe.json
 50d2b2fe21e3b358348ec44e6657cc0e180f0ce2 assets\medievalstuff\models\item\silver_axe.json
 e4563bbc711595aecb1a4cb4f5dcd054ce16a4e5 assets\medievalstuff\models\item\silver_sword.json
@@ -10,12 +10,12 @@ e4563bbc711595aecb1a4cb4f5dcd054ce16a4e5 assets\medievalstuff\models\item\silver
 54ee62cb159639b70a453e8a5051b40653521fb9 assets\medievalstuff\models\item\copperstone_forge_blueprint.json
 3aee4020ae8ca7ec962b82c01bf2bb4d491cb3e7 assets\medievalstuff\models\block\silver_ore.json
 9a6141a70cc16cc49e42f4c3c79de6acf581dc38 assets\medievalstuff\models\item\copperstone_bricks.json
-dd72f9f92a8b22c3179364a1a51e9b9fcb7600d9 assets\medievalstuff\models\block\deepslate_silver_ore.json
 621c5b7be1beb6da58204f866d50eb498fe27673 assets\medievalstuff\models\item\silver_ingot.json
+dd72f9f92a8b22c3179364a1a51e9b9fcb7600d9 assets\medievalstuff\models\block\deepslate_silver_ore.json
 a26bcba4edff409530d5ff972c70cb2927df78d1 assets\medievalstuff\models\item\raw_silver.json
 66c867c04cfa9a43bf07ec9bc4c081e9011aa988 assets\medievalstuff\models\block\silver_block.json
-e3cc4608a81e33cb2349a4d397a1519fd6d67582 assets\medievalstuff\models\block\raw_silver_block.json
 fb1ed105796b398ff2445c4b91004ec6e6fd8cbc assets\medievalstuff\blockstates\silver_block.json
+e3cc4608a81e33cb2349a4d397a1519fd6d67582 assets\medievalstuff\models\block\raw_silver_block.json
 4f26b41cabfd1ad756eb85dcceae617ffc08070d assets\medievalstuff\models\item\piece_of_jelly.json
 1390e718fa90b9883493afeb1e8214a860342b1f assets\medievalstuff\blockstates\deepslate_silver_ore.json
 268383c420565c7fa85f4d7faf9c31efdd49b010 assets\medievalstuff\models\item\jar.json
@@ -27,8 +27,8 @@ a96dc20121752686146022cf12ff9d59c4b676bf assets\medievalstuff\models\item\copper
 d231e60c8e3918007bc01f8642d18809debed0f6 assets\medievalstuff\models\item\silver_dagger.json
 186e749c2302eec55d5a60d1e50feb7046d546f3 assets\medievalstuff\models\item\jar_of_jelly.json
 018148ca3598956d5ee6b16de56ee7dadc895244 assets\medievalstuff\models\item\silver_block.json
-af37cc0759a3301ba1b3b9e49f39c62f2e18df1f assets\medievalstuff\models\item\silver_chestplate.json
 549afd62c29d9fca05131c612775b6b6ac5406ec assets\medievalstuff\blockstates\copperstone_bricks.json
+af37cc0759a3301ba1b3b9e49f39c62f2e18df1f assets\medievalstuff\models\item\silver_chestplate.json
 e2230a51f8772785f4fae610d2134ba9a024d83f assets\medievalstuff\models\item\silver_pickaxe.json
 7f5a189aa41b801874e09b19b7070caad56adb3d assets\medievalstuff\blockstates\raw_silver_block.json
 e346ad4c1a1d79172065b3f6f8a3dd077e7880ac assets\medievalstuff\models\item\silver_shovel.json

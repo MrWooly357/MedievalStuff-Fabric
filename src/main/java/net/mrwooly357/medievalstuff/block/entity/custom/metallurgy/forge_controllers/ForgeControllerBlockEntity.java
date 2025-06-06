@@ -19,13 +19,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.entity.custom.ImplementedInventory;
-import net.mrwooly357.wool.block.util.MultiblockConstructionBuilder;
 import net.mrwooly357.wool.block.util.MultiblockConstructionBuilding;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ForgeControllerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BlockPos>, ImplementedInventory, MultiblockConstructionBuilding {
 
-    private boolean canStartBuilding;
+    private boolean built;
+    private boolean canCheck;
     private int checkDelayTimer;
     private DefaultedList<ItemStack> inventory;
     private PropertyDelegate propertyDelegate;
@@ -43,22 +43,24 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
 
 
     public void tick(World world, BlockPos pos, BlockState state) {
-        boolean canCheck = false;
+        if (canCheck) {
+            boolean canTryCheck = false;
 
-        if (createBuilder().isSuccessful && getCheckDelay() == checkDelayTimer) {
-            resetCheckDelayTimer();
+            if (checkDelayTimer == 20) {
+                resetCheckDelayTimer();
 
-            createBuilder().isSuccessful = false;
-            canCheck = true;
+                canTryCheck = true;
+            }
+
+            if (canTryCheck) {
+                tryBuild(getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), state.get(Properties.HORIZONTAL_FACING));
+            }
+
+            increaseCheckDelayTimer();
         }
 
-        if (canCheck || canStartBuilding) {
-            tickBuilder(getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), state.get(Properties.HORIZONTAL_FACING));
-        }
-
-        increaseCheckDelayTimer();
-
-        /*if (hasRecipe() && canInsertResultFluid) {
+        if (built) {
+            /*if (hasRecipe() && canInsertResultFluid) {
 
             if (progress < maxProgress) {
                 increaseProgress();
@@ -73,7 +75,7 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
             resetProgress();
         }*/
 
-        /*BlockState stateToCheck = world.getBlockState(ingredientFluidTankPos);
+            /*BlockState stateToCheck = world.getBlockState(ingredientFluidTankPos);
         BlockState stateToCheck1 = world.getBlockState(ingredientFluidTankPos);
 
         if (stateToCheck.getBlock() instanceof TankBlock ingredientFluidTank) {
@@ -96,61 +98,29 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
                 }
             }
         }*/
+        }
     }
 
     @Override
-    public void onSuccess(MultiblockConstructionBuilder builder) {
+    public void onSuccess() {
+        setBuilt(true);
         System.out.println(":)");
-        setCanStartBuilding(false);
     }
 
-    protected BlockPos getMultiblockConstructionBuilderStartPos(World world, BlockPos pos) {
-        int x = pos.getX();
-        int y = pos.getY() - 1;
-        int z = pos.getZ();
-        BlockState state = world.getBlockState(pos);
-
-        if (state.get(Properties.HORIZONTAL_FACING) == Direction.NORTH) {
-            x++;
-            z += 2;
-        } else if (state.get(Properties.HORIZONTAL_FACING) == Direction.EAST) {
-            x -= 2;
-            z++;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.SOUTH) {
-            x--;
-            z -= 2;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.WEST) {
-            x += 2;
-            z--;
-        }
-
-        return new BlockPos(x, y, z);
+    @Override
+    public void onFail() {
+        setBuilt(false);
+        setCanCheck(false);
+        System.out.println(":(");
     }
 
-    protected BlockPos getMultiblockConstructionBuilderEndPos(World world, BlockPos pos) {
-        int x = pos.getX();
-        int y = pos.getY() + 1;
-        int z = pos.getZ();
-        BlockState state = world.getBlockState(pos);
-
-        if (state.get(Properties.HORIZONTAL_FACING) == Direction.NORTH) {
-            x--;
-        } else if (state.get(Properties.HORIZONTAL_FACING) == Direction.EAST) {
-            z--;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.SOUTH) {
-            x++;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.WEST) {
-            z++;
-        }
-
-        return new BlockPos(x, y, z);
+    public void setBuilt(boolean built) {
+        this.built = built;
     }
 
-    public void setCanStartBuilding(boolean canStartBuilding) {
-        this.canStartBuilding = canStartBuilding;
+    public void setCanCheck(boolean canCheck) {
+        this.canCheck = canCheck;
     }
-
-    protected abstract int getCheckDelay();
 
     protected void increaseCheckDelayTimer() {
         checkDelayTimer++;
@@ -266,9 +236,53 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
         return progress == maxProgress;
     }
 
+    protected BlockPos getMultiblockConstructionBuilderStartPos(World world, BlockPos pos) {
+        int x = pos.getX();
+        int y = pos.getY() - 1;
+        int z = pos.getZ();
+        BlockState state = world.getBlockState(pos);
+
+        if (state.get(Properties.HORIZONTAL_FACING) == Direction.NORTH) {
+            x++;
+            z += 2;
+        } else if (state.get(Properties.HORIZONTAL_FACING) == Direction.EAST) {
+            x -= 2;
+            z++;
+        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.SOUTH) {
+            x--;
+            z -= 2;
+        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.WEST) {
+            x += 2;
+            z--;
+        }
+
+        return new BlockPos(x, y, z);
+    }
+
+    protected BlockPos getMultiblockConstructionBuilderEndPos(World world, BlockPos pos) {
+        int x = pos.getX();
+        int y = pos.getY() + 1;
+        int z = pos.getZ();
+        BlockState state = world.getBlockState(pos);
+
+        if (state.get(Properties.HORIZONTAL_FACING) == Direction.NORTH) {
+            x--;
+        } else if (state.get(Properties.HORIZONTAL_FACING) == Direction.EAST) {
+            z--;
+        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.SOUTH) {
+            x++;
+        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.WEST) {
+            z++;
+        }
+
+        return new BlockPos(x, y, z);
+    }
+
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
+
+        built = nbt.getBoolean("Built");
 
         Inventories.readNbt(nbt, inventory, registryLookup);
 
@@ -283,8 +297,8 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
 
+        nbt.putBoolean("Built", built);
         Inventories.writeNbt(nbt, inventory, registryLookup);
-
         nbt.putInt("MeltingProgress", meltingProgress);
         nbt.putInt("MaxMeltingProgress", maxMeltingProgress);
         nbt.putInt("Progress", progress);

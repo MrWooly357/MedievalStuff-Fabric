@@ -94,17 +94,7 @@ public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockE
     }
 
     @Override
-    public int getDelay() {
-        return 1;
-    }
-
-    @Override
     public @NotNull MultiblockConstructionBuilder getBuilder() {
         return new MultiblockConstructionBuilder(ModMultiblockConstructionBlueprints.COPPERSTONE_FORGE, getWorld());
-    }
-
-    @Override
-    protected int getCheckDelay() {
-        return 20;
     }
 }

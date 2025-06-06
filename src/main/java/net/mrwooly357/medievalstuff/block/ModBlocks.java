@@ -17,19 +17,11 @@ import java.util.function.ToIntFunction;
 
 public class ModBlocks {
 
-    // Regular
-    public static final Block COPPERSTONE_BRICKS = register(
-            "copperstone_bricks", new Block(
-                    AbstractBlock.Settings.create()
-                            .strength(2.25F, 3.0F)
-                            .requiresTool()
-                            .sounds(BlockSoundGroup.STONE)
-            )
-    );
+    // Blocks
     public static final Block RAW_SILVER_BLOCK = register(
             "raw_silver_block", new Block(
                     AbstractBlock.Settings.create()
-                            .strength(4.5F, 4.0F)
+                            .strength(4.5F, 3.0F)
                             .requiresTool()
                             .sounds(BlockSoundGroup.STONE)
             )
@@ -58,8 +50,14 @@ public class ModBlocks {
                             .sounds(BlockSoundGroup.DEEPSLATE)
             )
     );
-
-    // Nature
+    public static final Block COPPERSTONE_BRICKS = register(
+            "copperstone_bricks", new Block(
+                    AbstractBlock.Settings.create()
+                            .strength(2.5F, 3.0F)
+                            .requiresTool()
+                            .sounds(BlockSoundGroup.STONE)
+            )
+    );
     public static final Block WILD_BLUEBERRY_BUSH = registerWithoutItem(
             "wild_blueberry_bush", new WildBlueberryBushBlock(
                     AbstractBlock.Settings.create()
@@ -71,11 +69,11 @@ public class ModBlocks {
             )
     );
 
-    // Functional
+    // Functional Blocks
     public static final Block COPPERSTONE_HEATER = register(
             "copperstone_heater", new CopperstoneHeaterBlock(
                     AbstractBlock.Settings.create()
-                            .strength(3.0F, 4.0F)
+                            .strength(3.5F, 4.5F)
                             .requiresTool()
                             .luminance(createLightLevelFromLitBlockState(8))
                             .sounds(BlockSoundGroup.STONE)
@@ -84,7 +82,7 @@ public class ModBlocks {
     public static final Block COPPER_TANK = register(
             "copper_tank", new CopperTankBlock(
                     AbstractBlock.Settings.create()
-                    .strength(2.0F, 1.5F)
+                    .strength(2.5F, 3.5F)
                     .requiresTool()
                     .luminance(state -> state.get(CopperTankBlock.LIGHT_LEVEL))
                     .sounds(BlockSoundGroup.COPPER)
@@ -95,7 +93,7 @@ public class ModBlocks {
     public static final Block COPPERSTONE_FORGE_CONTROLLER = register(
             "copperstone_forge_controller", new CopperstoneForgeControllerBlock(
                     AbstractBlock.Settings.create()
-                    .strength(3.5F, 4.5F)
+                    .strength(4.0F, 5.0F)
                     .requiresTool()
                     .luminance(createLightLevelFromLitBlockState(5))
                     .sounds(BlockSoundGroup.STONE)
