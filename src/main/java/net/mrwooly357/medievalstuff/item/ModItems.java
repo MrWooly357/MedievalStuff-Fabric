@@ -21,6 +21,7 @@ import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.RangedW
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.TwobowItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.advanced_bows.short_bows.ShortBowItem;
 import net.mrwooly357.medievalstuff.util.ModUtil;
+import net.mrwooly357.wool.config.custom.WoolConfig;
 import net.mrwooly357.wool.registry.ItemRegistryHelper;
 
 public class ModItems {
@@ -272,7 +273,7 @@ public class ModItems {
         return ItemRegistryHelper.register(Identifier.of(MedievalStuff.MOD_ID, name), item);
     }
 
-    public static void init() {
-        MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " items");
+    public static void initialize() {
+        if (WoolConfig.developerMode) MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " items");
     }
 }

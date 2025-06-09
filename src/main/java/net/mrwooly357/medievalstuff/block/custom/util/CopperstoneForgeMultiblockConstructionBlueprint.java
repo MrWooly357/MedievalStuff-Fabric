@@ -4,8 +4,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.Direction;
 import net.mrwooly357.medievalstuff.block.ModBlocks;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.heaters.HeaterBlock;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.tanks.TankBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.heater.HeaterBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.TankBlock;
 import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprint;
 import org.jetbrains.annotations.Nullable;
 

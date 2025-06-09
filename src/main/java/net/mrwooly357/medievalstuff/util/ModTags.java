@@ -11,6 +11,7 @@ import net.mrwooly357.medievalstuff.MedievalStuff;
 
 public class ModTags {
 
+
     public static class Items {
 
         public static final TagKey<Item> BYPASSES_DEFAULT_INTERACTION = createItemTag("bypasses_default_interaction");
@@ -18,13 +19,14 @@ public class ModTags {
         public static final TagKey<Item> HEATER_FUEL_EXCEPTIONS = createItemTag("heater_fuel_exceptions");
         public static final TagKey<Item> HEATER_ARSONISTS = createItemTag("heater_arsonists");
         public static final TagKey<Item> HEATER_CRAFTING_RECIPE_FUEL = createItemTag("heater_crafting_recipe_fuel");
-        public static final TagKey<Item> DOOR_BREAKING = createItemTag("door_breaking");
+        public static final TagKey<Item> FORGE_CONTROLLER_MELTABLE = createItemTag("forge_controller_meltable");
 
 
         private static TagKey<Item> createItemTag(String name) {
             return TagKey.of(RegistryKeys.ITEM, Identifier.of(MedievalStuff.MOD_ID, name));
         }
     }
+
 
     public static class Blocks {
 
@@ -39,6 +41,7 @@ public class ModTags {
         }
     }
 
+
     public static class EntityTypes {
 
         public static final TagKey<EntityType<?>> SOULFUL = create("soulful");
@@ -49,6 +52,7 @@ public class ModTags {
             return TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.of(MedievalStuff.MOD_ID, name));
         }
     }
+
 
     public static class Biomes {
 

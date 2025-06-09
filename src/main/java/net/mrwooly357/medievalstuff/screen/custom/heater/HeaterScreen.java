@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.screen.custom.heaters;
+package net.mrwooly357.medievalstuff.screen.custom.heater;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
@@ -9,9 +9,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public abstract class HeaterScreen<T extends HeaterScreenHandler> extends HandledScreen<T> {
+
     private final Identifier guiTexture;
 
-    public HeaterScreen(T handler, PlayerInventory inventory, Text title, Identifier guiTexture) {
+    protected HeaterScreen(T handler, PlayerInventory inventory, Text title, Identifier guiTexture) {
         super(handler, inventory, title);
         this.guiTexture = guiTexture;
     }
@@ -20,6 +21,9 @@ public abstract class HeaterScreen<T extends HeaterScreenHandler> extends Handle
     @Override
     protected void init() {
         super.init();
+
+        titleX += 25;
+        titleY += 10;
     }
 
     @Override

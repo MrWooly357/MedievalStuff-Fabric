@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.custom.metallurgy.heaters;
+package net.mrwooly357.medievalstuff.block.custom.metallurgy.heater;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.BlockState;
@@ -9,7 +9,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heaters.CopperstoneHeaterBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater.CopperstoneHeaterBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class CopperstoneHeaterBlock extends HeaterBlock {

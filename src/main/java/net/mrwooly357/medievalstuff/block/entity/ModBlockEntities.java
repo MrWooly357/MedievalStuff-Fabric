@@ -6,9 +6,9 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.ModBlocks;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controllers.CopperstoneForgeControllerBlockEntity;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heaters.CopperstoneHeaterBlockEntity;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tanks.CopperTankBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.CopperstoneForgeControllerBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater.CopperstoneHeaterBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank.CopperTankBlockEntity;
 
 public class ModBlockEntities {
 

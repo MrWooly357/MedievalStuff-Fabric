@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controllers;
+package net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controller;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.BlockState;
@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.custom.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controllers.CopperstoneForgeControllerBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.CopperstoneForgeControllerBlockEntity;
 import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprint;
 import org.jetbrains.annotations.Nullable;
 

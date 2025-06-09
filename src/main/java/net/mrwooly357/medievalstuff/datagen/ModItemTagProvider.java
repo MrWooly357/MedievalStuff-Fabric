@@ -35,9 +35,13 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 .add(Items.FIRE_CHARGE)
                 .add(Items.FLINT_AND_STEEL);
 
-        getOrCreateTagBuilder(ModTags.Items.DOOR_BREAKING)
-                .addTag(ItemTags.AXES)
-                .add(ModItems.SILVER_AXE);
+        getOrCreateTagBuilder(ModTags.Items.FORGE_CONTROLLER_MELTABLE)
+                .add(Items.RAW_COPPER)
+                .add(Items.RAW_IRON)
+                .add(Items.RAW_GOLD)
+                .add(Items.COPPER_INGOT)
+                .add(Items.GOLD_INGOT)
+                .add(Items.IRON_INGOT);
 
         /* Vanilla */
         getOrCreateTagBuilder(ItemTags.PICKAXES)

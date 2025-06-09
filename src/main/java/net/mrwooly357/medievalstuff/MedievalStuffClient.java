@@ -19,10 +19,12 @@ import net.mrwooly357.medievalstuff.entity.ModEntityModelLayers;
 import net.mrwooly357.medievalstuff.entity.projectile.khopesh.ThrownCopperKhopeshEntityModel;
 import net.mrwooly357.medievalstuff.entity.projectile.khopesh.ThrownCopperKhopeshEntityRenderer;
 import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
-import net.mrwooly357.medievalstuff.screen.custom.heaters.CopperstoneHeaterScreen;
+import net.mrwooly357.medievalstuff.screen.custom.forge_controller.CopperstoneForgeControllerScreen;
+import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreen;
 import net.mrwooly357.medievalstuff.util.ModModelPredicates;
 
 public class MedievalStuffClient implements ClientModInitializer {
+
 
     @Override
     public void onInitializeClient() {
@@ -47,6 +49,7 @@ public class MedievalStuffClient implements ClientModInitializer {
 
         //Screen handlers
         HandledScreens.register(ModScreenHandlerTypes.COPPERSTONE_HEATER_SCREEN_HANDLER, CopperstoneHeaterScreen::new);
+        HandledScreens.register(ModScreenHandlerTypes.COPPERSTONE_FORGE_CONTROLLER_SCREEN_HANDLER, CopperstoneForgeControllerScreen::new);
 
         //Additional
         ModModelPredicates.registerModModelPredicates();

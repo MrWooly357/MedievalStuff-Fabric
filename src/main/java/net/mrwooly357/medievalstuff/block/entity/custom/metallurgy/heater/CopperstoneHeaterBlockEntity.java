@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heaters;
+package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
-import net.mrwooly357.medievalstuff.screen.custom.heaters.CopperstoneHeaterScreenHandler;
+import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class CopperstoneHeaterBlockEntity extends HeaterBlockEntity {

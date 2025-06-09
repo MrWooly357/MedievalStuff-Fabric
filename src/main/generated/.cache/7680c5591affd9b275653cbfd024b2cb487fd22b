@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-05T18:11:23.8262573	Medieval Stuff/Model Definitions
+// 1.21.1	2025-06-09T23:11:09.1181287	Medieval Stuff/Model Definitions
 db1b026aaac5be6bb70216e1923c5f54a5f71561 assets\medievalstuff\models\item\silver_hoe.json
 50d2b2fe21e3b358348ec44e6657cc0e180f0ce2 assets\medievalstuff\models\item\silver_axe.json
 e4563bbc711595aecb1a4cb4f5dcd054ce16a4e5 assets\medievalstuff\models\item\silver_sword.json
@@ -10,8 +10,8 @@ e4563bbc711595aecb1a4cb4f5dcd054ce16a4e5 assets\medievalstuff\models\item\silver
 54ee62cb159639b70a453e8a5051b40653521fb9 assets\medievalstuff\models\item\copperstone_forge_blueprint.json
 3aee4020ae8ca7ec962b82c01bf2bb4d491cb3e7 assets\medievalstuff\models\block\silver_ore.json
 9a6141a70cc16cc49e42f4c3c79de6acf581dc38 assets\medievalstuff\models\item\copperstone_bricks.json
-621c5b7be1beb6da58204f866d50eb498fe27673 assets\medievalstuff\models\item\silver_ingot.json
 dd72f9f92a8b22c3179364a1a51e9b9fcb7600d9 assets\medievalstuff\models\block\deepslate_silver_ore.json
+621c5b7be1beb6da58204f866d50eb498fe27673 assets\medievalstuff\models\item\silver_ingot.json
 a26bcba4edff409530d5ff972c70cb2927df78d1 assets\medievalstuff\models\item\raw_silver.json
 66c867c04cfa9a43bf07ec9bc4c081e9011aa988 assets\medievalstuff\models\block\silver_block.json
 fb1ed105796b398ff2445c4b91004ec6e6fd8cbc assets\medievalstuff\blockstates\silver_block.json

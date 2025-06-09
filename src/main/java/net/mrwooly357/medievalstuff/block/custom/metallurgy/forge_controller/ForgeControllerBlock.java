@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controllers;
+package net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controller;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controllers.ForgeControllerBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.ForgeControllerBlockEntity;
 import net.mrwooly357.medievalstuff.util.ModTags;
 import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprint;
 import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprintHolder;
@@ -43,7 +43,7 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
         Hand hand = player.getActiveHand();
         ItemStack stackInHand = player.getStackInHand(hand);
 
-        if (!stackInHand.isIn(ModTags.Items.BYPASSES_DEFAULT_INTERACTION)) {
+        if (!stackInHand.isIn(ModTags.Items.BYPASSES_DEFAULT_INTERACTION) || stackInHand.isEmpty()) {
 
             if (world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity forgeControllerBlockEntity) {
 
@@ -68,7 +68,7 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
 
                     return ActionResult.SUCCESS;
                 } else if (!state.get(OPEN)) {
-                    return ActionResult.SUCCESS;
+                    return ActionResult.PASS;
                 }
             }
         }
@@ -82,11 +82,10 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
 
         if (bl && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity) {
             entity.setCanCheck(true);
+            stack.damage(1, player, EquipmentSlot.MAINHAND);
         }
 
-        stack.damage(1, player, EquipmentSlot.MAINHAND);
-
-        return bl ? ItemActionResult.SUCCESS : ItemActionResult.FAIL;
+        return bl ? ItemActionResult.SUCCESS : !stack.isIn(ModTags.Items.BYPASSES_DEFAULT_INTERACTION) ? ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemActionResult.FAIL;
     }
 
     @Override

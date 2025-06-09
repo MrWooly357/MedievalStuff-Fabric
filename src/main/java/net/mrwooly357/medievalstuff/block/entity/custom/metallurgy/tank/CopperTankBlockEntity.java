@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tanks;
+package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;

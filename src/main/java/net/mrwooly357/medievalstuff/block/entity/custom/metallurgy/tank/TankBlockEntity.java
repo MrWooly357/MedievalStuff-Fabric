@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tanks;
+package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
@@ -14,10 +14,10 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.tanks.TankBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.TankBlock;
 import org.jetbrains.annotations.Nullable;
 
-import static net.mrwooly357.medievalstuff.block.custom.metallurgy.tanks.TankBlock.calculateLightLevel;
+import static net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.TankBlock.calculateLightLevel;
 
 public abstract class TankBlockEntity extends BlockEntity {
 

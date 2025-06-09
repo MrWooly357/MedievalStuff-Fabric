@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * A simple {@code SidedInventory} implementation with only default methods + an item list getter.
+ * A simple {@link SidedInventory} implementation with only default methods + an item list getter.
  *
  * <h3>Reading and writing to tags</h2>
  * Use {@link Inventories#writeNbt(NbtCompound, DefaultedList, RegistryWrapper.WrapperLookup)} and

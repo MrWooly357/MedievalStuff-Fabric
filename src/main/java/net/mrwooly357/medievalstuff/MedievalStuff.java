@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.mrwooly357.medievalstuff.block.ModBlocks;
 import net.mrwooly357.medievalstuff.block.custom.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
+import net.mrwooly357.medievalstuff.config.custom.MedievalStuffConfig;
 import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntity;
@@ -20,7 +21,6 @@ import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridW
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponMaterials;
 import net.mrwooly357.medievalstuff.registry.ModRegistries;
 import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
-//import net.mrwooly357.medievalstuff.util.measurement_unit.MeasurementUnitTypes;
 import net.mrwooly357.medievalstuff.world.biome.ModBiomes;
 import net.mrwooly357.medievalstuff.world.biome.ModMaterialRules;
 import net.mrwooly357.medievalstuff.world.gen.ModEntitySpawns;
@@ -28,22 +28,27 @@ import net.mrwooly357.medievalstuff.world.gen.ModWorldGeneration;
 import net.mrwooly357.medievalstuff.events.HammerAdditionalBlocksBreakEvent;
 import net.mrwooly357.medievalstuff.events.TreechopperAdditionalBlocksBreakEvent;
 import net.mrwooly357.medievalstuff.world.gen.structure.ModStructureKeys;
+import net.mrwooly357.wool.WoolEntrypoint;
+import net.mrwooly357.wool.config.Config;
 import net.mrwooly357.wool.config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import terrablender.api.SurfaceRuleManager;
 import terrablender.api.TerraBlenderApi;
 
-public class MedievalStuff implements ModInitializer, TerraBlenderApi {
+public class MedievalStuff implements ModInitializer, TerraBlenderApi, WoolEntrypoint {
 
 	public static final String MOD_ID = "medievalstuff";
 	public static final Logger LOGGER = LoggerFactory.getLogger("Medieval Stuff");
+	public static final Config CONFIG = new MedievalStuffConfig();
 
 
 	@Override
 	public void onInitialize() {
+		onWoolInitialize();
+
 		//Items, item groups and related things
-		ModItems.init();
+		ModItems.initialize();
 		ModItemGroups.registerItemGroups();
 		HybridWeaponMaterials.registerHybridWeaponMaterials();
 		HybridWeaponFamilies.registerHybridWeaponFamilies();
@@ -93,6 +98,11 @@ public class MedievalStuff implements ModInitializer, TerraBlenderApi {
 		ModBiomes.init();
 
 		SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.OVERWORLD, MOD_ID, ModMaterialRules.makeWetlandsRules());
+	}
+
+	@Override
+	public void onWoolInitialize() {
+		ConfigManager.register(CONFIG);
 	}
 
 	private static void registerStrippableBlocks() {

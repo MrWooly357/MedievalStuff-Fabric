@@ -16,8 +16,8 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.tanks.TankBlock;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tanks.TankBlockEntity;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.TankBlock;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank.TankBlockEntity;
 
 // Credits to TurtyWurty
 // Under MIT-License: https://github.com/DaRealTurtyWurty/1.20-Tutorial-Mod?tab=MIT-1-ov-file#readme

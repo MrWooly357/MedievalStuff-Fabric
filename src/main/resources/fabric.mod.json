@@ -26,6 +26,9 @@
 		],
 		"terrablender": [
 			"net.mrwooly357.medievalstuff.MedievalStuff"
+		],
+		"wool": [
+			"net.mrwooly357.medievalstuff.MedievalStuff"
 		]
 	},
 	"mixins": [

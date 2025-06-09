@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heaters;
+package net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.Block;
@@ -17,7 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.heaters.HeaterBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.heater.HeaterBlock;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;

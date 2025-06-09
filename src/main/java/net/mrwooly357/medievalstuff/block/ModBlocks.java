@@ -7,10 +7,10 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controllers.CopperstoneForgeControllerBlock;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.heaters.CopperstoneHeaterBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controller.CopperstoneForgeControllerBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.heater.CopperstoneHeaterBlock;
 import net.mrwooly357.medievalstuff.block.custom.nature.WildBlueberryBushBlock;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.tanks.CopperTankBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.CopperTankBlock;
 import net.mrwooly357.wool.registry.BlockRegistryHelper;
 
 import java.util.function.ToIntFunction;

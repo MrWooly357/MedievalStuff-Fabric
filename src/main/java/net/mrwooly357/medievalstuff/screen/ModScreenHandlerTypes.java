@@ -6,7 +6,8 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.screen.custom.heaters.CopperstoneHeaterScreenHandler;
+import net.mrwooly357.medievalstuff.screen.custom.forge_controller.CopperstoneForgeControllerScreenHandler;
+import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreenHandler;
 import net.mrwooly357.wool.registry.ScreenHandlerTypeRegistryHelper;
 
 public class ModScreenHandlerTypes {
@@ -14,6 +15,11 @@ public class ModScreenHandlerTypes {
     public static final ScreenHandlerType<CopperstoneHeaterScreenHandler> COPPERSTONE_HEATER_SCREEN_HANDLER = register(
             "copperstone_heater_screen_handler", new ExtendedScreenHandlerType<>(
                     CopperstoneHeaterScreenHandler::new, BlockPos.PACKET_CODEC
+            )
+    );
+    public static final ScreenHandlerType<CopperstoneForgeControllerScreenHandler> COPPERSTONE_FORGE_CONTROLLER_SCREEN_HANDLER = register(
+            "copperstone_forge_controller_screen_handler", new ExtendedScreenHandlerType<>(
+                    CopperstoneForgeControllerScreenHandler::new, BlockPos.PACKET_CODEC
             )
     );
 

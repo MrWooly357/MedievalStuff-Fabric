@@ -7,12 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class Compound {
 
-    @Nullable
-    private String translationKey;
+    private int weight;
 
-    public Compound(Compound.Properties properties) {
-
-    }
+    public Compound() {}
 
 
     public Text getName() {
@@ -20,34 +17,14 @@ public class Compound {
     }
 
     public @Nullable String getTranslationKey() {
-        translationKey = Util.createTranslationKey("compound", ModRegistries.COMPOUND.getId(this));
 
-        return translationKey;
+        return Util.createTranslationKey("compound", ModRegistries.COMPOUND.getId(this));
     }
 
 
-    public static class Properties {
+    public Compound weight(int weight) {
+        this.weight = weight;
 
-        private int weight;
-        @Nullable
-        private Type type;
-
-
-        public Properties weight(int value) {
-            weight = value;
-
-            return this;
-        }
-
-        public Properties type(Type type) {
-            this.type = type;
-
-            return this;
-        }
-    }
-
-    public enum Type {
-        COAL,
-        METAL
+        return this;
     }
 }

@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.custom.metallurgy.tanks;
+package net.mrwooly357.medievalstuff.block.custom.metallurgy.tank;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
@@ -34,7 +34,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tanks.TankBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank.TankBlockEntity;
 import net.mrwooly357.medievalstuff.util.ItemStackUtils;
 import net.mrwooly357.medievalstuff.util.ModTags;
 import org.jetbrains.annotations.Nullable;
