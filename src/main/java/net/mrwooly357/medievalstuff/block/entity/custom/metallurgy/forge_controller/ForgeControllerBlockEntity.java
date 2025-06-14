@@ -29,7 +29,6 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
     protected boolean built;
     protected boolean canCheck;
     protected byte checkDelayTimer;
-    protected PropertyDelegate propertyDelegate;
     protected int temperature;
     protected int meltingProgress;
     protected int maxMeltingProgress;
@@ -46,54 +45,60 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
 
 
     public void tick(World world, BlockPos pos, BlockState state) {
-        if (canCheck) {
-            boolean canTryCheck = false;
+        if (!world.isClient()) {
 
-            if (checkDelayTimer == 20) {
-                resetCheckDelayTimer();
+            if (canCheck) {
+                boolean canTryCheck = false;
 
-                canTryCheck = true;
+                if (checkDelayTimer == 20) {
+                    resetCheckDelayTimer();
+
+                    canTryCheck = true;
+                }
+
+                if (canTryCheck) {
+                    tryBuild(getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), state.get(Properties.HORIZONTAL_FACING));
+                }
+
+                increaseCheckDelayTimer();
             }
 
-            if (canTryCheck) {
-                tryBuild(getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), state.get(Properties.HORIZONTAL_FACING));
-            }
+            if (built) {
 
-            increaseCheckDelayTimer();
-        }
-
-        if (built) {
-
-            if (hasMeltingRecipe() && canMelt()) {
-
-                if (meltingProgress < maxMeltingProgress) {
+                if (hasMeltingRecipe()) {
                     increaseMeltingProgress();
                     markDirty(world, pos, state);
-                }
 
-                if (hasMeltingFinished()) {
-                    melt();
-                    resetMeltingProgress();
-                }
-            } else {
-                resetMeltingProgress();
-            }
+                    if (hasMeltingFinished()) {
+                        melt();
+                        resetMeltingProgress();
+                    }
+                } else if (meltingProgress > 0) decreaseMeltingProgress();
 
-            if (hasAlloyingRecipe() && canAlloy()) {
-
-                if (alloyingProgress < maxAlloyingProgress) {
+                if (hasAlloyingRecipe()) {
                     increaseAlloyingProgress();
-                    decreaseCompoundAmount();
                     markDirty(world, pos, state);
-                }
 
-                if (hasAlloyingFinished()) {
-                    alloy();
-                    resetAlloyingProgress();
-                }
+                    if (hasAlloyingFinished()) {
+                        alloy();
+                        resetAlloyingProgress();
+                    }
+                } else if (alloyingProgress > 0) decreaseAlloyingProgress();
             } else {
-                resetAlloyingProgress();
+
+                if (meltingProgress > 0) decreaseMeltingProgress();
+
+                if (alloyingProgress > 0) decreaseAlloyingProgress();
+
+                if (meltingProgress == 0) resetMeltingProgress();
+
+                if (alloyingProgress == 0) resetAlloyingProgress();
             }
+
+            if (meltingProgress > 0 || alloyingProgress > 0) {
+
+                if (!state.get(Properties.LIT)) world.setBlockState(pos, state.with(Properties.LIT, true));
+            } else if (state.get(Properties.LIT)) world.setBlockState(pos, state.with(Properties.LIT, false));
         }
     }
 
@@ -112,6 +117,10 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
         this.built = built;
     }
 
+    public boolean isBuilt() {
+        return built;
+    }
+
     public void setCanCheck(boolean canCheck) {
         this.canCheck = canCheck;
     }
@@ -126,8 +135,6 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
 
     public abstract DefaultedList<ItemStack> getInventory();
 
-    public abstract PropertyDelegate getDelegate();
-
     public int getTemperature() {
         return temperature;
     }
@@ -138,6 +145,10 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
 
     protected void decreaseTemperature() {
         temperature--;
+    }
+
+    protected boolean isTemperatureSufficient(float temperature, boolean invert) {
+        return !invert ? this.temperature >= temperature : this.temperature <= temperature;
     }
 
     public int getMeltingProgress() {
@@ -162,8 +173,6 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
     }
 
     protected abstract boolean hasMeltingRecipe();
-
-    protected abstract boolean canMelt();
 
     protected boolean hasMeltingFinished() {
         return meltingProgress == maxMeltingProgress;
@@ -213,8 +222,6 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
     }
 
     protected abstract boolean hasAlloyingRecipe();
-
-    protected abstract boolean canAlloy();
 
     protected boolean hasAlloyingFinished() {
         return alloyingProgress == maxAlloyingProgress;
@@ -273,35 +280,37 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
     }
 
     @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-
-        built = nbt.getBoolean("Built");
-        checkDelayTimer = nbt.getByte("CheckDelayTimer");
-
-        Inventories.readNbt(nbt, getInventory(), registryLookup);
-
-        meltingProgress = nbt.getInt("MeltingProgress");
-        maxMeltingProgress = nbt.getInt("MaxMeltingProgress");
-        alloyingProgress = nbt.getInt("AlloyingProgress");
-        maxAlloyingProgress = nbt.getInt("MaxAlloyingProgress");
-        compoundAmount = nbt.getInt("CompoundAmount");
-        temperature = nbt.getInt("Temperature");
-    }
-
-    @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
 
         nbt.putBoolean("Built", built);
+        nbt.putBoolean("CanCheck", canCheck);
         nbt.putByte("CheckDelayTimer", checkDelayTimer);
         Inventories.writeNbt(nbt, getInventory(), registryLookup);
+        nbt.putInt("Temperature", temperature);
         nbt.putInt("MeltingProgress", meltingProgress);
         nbt.putInt("MaxMeltingProgress", maxMeltingProgress);
         nbt.putInt("AlloyingProgress", alloyingProgress);
         nbt.putInt("MaxAlloyingProgress", maxAlloyingProgress);
         nbt.putInt("CompoundAmount", compoundAmount);
-        nbt.putInt("Temperature", temperature);
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+
+        built = nbt.getBoolean("Built");
+        canCheck = nbt.getBoolean("CanCheck");
+        checkDelayTimer = nbt.getByte("CheckDelayTimer");
+
+        Inventories.readNbt(nbt, getInventory(), registryLookup);
+
+        temperature = nbt.getInt("Temperature");
+        meltingProgress = nbt.getInt("MeltingProgress");
+        maxMeltingProgress = nbt.getInt("MaxMeltingProgress");
+        alloyingProgress = nbt.getInt("AlloyingProgress");
+        maxAlloyingProgress = nbt.getInt("MaxAlloyingProgress");
+        compoundAmount = nbt.getInt("CompoundAmount");
     }
 
     @Override

@@ -1,63 +1,48 @@
 package net.mrwooly357.medievalstuff.screen.custom.heater;
 
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater.HeaterBlockEntity;
 import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
-import net.mrwooly357.medievalstuff.util.ModTags;
 
 public class CopperstoneHeaterScreenHandler extends HeaterScreenHandler {
-    private final Inventory inventory;
 
     public CopperstoneHeaterScreenHandler(int syncId, PlayerInventory playerInventory, BlockPos pos) {
-        this(syncId, playerInventory, playerInventory.player.getWorld().getBlockEntity(pos));
+        this(syncId, playerInventory, playerInventory.player.getWorld().getBlockEntity(pos), new ArrayPropertyDelegate(4));
     }
 
-    public CopperstoneHeaterScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity blockEntity) {
-        super(ModScreenHandlerTypes.COPPERSTONE_HEATER_SCREEN_HANDLER, syncId, playerInventory);
-        checkSize((Inventory) blockEntity, 1);
-        this.inventory = (Inventory) blockEntity;
+    public CopperstoneHeaterScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate delegate) {
+        super(ModScreenHandlerTypes.COPPERSTONE_HEATER_SCREEN_HANDLER, syncId, playerInventory, entity, delegate, 1);
 
-        this.addSlot(new Slot(inventory, 0, 80, 35) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return HeaterBlockEntity.createFuelTimeMap().containsKey(stack.getItem()) && !stack.isIn(ModTags.Items.HEATER_FUEL_EXCEPTIONS);
-            }
-        });
+        checkSize((Inventory) entity, 1);
+
+        addSlot(new FuelSlot(inventory, 0, 80, 35));
     }
 
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int invSlot) {
-        ItemStack newStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(invSlot);
-        if (slot.hasStack()) {
-            ItemStack originalStack = slot.getStack();
-            newStack = originalStack.copy();
-            if (invSlot < this.inventory.size()) {
-                if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
-                return ItemStack.EMPTY;
-            }
+    protected int getScaledBurnTime() {
+        int burnTime = delegate.get(0);
+        int maxBurnTime = delegate.get(1);
+        int cost = maxBurnTime / 16;
 
-            if (originalStack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
+        return burnTime != 0 && maxBurnTime != 0 && cost != 0 ? 16 - (maxBurnTime - burnTime) / cost : 0;
+    }
+
+    @Override
+    protected int getScaledAshAmount() {
+        float ashAmount = delegate.get(2);
+        float maxAshAmount = delegate.get(3);
+        int pixels = 0;
+
+        while (ashAmount - maxAshAmount / 16 >= 0) {
+            pixels++;
+            ashAmount -= maxAshAmount / 16;
         }
-        return newStack;
-    }
 
-    @Override
-    public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUse(player);
+        return pixels;
     }
 }

@@ -62,7 +62,7 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
                     return ActionResult.SUCCESS;
                 } else if (state.get(OPEN)) {
 
-                    if (!world.isClient) {
+                    if (!world.isClient && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity && entity.isBuilt()) {
                         player.openHandledScreen(forgeControllerBlockEntity);
                     }
 
@@ -80,7 +80,7 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         boolean bl = stack.getItem() instanceof MultiblockConstructionBlueprintHolder holder && holder.getBlueprint() == getRequiredBlueprint();
 
-        if (bl && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity) {
+        if (bl && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity && !entity.isBuilt()) {
             entity.setCanCheck(true);
             stack.damage(1, player, EquipmentSlot.MAINHAND);
         }

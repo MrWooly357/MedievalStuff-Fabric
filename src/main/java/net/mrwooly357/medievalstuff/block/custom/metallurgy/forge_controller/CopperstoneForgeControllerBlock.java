@@ -8,7 +8,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.custom.util.ModMultiblockConstructionBlueprints;
+import net.mrwooly357.medievalstuff.block.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
 import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.CopperstoneForgeControllerBlockEntity;
 import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprint;

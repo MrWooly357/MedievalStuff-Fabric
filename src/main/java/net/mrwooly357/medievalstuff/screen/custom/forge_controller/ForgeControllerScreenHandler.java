@@ -12,13 +12,14 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
 import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.ForgeControllerBlockEntity;
+import net.mrwooly357.medievalstuff.compound.CompoundHolder;
+import net.mrwooly357.medievalstuff.util.ModTags;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ForgeControllerScreenHandler extends ScreenHandler {
 
     protected final Inventory inventory;
     protected final PropertyDelegate delegate;
-    protected final ForgeControllerBlockEntity entity;
 
     protected ForgeControllerScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate delegate, int inventorySize) {
         super(type, syncId);
@@ -27,7 +28,6 @@ public abstract class ForgeControllerScreenHandler extends ScreenHandler {
 
         this.inventory = (Inventory) entity;
         this.delegate = delegate;
-        this.entity = (ForgeControllerBlockEntity) entity;
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
@@ -87,4 +87,32 @@ public abstract class ForgeControllerScreenHandler extends ScreenHandler {
     protected abstract int getScaledCompoundAmount();
 
     protected abstract int getScaledAlloyingProgress();
+
+
+    public static class MeltingIngredientSlot extends Slot {
+
+        public MeltingIngredientSlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return stack.isIn(ModTags.Items.FORGE_CONTROLLER_MELTABLE);
+        }
+    }
+
+
+    public static class CompoundSlot extends Slot {
+
+        public CompoundSlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return stack.getItem() instanceof CompoundHolder;
+        }
+    }
 }

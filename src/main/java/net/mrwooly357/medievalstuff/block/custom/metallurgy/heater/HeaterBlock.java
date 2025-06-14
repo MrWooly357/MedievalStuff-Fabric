@@ -28,7 +28,7 @@ import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater.Heater
 import net.mrwooly357.medievalstuff.util.ModTags;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class HeaterBlock extends BlockWithEntity implements BlockEntityProvider {
+public abstract class HeaterBlock extends BlockWithEntity {
 
     public static final BooleanProperty OPEN = Properties.OPEN;
     public static final BooleanProperty LIT = Properties.LIT;
@@ -46,7 +46,7 @@ public abstract class HeaterBlock extends BlockWithEntity implements BlockEntity
 
         if (!stackInHand.isIn(ModTags.Items.BYPASSES_DEFAULT_INTERACTION)) {
 
-            if (world.getBlockEntity(pos) instanceof HeaterBlockEntity heaterBlockEntity) {
+            if (world.getBlockEntity(pos) instanceof HeaterBlockEntity entity) {
 
                 if (player.isSneaking()) {
                     float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
@@ -64,13 +64,13 @@ public abstract class HeaterBlock extends BlockWithEntity implements BlockEntity
                 } else if (state.get(OPEN)) {
 
                     if (!world.isClient) {
-                        player.openHandledScreen(heaterBlockEntity);
+                        player.openHandledScreen(entity);
                     }
 
                     return ActionResult.SUCCESS;
                 } else if (!state.get(OPEN)) {
 
-                    if (stackInHand.isIn(ModTags.Items.HEATER_ARSONISTS) && !heaterBlockEntity.isEmpty() && !state.get(LIT)) {
+                    if (stackInHand.isIn(ModTags.Items.HEATER_ARSONISTS) && !entity.isEmpty() && !state.get(LIT)) {
                         return ActionResult.SUCCESS;
                     } else if (stackInHand.isIn(ItemTags.SHOVELS) && state.get(LIT)) {
                         return ActionResult.SUCCESS;
@@ -97,7 +97,7 @@ public abstract class HeaterBlock extends BlockWithEntity implements BlockEntity
 
                     for (int slot = 0; slot < blockEntity.size(); slot++) {
 
-                        if (!blockEntity.getStack(slot).isEmpty() && !blockEntity.getStack(slot).isIn(ModTags.Items.HEATER_FUEL_EXCEPTIONS)) {
+                        if (!blockEntity.getStack(slot).isEmpty()) {
                             world.setBlockState(pos, state.with(LIT, true));
                             world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.PLAYERS, soundVolume, soundPitch);
 
@@ -162,7 +162,7 @@ public abstract class HeaterBlock extends BlockWithEntity implements BlockEntity
 
     @Override
     public @Nullable BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(OPEN, false).with(LIT, false).with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+        return getDefaultState().with(OPEN, false).with(LIT, false).with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override
@@ -182,8 +182,9 @@ public abstract class HeaterBlock extends BlockWithEntity implements BlockEntity
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (!world.isClient && entity instanceof LivingEntity && state.get(LIT)) {
-            entity.damage(entity.getDamageSources().inFire(), 1.0F);
+        if (!world.isClient && entity instanceof LivingEntity && state.get(LIT) && world.getBlockEntity(pos) instanceof HeaterBlockEntity blockEntity && blockEntity.getTemperature() > 50.0F) {
+            entity.damage(entity.getDamageSources().onFire(), blockEntity.getTemperature() * 0.025F);
+            entity.setOnFireForTicks((int) blockEntity.getTemperature());
         }
     }
 

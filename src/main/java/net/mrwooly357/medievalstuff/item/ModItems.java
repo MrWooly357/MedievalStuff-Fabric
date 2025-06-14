@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.ModBlocks;
-import net.mrwooly357.medievalstuff.block.custom.util.ModMultiblockConstructionBlueprints;
+import net.mrwooly357.medievalstuff.block.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
 import net.mrwooly357.medievalstuff.item.custom.*;
 import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FilledBlueprintItem;

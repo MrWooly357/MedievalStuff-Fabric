@@ -16,7 +16,6 @@ public class ModTags {
 
         public static final TagKey<Item> BYPASSES_DEFAULT_INTERACTION = createItemTag("bypasses_default_interaction");
         public static final TagKey<Item> CUSTOM_BOWS = createItemTag("custom_bows");
-        public static final TagKey<Item> HEATER_FUEL_EXCEPTIONS = createItemTag("heater_fuel_exceptions");
         public static final TagKey<Item> HEATER_ARSONISTS = createItemTag("heater_arsonists");
         public static final TagKey<Item> HEATER_CRAFTING_RECIPE_FUEL = createItemTag("heater_crafting_recipe_fuel");
         public static final TagKey<Item> FORGE_CONTROLLER_MELTABLE = createItemTag("forge_controller_meltable");

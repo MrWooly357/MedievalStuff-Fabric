@@ -4,18 +4,34 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.custom.util.ModMultiblockConstructionBlueprints;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.forge_controller.CopperstoneForgeControllerBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.CopperTankBlock;
+import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.TankBlock;
+import net.mrwooly357.medievalstuff.block.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
+import net.mrwooly357.medievalstuff.recipe.MedievalStuffRecipeTypes;
+import net.mrwooly357.medievalstuff.recipe.custom.CopperstoneForgeControllerMeltingRecipe;
+import net.mrwooly357.medievalstuff.recipe.custom.CopperstoneForgeControllerMeltingRecipeInput;
 import net.mrwooly357.medievalstuff.screen.custom.forge_controller.CopperstoneForgeControllerScreenHandler;
 import net.mrwooly357.wool.block.util.MultiblockConstructionBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockEntity {
 
@@ -53,8 +69,8 @@ public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockE
     };
     private static final int MELTING_INGREDIENT_SLOT = 0;
     private static final int COMPOUND_SLOT = 1;
-    private BlockPos ingredientFluidTankPos;
-    private BlockPos resultFluidTankPos;
+    private BlockPos ingredientTankPos;
+    private BlockPos resultTankPos;
 
     public CopperstoneForgeControllerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.COPPERSTONE_FORGE_CONTROLLER_BE, pos, state);
@@ -64,6 +80,18 @@ public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockE
     @Override
     public void tick(World world, BlockPos pos, BlockState state) {
         super.tick(world, pos, state);
+    }
+
+    @Override
+    public void onSuccess() {
+        super.onSuccess();
+
+        if (world != null) {
+            BlockState state = world.getBlockState(pos);
+
+            setIngredientTankPos(calculateIngredientTankPos(state.getBlock() instanceof CopperstoneForgeControllerBlock ? state.get(Properties.HORIZONTAL_FACING) : Direction.NORTH));
+            setResultTankPos(calculateResultTankPos(state.getBlock() instanceof CopperstoneForgeControllerBlock ? state.get(Properties.HORIZONTAL_FACING) : Direction.NORTH));
+        }
     }
 
     @Override
@@ -82,30 +110,52 @@ public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockE
     }
 
     @Override
-    public PropertyDelegate getDelegate() {
-        return delegate;
-    }
-
-    @Override
     protected boolean hasMeltingRecipe() {
-        return false;
+        Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> recipe = getMeltingRecipe();
+
+        if (recipe.isEmpty()) return false;
+
+        long amount = recipe.get().value().getAmount();
+        float temperature = recipe.get().value().getMinTemperature();
+        boolean invertTemperatures = recipe.get().value().isInvertTemperatures();
+        maxMeltingProgress = recipe.get().value().getMeltingTime();
+
+        return canInsertIntoIngredientTank(amount) && isTemperatureSufficient(temperature, invertTemperatures);
+    }
+
+    private Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> getMeltingRecipe() {
+        if (world != null) {
+            RecipeManager manager = world.getRecipeManager();
+
+            if (manager != null) return world.getRecipeManager().getFirstMatch(MedievalStuffRecipeTypes.COPPERSTONE_FORGE_CONTROLLER_MELTING, new CopperstoneForgeControllerMeltingRecipeInput(inventory.get(MELTING_INGREDIENT_SLOT)), world);
+        }
+
+        return Optional.empty();
     }
 
     @Override
-    protected boolean canMelt() {
-        return false;
-    }
+    protected void melt() {
+        Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> recipe = getMeltingRecipe();
 
-    @Override
-    protected void melt() {}
+        if (recipe.isEmpty()) return;
+
+        String fluid = recipe.get().value().getResultFluid();
+        long amount = recipe.get().value().getAmount();
+
+        removeStack(MELTING_INGREDIENT_SLOT, 1);
+
+        if (world != null) {
+            BlockState state = world.getBlockState(ingredientTankPos);
+
+            if (state.getBlock() instanceof CopperTankBlock) {
+
+                TankBlock.tryInsert(world, ingredientTankPos, Registries.FLUID.get(Identifier.of(fluid)), amount, null);
+            }
+        }
+    }
 
     @Override
     protected boolean hasAlloyingRecipe() {
-        return false;
-    }
-
-    @Override
-    protected boolean canAlloy() {
         return false;
     }
 
@@ -117,24 +167,91 @@ public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockE
         return inventory;
     }
 
-    private BlockPos getIngredientFluidTankPos() {
-        return ingredientFluidTankPos;
+    private BlockPos calculateIngredientTankPos(Direction direction) {
+        int x = pos.getX();
+        int z = pos.getZ();
+
+        if (direction == Direction.NORTH) {
+            x++;
+        } else if (direction == Direction.EAST) {
+            z++;
+        } else if (direction == Direction.SOUTH) {
+            x--;
+        } else if (direction == Direction.WEST) {
+            z--;
+        }
+
+        return new BlockPos(x, pos.getY(), z);
     }
 
-    private BlockPos getResultFluidTankPos() {
-        return resultFluidTankPos;
+    private void setIngredientTankPos(BlockPos ingredientTankPos) {
+        this.ingredientTankPos = ingredientTankPos;
     }
 
-    private void setIngredientFluidTankPos(BlockPos pos) {
-        ingredientFluidTankPos = pos;
+    private boolean canInsertIntoIngredientTank(long amount) {
+        if (world != null) {
+            return world.getBlockState(ingredientTankPos).getBlock() instanceof CopperTankBlock && TankBlock.canInsert(amount, world, ingredientTankPos);
+        } else {
+            return false;
+        }
     }
 
-    private void setResultFluidTankPos(BlockPos pos) {
-        resultFluidTankPos = pos;
+    private BlockPos calculateResultTankPos(Direction direction) {
+        int x = pos.getX();
+        int z = pos.getZ();
+
+        if (direction == Direction.NORTH) {
+            x--;
+        } else if (direction == Direction.EAST) {
+            z--;
+        } else if (direction == Direction.SOUTH) {
+            x++;
+        } else if (direction == Direction.WEST) {
+            z++;
+        }
+
+        return new BlockPos(x, pos.getY(), z);
+    }
+
+    private void setResultTankPos(BlockPos resultTankPos) {
+        this.resultTankPos = resultTankPos;
+    }
+
+    private boolean canInsertIntoResultTank(long amount) {
+        if (world != null) {
+            return world.getBlockState(resultTankPos).getBlock() instanceof CopperTankBlock && TankBlock.canInsert(amount, world, ingredientTankPos);
+        } else {
+            return false;
+        }
     }
 
     @Override
     public @NotNull MultiblockConstructionBuilder getBuilder() {
         return new MultiblockConstructionBuilder(ModMultiblockConstructionBlueprints.COPPERSTONE_FORGE, getWorld());
+    }
+
+    @Override
+    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(nbt, registryLookup);
+
+        if (ingredientTankPos != null) {
+            nbt.putInt("IngredientTankPosX", ingredientTankPos.getX());
+            nbt.putInt("IngredientTankPosY", ingredientTankPos.getY());
+            nbt.putInt("IngredientTankPosZ", ingredientTankPos.getZ());
+        }
+
+        if (resultTankPos != null) {
+            nbt.putInt("ResultTankPosX", resultTankPos.getX());
+            nbt.putInt("ResultTankPosY", resultTankPos.getY());
+            nbt.putInt("ResultTankPosZ", resultTankPos.getZ());
+        }
+    }
+
+    @Override
+    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(nbt, registryLookup);
+
+        ingredientTankPos = new BlockPos(nbt.getInt("IngredientTankPosX"), nbt.getInt("IngredientTankPosY"), nbt.getInt("IngredientTankPosZ"));
+        resultTankPos = new BlockPos(nbt.getInt("ResultTankPosX"), nbt.getInt("ResultTankPosY"), nbt.getInt("ResultTankPosZ"));
     }
 }

@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.custom.util;
+package net.mrwooly357.medievalstuff.block.util;
 
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;

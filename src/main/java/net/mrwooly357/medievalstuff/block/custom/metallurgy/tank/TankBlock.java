@@ -22,7 +22,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -35,7 +34,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
 import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank.TankBlockEntity;
-import net.mrwooly357.medievalstuff.util.ItemStackUtils;
+import net.mrwooly357.medievalstuff.util.ItemStackUtil;
 import net.mrwooly357.medievalstuff.util.ModTags;
 import org.jetbrains.annotations.Nullable;
 
@@ -405,11 +404,11 @@ public abstract class TankBlock extends BlockWithEntity {
         return validateTicker(type, ModBlockEntities.COPPER_TANK_BE, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 
-    public boolean tryInsert(World world, BlockPos pos, Fluid fluid, long amount, SoundEvent sound) {
+    public static boolean tryInsert(World world, BlockPos pos, Fluid fluid, long amount, @Nullable SoundEvent sound) {
         return tryInsert(world, pos, fluid, amount, sound, null, null, null);
     }
 
-    public boolean tryInsert(World world, BlockPos pos, Fluid fluid, long amount, SoundEvent sound, @Nullable ItemStack useStack, @Nullable ItemStack exchangeStack, @Nullable PlayerEntity player) {
+    public static boolean tryInsert(World world, BlockPos pos, Fluid fluid, long amount, @Nullable SoundEvent sound, @Nullable ItemStack useStack, @Nullable ItemStack exchangeStack, @Nullable PlayerEntity player) {
         boolean bl = false;
         FluidVariant insertVariant = FluidVariant.of(fluid);
 
@@ -436,27 +435,28 @@ public abstract class TankBlock extends BlockWithEntity {
 
                                 amount -= transferAmount;
                                 int lightLevel = calculateLightLevel(tankBlockEntity, fluid);
-                                System.out.println(lightLevel);
-                                System.out.println(transferAmount);
 
                                 world.setBlockState(blockPos, state.with(LIGHT_LEVEL, lightLevel));
                             }
 
                             if (amount == 0) {
-                                PlayerInventory inventory = player.getInventory();
-                                float useSoundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
-                                float useSoundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
 
-                                if (useStack != null && exchangeStack != null) {
+                                if (player != null) {
+                                    PlayerInventory inventory = player.getInventory();
+                                    float useSoundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+                                    float useSoundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
 
-                                    if (!ItemStackUtils.insertFluidStorageStack(useStack, exchangeStack, inventory, inventory.selectedSlot)) {
-                                        player.dropItem(exchangeStack, false);
+                                    if (useStack != null && exchangeStack != null) {
+
+                                        if (!ItemStackUtil.insertFluidStorageStack(useStack, exchangeStack, inventory, inventory.selectedSlot)) {
+                                            player.dropItem(exchangeStack, false);
+                                        }
                                     }
+
+                                    if (sound != null) world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
                                 }
 
                                 bl = true;
-
-                                world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
 
                                 break;
                             }
@@ -469,11 +469,11 @@ public abstract class TankBlock extends BlockWithEntity {
         return bl;
     }
 
-    public boolean tryExtract(World world, BlockPos pos, long amount, SoundEvent sound) {
+    public static boolean tryExtract(World world, BlockPos pos, long amount, @Nullable SoundEvent sound) {
         return tryExtract(world, pos, amount, sound, null, null, null);
     }
 
-    public boolean tryExtract(World world, BlockPos pos, long amount, SoundEvent sound, @Nullable ItemStack useStack, @Nullable ItemStack exchangeStack, @Nullable PlayerEntity player) {
+    public static boolean tryExtract(World world, BlockPos pos, long amount, @Nullable SoundEvent sound, @Nullable ItemStack useStack, @Nullable ItemStack exchangeStack, @Nullable PlayerEntity player) {
         boolean bl = false;
 
         if (canExtract(amount, world, pos)) {
@@ -499,26 +499,28 @@ public abstract class TankBlock extends BlockWithEntity {
 
                             amount -= transferAmount;
                             int lightLevel = calculateLightLevel(tankBlockEntity, variantInMultiblockConstruction.getFluid());
-                            System.out.println(lightLevel);
 
                             world.setBlockState(blockPos, state.with(LIGHT_LEVEL, lightLevel));
                         }
 
                         if (amount == 0) {
-                            PlayerInventory inventory = player.getInventory();
-                            float useSoundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
-                            float useSoundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
 
-                            if (useStack != null && exchangeStack != null) {
+                            if (player != null) {
+                                PlayerInventory inventory = player.getInventory();
+                                float useSoundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+                                float useSoundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
 
-                                if (!ItemStackUtils.insertFluidStorageStack(useStack, exchangeStack, inventory, inventory.selectedSlot)) {
-                                    player.dropItem(exchangeStack, false);
+                                if (useStack != null && exchangeStack != null) {
+
+                                    if (!ItemStackUtil.insertFluidStorageStack(useStack, exchangeStack, inventory, inventory.selectedSlot)) {
+                                        player.dropItem(exchangeStack, false);
+                                    }
                                 }
+
+                                if (sound != null) world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
                             }
 
                             bl = true;
-
-                            world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
 
                             break;
                         }
@@ -530,7 +532,7 @@ public abstract class TankBlock extends BlockWithEntity {
         return bl;
     }
 
-    public boolean shouldConnectWhenBetween(World world,BlockPos pos) {
+    public static boolean shouldConnectWhenBetween(World world,BlockPos pos) {
         BlockPos posBelow = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
         BlockPos posAbove = new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ());
         BlockState stateBelow = world.getBlockState(posBelow);
@@ -640,15 +642,7 @@ public abstract class TankBlock extends BlockWithEntity {
         return variantBelow == variantAbove || variantBelow == empty || variantAbove == empty;
     }
 
-    @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        System.out.println(canInsert(81000, world, pos));
-        System.out.println(canExtract(81000, world, pos));
-
-        return super.onUse(state, world, pos, player, hit);
-    }
-
-    public FluidVariant getFluidVariant(World world, BlockPos pos) {
+    public static FluidVariant getFluidVariant(World world, BlockPos pos) {
         List<BlockPos> multiblockConstruction = createMultiblockConstruction(world, pos);
         FluidVariant variant = FluidVariant.of(Fluids.EMPTY);
 
@@ -670,7 +664,7 @@ public abstract class TankBlock extends BlockWithEntity {
         return variant;
     }
 
-    public boolean canInsert(long amount, World world, BlockPos pos) {
+    public static boolean canInsert(long amount, World world, BlockPos pos) {
         List<BlockPos> multiblockConstruction = createMultiblockConstruction(world, pos);
         boolean bl = false;
 
@@ -693,7 +687,7 @@ public abstract class TankBlock extends BlockWithEntity {
         return bl;
     }
 
-    public boolean canExtract(long amount, World world, BlockPos pos) {
+    public static boolean canExtract(long amount, World world, BlockPos pos) {
         List<BlockPos> multiblockConstruction = createMultiblockConstruction(world, pos);
         boolean bl = false;
 
@@ -716,7 +710,7 @@ public abstract class TankBlock extends BlockWithEntity {
         return bl;
     }
 
-    protected List<BlockPos> createMultiblockConstruction(World world, BlockPos startPos) {
+    protected static List<BlockPos> createMultiblockConstruction(World world, BlockPos startPos) {
         List<BlockPos> multiblockConstruction = new ArrayList<>();
         BlockState state = world.getBlockState(startPos);
 

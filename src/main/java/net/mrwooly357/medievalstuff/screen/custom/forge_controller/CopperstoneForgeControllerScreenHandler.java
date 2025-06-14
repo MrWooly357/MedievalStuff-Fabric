@@ -2,18 +2,10 @@ package net.mrwooly357.medievalstuff.screen.custom.forge_controller;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.ForgeControllerBlockEntity;
-import net.mrwooly357.medievalstuff.compound.CompoundHolder;
 import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
-import net.mrwooly357.medievalstuff.util.ModTags;
-import org.jetbrains.annotations.Nullable;
 
 public class CopperstoneForgeControllerScreenHandler extends ForgeControllerScreenHandler {
 
@@ -33,8 +25,14 @@ public class CopperstoneForgeControllerScreenHandler extends ForgeControllerScre
     protected int getScaledMeltingProgress() {
         int progress = delegate.get(0);
         int maxProgress = delegate.get(1);
+        int pixels = 0;
 
-        return progress != 0 && maxProgress != 0 ? progress * 6 / maxProgress : 0;
+        while (progress - maxProgress / 8 >= 0) {
+            pixels++;
+            progress -= maxProgress / 8;
+        }
+
+        return pixels;
     }
 
     @Override
@@ -50,33 +48,5 @@ public class CopperstoneForgeControllerScreenHandler extends ForgeControllerScre
         int maxProgress = delegate.get(4);
 
         return progress != 0 && maxProgress != 0 ? progress * 20 / maxProgress : 0;
-    }
-
-
-    public static class MeltingIngredientSlot extends Slot {
-
-        public MeltingIngredientSlot(Inventory inventory, int index, int x, int y) {
-            super(inventory, index, x, y);
-        }
-
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return stack.isIn(ModTags.Items.FORGE_CONTROLLER_MELTABLE);
-        }
-    }
-
-
-    public static class CompoundSlot extends Slot {
-
-        public CompoundSlot(Inventory inventory, int index, int x, int y) {
-            super(inventory, index, x, y);
-        }
-
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return stack.getItem() instanceof CompoundHolder;
-        }
     }
 }

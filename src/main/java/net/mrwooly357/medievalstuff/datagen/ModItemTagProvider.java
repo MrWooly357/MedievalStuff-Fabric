@@ -28,9 +28,6 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 .add(Items.COAL)
                 .add(Items.CHARCOAL);
 
-        getOrCreateTagBuilder(ModTags.Items.HEATER_FUEL_EXCEPTIONS)
-                .add(Items.LAVA_BUCKET);
-
         getOrCreateTagBuilder(ModTags.Items.HEATER_ARSONISTS)
                 .add(Items.FIRE_CHARGE)
                 .add(Items.FLINT_AND_STEEL);
