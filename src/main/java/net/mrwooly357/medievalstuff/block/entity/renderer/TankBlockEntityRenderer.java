@@ -19,13 +19,11 @@ import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.TankBlock;
 import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank.TankBlockEntity;
 
-// Credits to TurtyWurty
-// Under MIT-License: https://github.com/DaRealTurtyWurty/1.20-Tutorial-Mod?tab=MIT-1-ov-file#readme
-// Major Rewrites for Fabric
 public class TankBlockEntityRenderer implements BlockEntityRenderer<TankBlockEntity> {
 
     public TankBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
     }
+
 
     @Override
     public void render(TankBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {

@@ -8,7 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
@@ -44,41 +43,31 @@ public abstract class HeaterBlock extends BlockWithEntity {
         Hand hand = player.getActiveHand();
         ItemStack stackInHand = player.getStackInHand(hand);
 
-        if (!stackInHand.isIn(ModTags.Items.BYPASSES_DEFAULT_INTERACTION)) {
+        if (!stackInHand.isIn(ModTags.Items.BYPASSES_DEFAULT_INTERACTION) && world.getBlockEntity(pos) instanceof HeaterBlockEntity entity) {
 
-            if (world.getBlockEntity(pos) instanceof HeaterBlockEntity entity) {
+            if (player.isSneaking()) {
+                float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+                float soundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
 
-                if (player.isSneaking()) {
-                    float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
-                    float soundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+                world.setBlockState(pos, state.cycle(OPEN));
 
-                    world.setBlockState(pos, state.cycle(OPEN));
-
-                    if (state.get(OPEN)) {
-                        world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_OPEN, SoundCategory.BLOCKS, soundVolume, soundPitch);
-                    } else {
-                        world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, soundVolume, soundPitch);
-                    }
-
-                    return ActionResult.SUCCESS;
-                } else if (state.get(OPEN)) {
-
-                    if (!world.isClient) {
-                        player.openHandledScreen(entity);
-                    }
-
-                    return ActionResult.SUCCESS;
-                } else if (!state.get(OPEN)) {
-
-                    if (stackInHand.isIn(ModTags.Items.HEATER_ARSONISTS) && !entity.isEmpty() && !state.get(LIT)) {
-                        return ActionResult.SUCCESS;
-                    } else if (stackInHand.isIn(ItemTags.SHOVELS) && state.get(LIT)) {
-                        return ActionResult.SUCCESS;
-                    } else {
-                        return ActionResult.FAIL;
-                    }
+                if (state.get(OPEN)) {
+                    world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_OPEN, SoundCategory.BLOCKS, soundVolume, soundPitch);
+                } else {
+                    world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, soundVolume, soundPitch);
                 }
-            }
+
+                return ActionResult.SUCCESS;
+            } else if (state.get(OPEN)) {
+
+                if ((stackInHand.isIn(ModTags.Items.HEATER_ARSONISTS) && !state.get(LIT) && !entity.isEmpty()) || (stackInHand.isIn(ItemTags.SHOVELS) && state.get(LIT))) {
+                    return ActionResult.SUCCESS;
+                } else if (!world.isClient()) {
+                    player.openHandledScreen(entity);
+
+                    return ActionResult.SUCCESS;
+                }
+            } else return ActionResult.PASS;
         }
 
         return ActionResult.PASS;
@@ -86,53 +75,47 @@ public abstract class HeaterBlock extends BlockWithEntity {
 
     @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
-        float soundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+        if (state.get(OPEN) && !stack.isIn(ModTags.Items.BYPASSES_DEFAULT_INTERACTION) && world.getBlockEntity(pos) instanceof HeaterBlockEntity entity) {
+            float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+            float soundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
 
-        if (!state.get(LIT)) {
+            if (!state.get(LIT) && stack.isIn(ModTags.Items.HEATER_ARSONISTS)) {
 
-            if (stack.isIn(ModTags.Items.HEATER_ARSONISTS)) {
+                for (int slot = 0; slot < entity.size(); slot++) {
 
-                if (world.getBlockEntity(pos) instanceof HeaterBlockEntity blockEntity) {
+                    if (!entity.getStack(slot).isEmpty()) {
+                        world.setBlockState(pos, state.with(LIT, true));
+                        world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.PLAYERS, soundVolume, soundPitch);
 
-                    for (int slot = 0; slot < blockEntity.size(); slot++) {
-
-                        if (!blockEntity.getStack(slot).isEmpty()) {
-                            world.setBlockState(pos, state.with(LIT, true));
-                            world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.PLAYERS, soundVolume, soundPitch);
-
-                            if (stack.isOf(Items.FLINT_AND_STEEL)) {
-                                stack.damage(1, player, EquipmentSlot.MAINHAND);
-
-                            } else {
-                                stack.decrementUnlessCreative(1, player);
-                            }
-
-                            return ItemActionResult.SUCCESS;
+                        if (stack.isDamageable()) {
+                            stack.damage(1, player, EquipmentSlot.MAINHAND);
+                        } else {
+                            stack.decrementUnlessCreative(1, player);
                         }
-                    }
+
+                        return ItemActionResult.SUCCESS;
+                    } else if (!state.get(OPEN)) return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
                 }
-            }
-        } else if (stack.isIn(ItemTags.SHOVELS)) {
-            int largeSmokeAmountRandomizer = MathHelper.nextInt(Random.create(), 1, 3);
-            double randomHelper = MathHelper.nextDouble(Random.create(), -0.15, 0.15);
-            double largeSmokeX = pos.getX() + 0.5 + randomHelper;
-            double largeSmokeY = pos.getY() + 1.1 + randomHelper;
-            double largeSmokeZ = pos.getZ() + 0.5 + randomHelper;
+            } else if (state.get(LIT) && stack.isIn(ItemTags.SHOVELS)) {
+                int particleAmount = MathHelper.nextInt(Random.create(), 1, 3);
+                double randomHelper = MathHelper.nextDouble(Random.create(), -0.15, 0.15);
+                double largeSmokeX = pos.getX() + 0.5 + randomHelper;
+                double largeSmokeY = pos.getY() + 1.1 + randomHelper;
+                double largeSmokeZ = pos.getZ() + 0.5 + randomHelper;
 
-            world.setBlockState(pos, state.with(LIT, false));
-            stack.damage(1, player, EquipmentSlot.MAINHAND);
+                world.setBlockState(pos, state.with(LIT, false));
+                stack.damage(1, player, EquipmentSlot.MAINHAND);
+                world.playSound(player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.PLAYERS, soundVolume - 0.4F, soundPitch * 2);
+                entity.resetBurnTime();
+                entity.resetMaxBurnTime();
 
-            for (int largeSmokeAmount = 0; largeSmokeAmount < largeSmokeAmountRandomizer; largeSmokeAmount++) {
-                double largeSmokeVelocity = MathHelper.nextDouble(Random.create(), -0.03, 0.03);
+                for (int a = 0; a < particleAmount; a++) {
+                    double velocityX = MathHelper.nextDouble(Random.create(), -0.03, 0.03);
+                    double velocityY = MathHelper.nextDouble(Random.create(), -0.03, 0.03);
+                    double velocityZ = MathHelper.nextDouble(Random.create(), -0.03, 0.03);
 
-                world.addParticle(ParticleTypes.LARGE_SMOKE, largeSmokeX, largeSmokeY, largeSmokeZ, largeSmokeVelocity, largeSmokeVelocity, largeSmokeVelocity);
-            }
-
-            world.playSound(player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.PLAYERS, soundVolume - 0.4F, soundPitch * 2);
-
-            if (world.getBlockEntity(pos) instanceof HeaterBlockEntity blockEntity) {
-                blockEntity.setBurnTime(0);
+                    world.addParticle(ParticleTypes.LARGE_SMOKE, largeSmokeX, largeSmokeY, largeSmokeZ, velocityX, velocityY, velocityZ);
+                }
 
                 return ItemActionResult.SUCCESS;
             }
@@ -183,8 +166,8 @@ public abstract class HeaterBlock extends BlockWithEntity {
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
         if (!world.isClient && entity instanceof LivingEntity && state.get(LIT) && world.getBlockEntity(pos) instanceof HeaterBlockEntity blockEntity && blockEntity.getTemperature() > 50.0F) {
-            entity.damage(entity.getDamageSources().onFire(), blockEntity.getTemperature() * 0.025F);
-            entity.setOnFireForTicks((int) blockEntity.getTemperature());
+            entity.damage(entity.getDamageSources().onFire(), blockEntity.getTemperature() * 0.02F);
+            entity.setOnFireForTicks((int) blockEntity.getTemperature() / 2);
         }
     }
 

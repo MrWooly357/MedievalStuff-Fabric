@@ -16,7 +16,9 @@ public class MedievalStuffConfig extends Config {
     public MedievalStuffConfig() {
         super(MedievalStuff.MOD_ID);
 
+        addComment("Blocks");
         forgeControllerDefaultMaxMeltingProgressEntry = intField("Sets the default max melting progress for forge controllers. Doesn't affect gameplay pretty much at all.", blocks,"forgeControllerDefaultMaxMeltingProgress", 200, new IntExactRestriction(200));
+        addEmptyLine();
         forgeControllerDefaultMaxAlloyingProgressEntry = intField("Sets the default max alloying progress for forge controllers. Doesn't affect gameplay pretty much at all.", blocks ,"forgeControllerDefaultMaxAlloyingProgress", 200, new IntExactRestriction(200));
     }
 

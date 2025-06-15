@@ -60,7 +60,6 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
 
 
     public void tick(World world, BlockPos pos, BlockState state) {
-        System.out.println(temperature);
         boolean shouldMarkDirty = false;
         boolean isBurning = isBurning();
         ItemStack stackInSlot = ItemStack.EMPTY;
@@ -166,12 +165,20 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
         return burnTime > 0;
     }
 
+    public void resetBurnTime() {
+        burnTime = 0;
+    }
+
     public int getMaxBurnTime() {
         return maxBurnTime;
     }
 
     protected void setMaxBurnTime(int maxBurnTime) {
         this.maxBurnTime = maxBurnTime;
+    }
+
+    public void resetMaxBurnTime() {
+        maxBurnTime = 0;
     }
 
     public int getAshAmount() {
@@ -375,8 +382,13 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
 
         Inventories.readNbt(nbt, getInventory(), registryLookup);
         setTemperature(nbt.getFloat("Temperature"));
-        System.out.println(Identifier.of(nbt.getString("Fuel")));
-        setFuel(createFuelsMap().get(Identifier.of(nbt.getString("Fuel"))));
+
+        if (fuel == null) {
+            setFuel(Fuel.getEmpty());
+        } else {
+            setFuel(createFuelsMap().get(Identifier.of(nbt.getString("Fuel"))));
+        }
+
         System.out.println("fuel:" + fuel);
         setBurnTime(nbt.getInt("BurnTime"));
         setAshAmount(nbt.getInt("AshAmount"));
@@ -389,7 +401,6 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
         Inventories.writeNbt(nbt, getInventory(), registryLookup);
         nbt.putFloat("Temperature", temperature);
         nbt.putString("Fuel", fuel.id().toString());
-        System.out.println("fuelId:" + fuel.id.toString());
         nbt.putInt("BurnTime", burnTime);
         nbt.putInt("AshAmount", ashAmount);
     }
