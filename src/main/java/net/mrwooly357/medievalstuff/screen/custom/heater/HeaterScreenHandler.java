@@ -5,25 +5,40 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater.HeaterBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater.HeaterBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class HeaterScreenHandler extends ScreenHandler {
 
     protected final Inventory inventory;
     protected final PropertyDelegate delegate;
+    protected final int INPUT_START_SLOT;
+    protected final int INPUT_END_SLOT;
+    protected final int INVENTORY_START_SLOT;
+    protected final int INVENTORY_END_SLOT;
+    protected final int HOTBAR_START_SLOT;
+    protected final int HOTBAR_END_SLOT;
 
     protected HeaterScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate delegate, int inventorySize) {
         super(type, syncId);
+
+        int playerInventoryMainSize = playerInventory.main.size();
 
         checkSize((Inventory) entity, inventorySize);
 
         this.inventory = (Inventory) entity;
         this.delegate = delegate;
+        INPUT_START_SLOT = playerInventoryMainSize;
+        INPUT_END_SLOT = playerInventoryMainSize + inventorySize;
+        INVENTORY_START_SLOT = 0;
+        INVENTORY_END_SLOT = playerInventoryMainSize - 10;
+        HOTBAR_START_SLOT = playerInventoryMainSize - 9;
+        HOTBAR_END_SLOT = playerInventoryMainSize - 1;
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
@@ -32,31 +47,42 @@ public abstract class HeaterScreenHandler extends ScreenHandler {
 
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slotIndex) {
-        ItemStack newStack = ItemStack.EMPTY;
-        Slot slot = slots.get(slotIndex);
+    public ItemStack quickMove(PlayerEntity player, int slot) {
+        ItemStack stack = ItemStack.EMPTY;
+        Slot actualSlot = slots.get(slot);
 
-        if (slot.hasStack()) {
-            ItemStack originalStack = slot.getStack();
-            newStack = originalStack.copy();
+        if (actualSlot.hasStack()) {
+            ItemStack stackInSlot = actualSlot.getStack();
+            stack = stackInSlot.copy();
 
-            if (slotIndex < inventory.size()) {
+            if (actualSlot instanceof FuelSlot) {
 
-                if (!insertItem(originalStack, inventory.size(), slots.size(), true)) {
+                if (!insertItem(stackInSlot, INVENTORY_START_SLOT, HOTBAR_END_SLOT, false))
+                    return ItemStack.EMPTY;
+            } else if (HeaterBlockEntity.createFuelsMap().containsKey(Registries.ITEM.getId(stackInSlot.getItem())) && inventory.isEmpty()) {
+
+                if (!insertItem(stackInSlot, INPUT_START_SLOT, INPUT_END_SLOT, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.insertItem(originalStack, 0, inventory.size(), false)) {
+            } else if (slot >= INVENTORY_START_SLOT && slot <= INVENTORY_END_SLOT) {
+
+                if (!insertItem(stackInSlot, HOTBAR_START_SLOT, HOTBAR_END_SLOT + 1, false))
+                    return ItemStack.EMPTY;
+            } else if (slot >= HOTBAR_START_SLOT && slot <= HOTBAR_END_SLOT && !insertItem(stackInSlot, INVENTORY_START_SLOT, INVENTORY_END_SLOT, false)) {
                 return ItemStack.EMPTY;
             }
 
-            if (originalStack.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
-            } else {
-                slot.markDirty();
-            }
+            if (stackInSlot.isEmpty())
+                actualSlot.setStack(ItemStack.EMPTY);
+
+            if (stackInSlot.getCount() == stack.getCount())
+                return ItemStack.EMPTY;
+
+            actualSlot.onTakeItem(player, stackInSlot);
+            sendContentUpdates();
         }
 
-        return newStack;
+        return stack;
     }
 
     @Override

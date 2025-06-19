@@ -6,7 +6,7 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.particle.ParticleEffect;
 import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
-import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 public class SoulProtectionStatusEffect extends StatusEffect {
 
@@ -29,7 +29,7 @@ public class SoulProtectionStatusEffect extends StatusEffect {
             livingEntity.addStatusEffect(new StatusEffectInstance(ModStatusEffects.SOUL_DECAY, (int) (soulDecayDuration - (soulDecayDuration * 0.2 * amplifier) / 5), soulDecayAmplifier), null);
         }
 
-        return livingEntity.getType().isIn(ModTags.EntityTypes.SOULFUL) && !livingEntity.getType().isIn(ModTags.EntityTypes.SOULLESS);
+        return livingEntity.getType().isIn(MedievalStuffTags.EntityTypes.SOULFUL) && !livingEntity.getType().isIn(MedievalStuffTags.EntityTypes.SOULLESS);
     }
 
     @Override

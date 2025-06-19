@@ -27,8 +27,8 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
 import net.mrwooly357.medievalstuff.entity.mob.GhostEntity;
-import net.mrwooly357.medievalstuff.item.ModItems;
-import net.mrwooly357.medievalstuff.util.ModUtil;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
+import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -95,11 +95,11 @@ public class FallenKnightEntity extends HostileEntity implements GhostEntity {
     @Override
     protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
         int armorRandomizer = MathHelper.nextInt(random, 0, 3);
-        //ItemStack sword = new ItemStack(ModItems.SOULSTEEL_SWORD);
-        ItemStack helmet = new ItemStack(ModItems.SOULSTEEL_HELMET);
-        ItemStack chestplate = new ItemStack(ModItems.SOULSTEEL_CHESTPLATE);
-        ItemStack leggings = new ItemStack(ModItems.SOULSTEEL_LEGGINGS);
-        ItemStack boots = new ItemStack(ModItems.SOULSTEEL_BOOTS);
+        //ItemStack sword = new ItemStack(MedievalStuffItems.SOULSTEEL_SWORD);
+        ItemStack helmet = new ItemStack(MedievalStuffItems.SOULSTEEL_HELMET);
+        ItemStack chestplate = new ItemStack(MedievalStuffItems.SOULSTEEL_CHESTPLATE);
+        ItemStack leggings = new ItemStack(MedievalStuffItems.SOULSTEEL_LEGGINGS);
+        ItemStack boots = new ItemStack(MedievalStuffItems.SOULSTEEL_BOOTS);
 
         //sword.setDamage(MathHelper.nextInt(random, 0, (int) (sword.getMaxDamage() * 0.75)));
         helmet.setDamage(MathHelper.nextInt(random, 0, (int) (helmet.getMaxDamage() * 0.75)));
@@ -355,7 +355,7 @@ public class FallenKnightEntity extends HostileEntity implements GhostEntity {
     public boolean canCharge() {
         LivingEntity target = getTarget();
 
-        return chargeCooldownTimer == 0 && target != null && target.isAlive() && ModUtil.getDistanceBetween(target.getX(), target.getY(), target.getZ(), getX(), getY(), getZ()) > getChargeTriggerDistance() && !isShaking() && isDifficultySufficientForCharge(getWorld().getDifficulty()) && !isCharging;
+        return chargeCooldownTimer == 0 && target != null && target.isAlive() && MedievalStuffUtil.getDistanceBetween(target.getX(), target.getY(), target.getZ(), getX(), getY(), getZ()) > getChargeTriggerDistance() && !isShaking() && isDifficultySufficientForCharge(getWorld().getDifficulty()) && !isCharging;
     }
 
     public boolean isCharging() {

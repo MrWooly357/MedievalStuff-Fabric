@@ -5,26 +5,26 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.block.ModBlocks;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.CopperstoneForgeControllerBlockEntity;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.heater.CopperstoneHeaterBlockEntity;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank.CopperTankBlockEntity;
+import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
+import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.forge_controller.CopperstoneForgeControllerBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater.CopperstoneHeaterBlockEntity;
+import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.tank.CopperTankBlockEntity;
 
 public class ModBlockEntities {
 
     public static final BlockEntityType<CopperstoneHeaterBlockEntity> COPPERSTONE_HEATER_BE = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, Identifier.of(MedievalStuff.MOD_ID, "copperstone_heater_be"),
-            BlockEntityType.Builder.create(CopperstoneHeaterBlockEntity::new, ModBlocks.COPPERSTONE_HEATER).build(null)
+            BlockEntityType.Builder.create(CopperstoneHeaterBlockEntity::new, MedievalStuffBlocks.COPPERSTONE_HEATER).build(null)
             );
 
     public static final BlockEntityType<CopperTankBlockEntity> COPPER_TANK_BE = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, Identifier.of(MedievalStuff.MOD_ID, "copper_tank_be"),
-            BlockEntityType.Builder.create(CopperTankBlockEntity::new, ModBlocks.COPPER_TANK).build(null)
+            BlockEntityType.Builder.create(CopperTankBlockEntity::new, MedievalStuffBlocks.COPPER_TANK).build(null)
     );
 
     public static final BlockEntityType<CopperstoneForgeControllerBlockEntity> COPPERSTONE_FORGE_CONTROLLER_BE = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, Identifier.of(MedievalStuff.MOD_ID, "copperstone_forge_controller_be"),
-            BlockEntityType.Builder.create(CopperstoneForgeControllerBlockEntity::new, ModBlocks.COPPERSTONE_FORGE_CONTROLLER).build(null)
+            BlockEntityType.Builder.create(CopperstoneForgeControllerBlockEntity::new, MedievalStuffBlocks.COPPERSTONE_FORGE_CONTROLLER).build(null)
     );
 
 

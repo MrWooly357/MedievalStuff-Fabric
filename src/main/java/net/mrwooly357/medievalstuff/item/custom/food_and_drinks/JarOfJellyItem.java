@@ -16,7 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.item.ModItems;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 
 import java.util.List;
 
@@ -36,10 +36,10 @@ public class JarOfJellyItem extends Item {
         }
 
         if (stack.isEmpty()) {
-            return new ItemStack(ModItems.JAR);
+            return new ItemStack(MedievalStuffItems.JAR);
         } else {
             if (user instanceof PlayerEntity playerEntity && !playerEntity.isInCreativeMode()) {
-                ItemStack itemStack = new ItemStack(ModItems.JAR);
+                ItemStack itemStack = new ItemStack(MedievalStuffItems.JAR);
 
                 if (!playerEntity.getInventory().insertStack(itemStack)) {
                     playerEntity.dropItem(itemStack, false);

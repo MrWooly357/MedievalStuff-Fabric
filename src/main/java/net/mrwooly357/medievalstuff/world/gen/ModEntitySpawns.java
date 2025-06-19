@@ -10,7 +10,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.BiomeKeys;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntity;
-import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 public class ModEntitySpawns {
 
@@ -22,7 +22,7 @@ public class ModEntitySpawns {
                 Heightmap.Type.WORLD_SURFACE, AnimalEntity::isValidNaturalSpawn
         );
 
-        BiomeModifications.addSpawn(BiomeSelectors.tag(ModTags.Biomes.FALLEN_KNIGHT_SPAWNABLE),
+        BiomeModifications.addSpawn(BiomeSelectors.tag(MedievalStuffTags.Biomes.FALLEN_KNIGHT_SPAWNABLE),
                 SpawnGroup.MONSTER, ModEntityTypes.FALLEN_KNIGHT, 50,  1, 2
         );
         SpawnRestriction.register(ModEntityTypes.FALLEN_KNIGHT, SpawnLocationTypes.ON_GROUND,

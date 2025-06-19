@@ -16,8 +16,8 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.custom.metallurgy.tank.TankBlock;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.tank.TankBlockEntity;
+import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.TankBlock;
+import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.tank.TankBlockEntity;
 
 public class TankBlockEntityRenderer implements BlockEntityRenderer<TankBlockEntity> {
 

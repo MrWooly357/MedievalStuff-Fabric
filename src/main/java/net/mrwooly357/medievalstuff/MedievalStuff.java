@@ -4,7 +4,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
-import net.mrwooly357.medievalstuff.block.ModBlocks;
+import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
 import net.mrwooly357.medievalstuff.block.util.ModMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
 import net.mrwooly357.medievalstuff.config.custom.MedievalStuffConfig;
@@ -13,8 +13,8 @@ import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntity;
 import net.mrwooly357.medievalstuff.entity.mob.passive.jelly.JellyEntity;
 import net.mrwooly357.medievalstuff.item.ModArmorMaterials;
-import net.mrwooly357.medievalstuff.item.ModItemGroups;
-import net.mrwooly357.medievalstuff.item.ModItems;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItemGroups;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import net.mrwooly357.medievalstuff.compound.Compounds;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponClasses;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponFamilies;
@@ -48,13 +48,13 @@ public class MedievalStuff implements ModInitializer, TerraBlenderApi, WoolEntry
 	@Override
 	public void onInitialize() {
 		onWoolInitialize();
-		ModItems.initialize();
-		ModItemGroups.registerItemGroups();
+		MedievalStuffItems.initialize();
+		MedievalStuffItemGroups.initialize();
 		HybridWeaponMaterials.registerHybridWeaponMaterials();
 		HybridWeaponFamilies.registerHybridWeaponFamilies();
 		HybridWeaponClasses.registerHybridWeaponClasses();
 		ModArmorMaterials.init();
-		ModBlocks.init();
+		MedievalStuffBlocks.init();
 		ModMultiblockConstructionBlueprints.init();
 		ModBlockEntities.registerModBlockEntities();
 		MedievalStuffRecipeSerializers.initialize();

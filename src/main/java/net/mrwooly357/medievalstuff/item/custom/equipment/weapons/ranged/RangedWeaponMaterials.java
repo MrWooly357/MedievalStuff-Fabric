@@ -2,14 +2,14 @@ package net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged;
 
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
-import net.mrwooly357.medievalstuff.item.ModItems;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 
 import java.util.function.Supplier;
 
 public enum RangedWeaponMaterials implements RangedWeaponMaterial {
     COPPER(128, 1.5F, 2.0F, 0.1F, 0.00F, 7, () -> Ingredient.ofItems(Items.COPPER_INGOT)),
     IRON(192, 1.45F, 2.25F, 0.15F,0.15F, 8, () -> Ingredient.ofItems(Items.IRON_INGOT)),
-    SILVER(256, 1.4F, 2.5F, 0.2F,0.20F, 9, () -> Ingredient.ofItems(ModItems.SILVER_INGOT)),
+    SILVER(256, 1.4F, 2.5F, 0.2F,0.20F, 9, () -> Ingredient.ofItems(MedievalStuffItems.SILVER_INGOT)),
     NETHERITE(1024, 0.75F, 5.0F, 0.5F,0.50F, 20, () -> Ingredient.ofItems(Items.NETHERITE_INGOT));
 
     private final int baseDurability;

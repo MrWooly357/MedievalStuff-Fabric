@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LeafEntry;
@@ -14,8 +15,8 @@ import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
-import net.mrwooly357.medievalstuff.block.ModBlocks;
-import net.mrwooly357.medievalstuff.item.ModItems;
+import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -28,14 +29,14 @@ public class ModLootTableGenerator extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
-        addDrop(ModBlocks.SILVER_ORE, oreDrops(ModBlocks.SILVER_ORE, ModItems.RAW_SILVER));
-        addDrop(ModBlocks.DEEPSLATE_SILVER_ORE, multipleDrops(ModBlocks.DEEPSLATE_SILVER_ORE, ModItems.RAW_SILVER, 1, 2));
-        addDrop(ModBlocks.RAW_SILVER_BLOCK);
-        addDrop(ModBlocks.SILVER_BLOCK);
-        addDrop(ModBlocks.COPPERSTONE_BRICKS);
-        addDrop(ModBlocks.COPPERSTONE_HEATER);
-        addDrop(ModBlocks.COPPER_TANK);
-        addDrop(ModBlocks.COPPERSTONE_FORGE_CONTROLLER);
+        addDrop(MedievalStuffBlocks.SILVER_ORE, oreDrops(MedievalStuffBlocks.SILVER_ORE, MedievalStuffItems.RAW_SILVER));
+        addDrop(MedievalStuffBlocks.DEEPSLATE_SILVER_ORE, multipleDrops(MedievalStuffBlocks.DEEPSLATE_SILVER_ORE, MedievalStuffItems.RAW_SILVER, 1, 2));
+        addDrop(MedievalStuffBlocks.RAW_SILVER_BLOCK);
+        addDrop(MedievalStuffBlocks.SILVER_BLOCK);
+        addDrop(MedievalStuffBlocks.COPPERSTONE_BRICKS);
+        addDrop(MedievalStuffBlocks.COPPERSTONE_HEATER);
+        addDrop(MedievalStuffBlocks.COPPER_TANK);
+        addDrop(MedievalStuffBlocks.COPPERSTONE_FORGE_CONTROLLER);
     }
 
     public LootTable.Builder multipleDrops(Block drop, Item item, float minDrops, float maxDrops) {

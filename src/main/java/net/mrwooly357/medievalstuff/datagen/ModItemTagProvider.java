@@ -5,8 +5,8 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
-import net.mrwooly357.medievalstuff.item.ModItems;
-import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,19 +20,19 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         /* Mod */
-        getOrCreateTagBuilder(ModTags.Items.CUSTOM_BOWS)
-                .add(ModItems.SHORT_COPPER_BOW)
-                .add(ModItems.TWOBOW);
+        getOrCreateTagBuilder(MedievalStuffTags.Items.CUSTOM_BOWS)
+                .add(MedievalStuffItems.SHORT_COPPER_BOW)
+                .add(MedievalStuffItems.TWOBOW);
 
-        getOrCreateTagBuilder(ModTags.Items.HEATER_CRAFTING_RECIPE_FUEL)
+        getOrCreateTagBuilder(MedievalStuffTags.Items.HEATER_CRAFTING_RECIPE_FUEL)
                 .add(Items.COAL)
                 .add(Items.CHARCOAL);
 
-        getOrCreateTagBuilder(ModTags.Items.HEATER_ARSONISTS)
+        getOrCreateTagBuilder(MedievalStuffTags.Items.HEATER_ARSONISTS)
                 .add(Items.FIRE_CHARGE)
                 .add(Items.FLINT_AND_STEEL);
 
-        getOrCreateTagBuilder(ModTags.Items.FORGE_CONTROLLER_MELTABLE)
+        getOrCreateTagBuilder(MedievalStuffTags.Items.FORGE_CONTROLLER_MELTABLE)
                 .add(Items.RAW_COPPER)
                 .add(Items.RAW_IRON)
                 .add(Items.RAW_GOLD)
@@ -42,18 +42,18 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         /* Vanilla */
         getOrCreateTagBuilder(ItemTags.PICKAXES)
-                .add(ModItems.SILVER_PICKAXE);
+                .add(MedievalStuffItems.SILVER_PICKAXE);
 
         getOrCreateTagBuilder(ItemTags.AXES)
-                .add(ModItems.SILVER_AXE);
+                .add(MedievalStuffItems.SILVER_AXE);
 
         getOrCreateTagBuilder(ItemTags.SHOVELS)
-                .add(ModItems.SILVER_SHOVEL);
+                .add(MedievalStuffItems.SILVER_SHOVEL);
 
         getOrCreateTagBuilder(ItemTags.HOES)
-                .add(ModItems.SILVER_HOE);
+                .add(MedievalStuffItems.SILVER_HOE);
 
         getOrCreateTagBuilder(ItemTags.SWORDS)
-                .add(ModItems.SILVER_SWORD);
+                .add(MedievalStuffItems.SILVER_SWORD);
     }
 }

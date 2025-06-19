@@ -9,7 +9,7 @@ import net.minecraft.structure.rule.TagMatchRuleTest;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.*;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.block.ModBlocks;
+import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
 
 import java.util.List;
 
@@ -24,8 +24,8 @@ public class ModConfiguredFeatures {
 
 
         List<OreFeatureConfig.Target> overworldSilverOres =
-                List.of(OreFeatureConfig.createTarget(stoneReplaceables, ModBlocks.SILVER_ORE.getDefaultState()),
-                        OreFeatureConfig.createTarget(deepslateReplaceables, ModBlocks.DEEPSLATE_SILVER_ORE.getDefaultState()));
+                List.of(OreFeatureConfig.createTarget(stoneReplaceables, MedievalStuffBlocks.SILVER_ORE.getDefaultState()),
+                        OreFeatureConfig.createTarget(deepslateReplaceables, MedievalStuffBlocks.DEEPSLATE_SILVER_ORE.getDefaultState()));
 
 
         register(context, SMALL_SILVER_ORE_KEY, Feature.ORE, new OreFeatureConfig(overworldSilverOres, 3));

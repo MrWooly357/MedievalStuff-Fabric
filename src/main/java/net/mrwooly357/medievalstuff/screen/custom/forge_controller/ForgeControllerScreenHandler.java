@@ -5,15 +5,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.block.entity.custom.metallurgy.forge_controller.ForgeControllerBlockEntity;
 import net.mrwooly357.medievalstuff.compound.CompoundHolder;
-import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ForgeControllerScreenHandler extends ScreenHandler {
@@ -98,7 +95,7 @@ public abstract class ForgeControllerScreenHandler extends ScreenHandler {
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return stack.isIn(ModTags.Items.FORGE_CONTROLLER_MELTABLE);
+            return stack.isIn(MedievalStuffTags.Items.FORGE_CONTROLLER_MELTABLE);
         }
     }
 

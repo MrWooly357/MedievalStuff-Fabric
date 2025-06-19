@@ -25,7 +25,7 @@ public class ModArmorMaterials {
                         map.put(ArmorItem.Type.LEGGINGS, 6);
                         map.put(ArmorItem.Type.BOOTS, 2);
                         map.put(ArmorItem.Type.BODY, 5);
-            }), 16, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.1F, 0.1F, () -> Ingredient.ofItems(ModItems.SILVER_INGOT)
+            }), 16, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.1F, 0.1F, () -> Ingredient.ofItems(MedievalStuffItems.SILVER_INGOT)
     );
     public static final RegistryEntry<ArmorMaterial> SOULSTEEL = register(
             "soulsteel", Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
@@ -34,7 +34,7 @@ public class ModArmorMaterials {
                         map.put(ArmorItem.Type.LEGGINGS, 5);
                         map.put(ArmorItem.Type.BOOTS, 3);
                         map.put(ArmorItem.Type.BODY, 6);
-                    }), 20, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 0.2F, 0.15F, () -> Ingredient.ofItems(ModItems.SOULSTEEL_PLATE)
+                    }), 20, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 0.2F, 0.15F, () -> Ingredient.ofItems(MedievalStuffItems.SOULSTEEL_PLATE)
     );
 
 

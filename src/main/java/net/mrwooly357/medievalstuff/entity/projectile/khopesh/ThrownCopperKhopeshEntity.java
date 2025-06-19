@@ -6,7 +6,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
-import net.mrwooly357.medievalstuff.item.ModItems;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import org.jetbrains.annotations.Nullable;
 
 public class ThrownCopperKhopeshEntity extends ThrownKhopeshEntity {
@@ -20,7 +20,7 @@ public class ThrownCopperKhopeshEntity extends ThrownKhopeshEntity {
     }
 
     public ThrownCopperKhopeshEntity(World world, PlayerEntity player, @Nullable ItemStack thrownStack) {
-        super(ModEntityTypes.THROWN_COPPER_KHOPESH, player, world, new ItemStack(ModItems.COPPER_KHOPESH), null, thrownStack);
+        super(ModEntityTypes.THROWN_COPPER_KHOPESH, player, world, new ItemStack(MedievalStuffItems.COPPER_KHOPESH), null, thrownStack);
     }
 
     public ThrownCopperKhopeshEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
@@ -30,6 +30,6 @@ public class ThrownCopperKhopeshEntity extends ThrownKhopeshEntity {
 
     @Override
     protected ItemStack getDefaultItemStack() {
-        return new ItemStack(ModItems.COPPER_KHOPESH);
+        return new ItemStack(MedievalStuffItems.COPPER_KHOPESH);
     }
 }

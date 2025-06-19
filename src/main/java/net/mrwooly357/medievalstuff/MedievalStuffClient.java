@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.mrwooly357.medievalstuff.block.ModBlocks;
+import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
 import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
 import net.mrwooly357.medievalstuff.block.entity.renderer.TankBlockEntityRenderer;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
@@ -29,7 +29,7 @@ public class MedievalStuffClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         //Blocks
-        BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.COPPER_TANK, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(MedievalStuffBlocks.COPPER_TANK, RenderLayer.getTranslucent());
 
         //Block entity renderers
         BlockEntityRendererFactories.register(ModBlockEntities.COPPER_TANK_BE, TankBlockEntityRenderer::new);

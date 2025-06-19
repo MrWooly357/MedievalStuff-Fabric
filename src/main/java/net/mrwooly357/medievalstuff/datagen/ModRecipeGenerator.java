@@ -13,9 +13,9 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.block.ModBlocks;
-import net.mrwooly357.medievalstuff.item.ModItems;
-import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -28,144 +28,144 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
 
     @Override
     public void generate(RecipeExporter exporter) {
-        List<ItemConvertible> SILVER_SMELTABLES = List.of(ModItems.RAW_SILVER, ModBlocks.SILVER_ORE, ModBlocks.DEEPSLATE_SILVER_ORE);
+        List<ItemConvertible> SILVER_SMELTABLES = List.of(MedievalStuffItems.RAW_SILVER, MedievalStuffBlocks.SILVER_ORE, MedievalStuffBlocks.DEEPSLATE_SILVER_ORE);
 
-        offerSmelting(exporter, SILVER_SMELTABLES, RecipeCategory.MISC, ModItems.SILVER_INGOT, 0.5f, 200, "medievalstuff");
-        offerBlasting(exporter, SILVER_SMELTABLES, RecipeCategory.MISC, ModItems.SILVER_INGOT, 0.5f, 100, "medievalstuff");
+        offerSmelting(exporter, SILVER_SMELTABLES, RecipeCategory.MISC, MedievalStuffItems.SILVER_INGOT, 0.5f, 200, "medievalstuff");
+        offerBlasting(exporter, SILVER_SMELTABLES, RecipeCategory.MISC, MedievalStuffItems.SILVER_INGOT, 0.5f, 100, "medievalstuff");
 
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.SILVER_INGOT)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, MedievalStuffItems.SILVER_INGOT)
                 .pattern("NNN")
                 .pattern("NNN")
                 .pattern("NNN")
-                .input('N', ModItems.SILVER_NUGGET)
-                .criterion(hasItem(ModItems.SILVER_NUGGET), conditionsFromItem(ModItems.SILVER_NUGGET))
+                .input('N', MedievalStuffItems.SILVER_NUGGET)
+                .criterion(hasItem(MedievalStuffItems.SILVER_NUGGET), conditionsFromItem(MedievalStuffItems.SILVER_NUGGET))
                 .offerTo(exporter, Identifier.of(MedievalStuff.MOD_ID, "silver_ingot_from_silver_nuggets"));
 
 
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.SILVER_NUGGET, 9)
-                .input(ModItems.SILVER_INGOT)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, MedievalStuffItems.SILVER_NUGGET, 9)
+                .input(MedievalStuffItems.SILVER_INGOT)
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
 
 
-        offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, ModItems.RAW_SILVER, RecipeCategory.BUILDING_BLOCKS, ModBlocks.RAW_SILVER_BLOCK);
-        offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, ModItems.SILVER_INGOT, RecipeCategory.BUILDING_BLOCKS, ModBlocks.SILVER_BLOCK);
+        offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, MedievalStuffItems.RAW_SILVER, RecipeCategory.BUILDING_BLOCKS, MedievalStuffBlocks.RAW_SILVER_BLOCK);
+        offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, MedievalStuffItems.SILVER_INGOT, RecipeCategory.BUILDING_BLOCKS, MedievalStuffBlocks.SILVER_BLOCK);
 
 
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.SILVER_SWORD, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.SILVER_SWORD, 1)
                 .pattern(" I ")
                 .pattern(" I ")
                 .pattern(" S ")
-                .input('I', ModItems.SILVER_INGOT)
+                .input('I', MedievalStuffItems.SILVER_INGOT)
                 .input('S', Items.STICK)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.SILVER_DAGGER, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.SILVER_DAGGER, 1)
                 .pattern(" N ")
                 .pattern(" I ")
                 .pattern(" S ")
-                .input('N', ModItems.SILVER_INGOT)
-                .input('I', ModItems.SILVER_NUGGET)
+                .input('N', MedievalStuffItems.SILVER_INGOT)
+                .input('I', MedievalStuffItems.SILVER_NUGGET)
                 .input('S', Items.STICK)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.WEIGHTLESS_DAGGER_TIER_1, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.WEIGHTLESS_DAGGER_TIER_1, 1)
                 .pattern("PPP")
                 .pattern("JJP")
                 .pattern("SJJ")
-                .input('P', ModItems.PIECE_OF_JELLY)
-                .input('J', ModItems.JAR_OF_JELLY)
-                .input('S', ModItems.SILVER_DAGGER)
-                .criterion(hasItem(ModItems.SILVER_DAGGER), conditionsFromItem(ModItems.SILVER_DAGGER))
+                .input('P', MedievalStuffItems.PIECE_OF_JELLY)
+                .input('J', MedievalStuffItems.JAR_OF_JELLY)
+                .input('S', MedievalStuffItems.SILVER_DAGGER)
+                .criterion(hasItem(MedievalStuffItems.SILVER_DAGGER), conditionsFromItem(MedievalStuffItems.SILVER_DAGGER))
                 .offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.WEIGHTLESS_DAGGER_TIER_2, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.WEIGHTLESS_DAGGER_TIER_2, 1)
                 .pattern("PP ")
                 .pattern("JPP")
                 .pattern("WJJ")
-                .input('P', ModItems.PIECE_OF_JELLY)
-                .input('J', ModItems.JAR_OF_JELLY)
-                .input('W', ModItems.WEIGHTLESS_DAGGER_TIER_1)
-                .criterion(hasItem(ModItems.WEIGHTLESS_DAGGER_TIER_1), conditionsFromItem(ModItems.WEIGHTLESS_DAGGER_TIER_1))
+                .input('P', MedievalStuffItems.PIECE_OF_JELLY)
+                .input('J', MedievalStuffItems.JAR_OF_JELLY)
+                .input('W', MedievalStuffItems.WEIGHTLESS_DAGGER_TIER_1)
+                .criterion(hasItem(MedievalStuffItems.WEIGHTLESS_DAGGER_TIER_1), conditionsFromItem(MedievalStuffItems.WEIGHTLESS_DAGGER_TIER_1))
                 .offerTo(exporter);
 
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, ModItems.SILVER_PICKAXE, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, MedievalStuffItems.SILVER_PICKAXE, 1)
                 .pattern("III")
                 .pattern(" S ")
                 .pattern(" S ")
-                .input('I', ModItems.SILVER_INGOT)
+                .input('I', MedievalStuffItems.SILVER_INGOT)
                 .input('S', Items.STICK)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, ModItems.SILVER_AXE, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, MedievalStuffItems.SILVER_AXE, 1)
                 .pattern("II ")
                 .pattern("IS ")
                 .pattern(" S ")
-                .input('I', ModItems.SILVER_INGOT)
+                .input('I', MedievalStuffItems.SILVER_INGOT)
                 .input('S', Items.STICK)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, ModItems.SILVER_SHOVEL, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, MedievalStuffItems.SILVER_SHOVEL, 1)
                 .pattern(" I ")
                 .pattern(" S ")
                 .pattern(" S ")
-                .input('I', ModItems.SILVER_INGOT)
+                .input('I', MedievalStuffItems.SILVER_INGOT)
                 .input('S', Items.STICK)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, ModItems.SILVER_HOE, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, MedievalStuffItems.SILVER_HOE, 1)
                 .pattern("II ")
                 .pattern(" S ")
                 .pattern(" S ")
-                .input('I', ModItems.SILVER_INGOT)
+                .input('I', MedievalStuffItems.SILVER_INGOT)
                 .input('S', Items.STICK)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.SILVER_HELMET, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.SILVER_HELMET, 1)
                 .pattern("   ")
                 .pattern("III")
                 .pattern("I I")
-                .input('I', ModItems.SILVER_INGOT)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .input('I', MedievalStuffItems.SILVER_INGOT)
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.SILVER_CHESTPLATE, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.SILVER_CHESTPLATE, 1)
                 .pattern("I I")
                 .pattern("III")
                 .pattern("III")
-                .input('I', ModItems.SILVER_INGOT)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .input('I', MedievalStuffItems.SILVER_INGOT)
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.SILVER_LEGGINGS, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.SILVER_LEGGINGS, 1)
                 .pattern("III")
                 .pattern("I I")
                 .pattern("I I")
-                .input('I', ModItems.SILVER_INGOT)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .input('I', MedievalStuffItems.SILVER_INGOT)
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, ModItems.SILVER_BOOTS, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, MedievalStuffItems.SILVER_BOOTS, 1)
                 .pattern("   ")
                 .pattern("I I")
                 .pattern("I I")
-                .input('I', ModItems.SILVER_INGOT)
-                .criterion(hasItem(ModItems.SILVER_INGOT), conditionsFromItem(ModItems.SILVER_INGOT))
+                .input('I', MedievalStuffItems.SILVER_INGOT)
+                .criterion(hasItem(MedievalStuffItems.SILVER_INGOT), conditionsFromItem(MedievalStuffItems.SILVER_INGOT))
                 .offerTo(exporter);
 
 
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.JAR, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, MedievalStuffItems.JAR, 1)
                 .pattern("PPP")
                 .pattern("G G")
                 .pattern("GGG")
@@ -174,7 +174,7 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                 .criterion(hasItem(Blocks.GLASS_PANE), conditionsFromItem(Blocks.GLASS_PANE))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.PIECE_OF_JELLY, 4)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, MedievalStuffItems.PIECE_OF_JELLY, 4)
                 .pattern("   ")
                 .pattern("SGW")
                 .pattern("WSG")
@@ -184,18 +184,18 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
                 .criterion(hasItem(Items.GLOWSTONE_DUST), conditionsFromItem(Items.GLOWSTONE_DUST))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, ModItems.JAR_OF_JELLY, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, MedievalStuffItems.JAR_OF_JELLY, 1)
                 .pattern("PPP")
                 .pattern("PPP")
                 .pattern("JPP")
-                .input('P', ModItems.PIECE_OF_JELLY)
-                .input('J', ModItems.JAR)
-                .criterion(hasItem(ModItems.JAR), conditionsFromItem(ModItems.JAR))
+                .input('P', MedievalStuffItems.PIECE_OF_JELLY)
+                .input('J', MedievalStuffItems.JAR)
+                .criterion(hasItem(MedievalStuffItems.JAR), conditionsFromItem(MedievalStuffItems.JAR))
                 .offerTo(exporter);
 
 
         //Building blocks
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, ModBlocks.COPPERSTONE_BRICKS, 2)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, MedievalStuffBlocks.COPPERSTONE_BRICKS, 2)
                 .input('A', Items.COPPER_INGOT)
                 .input('B', Blocks.STONE_BRICKS)
                 .pattern("AB ")
@@ -206,18 +206,18 @@ public class ModRecipeGenerator extends FabricRecipeProvider {
 
 
         //Functional blocks
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModBlocks.COPPERSTONE_HEATER, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, MedievalStuffBlocks.COPPERSTONE_HEATER, 1)
                 .input('A', Items.COPPER_INGOT)
-                .input('B', ModBlocks.COPPERSTONE_BRICKS)
+                .input('B', MedievalStuffBlocks.COPPERSTONE_BRICKS)
                 .input('C', Blocks.CAMPFIRE)
-                .input('D', ModTags.Items.HEATER_CRAFTING_RECIPE_FUEL)
+                .input('D', MedievalStuffTags.Items.HEATER_CRAFTING_RECIPE_FUEL)
                 .pattern("AAA")
                 .pattern("BCB")
                 .pattern("BDB")
-                .criterion(hasItem(ModBlocks.COPPERSTONE_BRICKS), conditionsFromItem(ModBlocks.COPPERSTONE_BRICKS))
+                .criterion(hasItem(MedievalStuffBlocks.COPPERSTONE_BRICKS), conditionsFromItem(MedievalStuffBlocks.COPPERSTONE_BRICKS))
                 .offerTo(exporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModBlocks.COPPER_TANK, 1)
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, MedievalStuffBlocks.COPPER_TANK, 1)
                 .input('A', Blocks.GLASS)
                 .input('B', Items.COPPER_INGOT)
                 .pattern("ABA")

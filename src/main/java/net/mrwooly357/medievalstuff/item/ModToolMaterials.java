@@ -5,12 +5,12 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.tag.TagKey;
-import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 import java.util.function.Supplier;
 
 public enum ModToolMaterials implements ToolMaterial {
-    SILVER(ModTags.Blocks.INCORRECT_FOR_SILVER_TOOL, 325, 6.5F, 2F, 16, () -> Ingredient.ofItems(ModItems.SILVER_INGOT));
+    SILVER(MedievalStuffTags.Blocks.INCORRECT_FOR_SILVER_TOOL, 325, 6.5F, 2F, 16, () -> Ingredient.ofItems(MedievalStuffItems.SILVER_INGOT));
 
 
     private final TagKey<Block> inverseTag;

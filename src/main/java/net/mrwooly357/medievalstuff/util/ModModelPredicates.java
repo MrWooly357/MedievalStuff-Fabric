@@ -3,14 +3,14 @@ package net.mrwooly357.medievalstuff.util;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
-import net.mrwooly357.medievalstuff.item.ModItems;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.ExtendedRangedWeaponItem;
 
 public class ModModelPredicates {
 
     public static void registerModModelPredicates() {
-        registerCustomBow(ModItems.TWOBOW);
-        registerExtendedRangedWeaponItem((ExtendedRangedWeaponItem) ModItems.SHORT_COPPER_BOW);
+        registerCustomBow(MedievalStuffItems.TWOBOW);
+        registerExtendedRangedWeaponItem((ExtendedRangedWeaponItem) MedievalStuffItems.SHORT_COPPER_BOW);
     }
 
     private static void registerCustomBow(Item item) {

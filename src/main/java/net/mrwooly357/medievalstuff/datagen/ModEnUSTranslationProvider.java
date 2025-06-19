@@ -7,10 +7,10 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.block.ModBlocks;
+import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
 import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
-import net.mrwooly357.medievalstuff.item.ModItems;
+import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponClass;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponFamily;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponMaterial;
@@ -27,35 +27,43 @@ public class ModEnUSTranslationProvider extends FabricLanguageProvider {
     @Override
     public void generateTranslations(RegistryWrapper.WrapperLookup registryLookup, TranslationBuilder translationBuilder) {
         // Items
-        translationBuilder.add(ModItems.RAW_SILVER, "Raw Silver");
-        translationBuilder.add(ModItems.SILVER_INGOT, "Silver Ingot");
-        translationBuilder.add(ModItems.SILVER_NUGGET, "Silver Nugget");
-        translationBuilder.add(ModItems.JAR, "Jar");
+        translationBuilder.add(MedievalStuffItems.RAW_SILVER, "Raw Silver");
+        translationBuilder.add(MedievalStuffItems.SILVER_INGOT, "Silver Ingot");
+        translationBuilder.add(MedievalStuffItems.SILVER_NUGGET, "Silver Nugget");
+        translationBuilder.add(MedievalStuffItems.JAR, "Jar");
 
-        translationBuilder.add(ModItems.PIECE_OF_JELLY, "Jelly");
-        translationBuilder.add(ModItems.JAR_OF_JELLY, "Jar of Jelly");
-        translationBuilder.add(ModItems.WILD_BLUEBERRIES, "Blueberries");
-        translationBuilder.add(ModItems.CULTIVATED_BLUEBERRIES, "Blueberries");
+        translationBuilder.add(MedievalStuffItems.PIECE_OF_JELLY, "Jelly");
+        translationBuilder.add(MedievalStuffItems.JAR_OF_JELLY, "Jar of Jelly");
+        translationBuilder.add(MedievalStuffItems.WILD_BLUEBERRIES, "Blueberries");
+        translationBuilder.add(MedievalStuffItems.CULTIVATED_BLUEBERRIES, "Blueberries");
 
-        translationBuilder.add(ModItems.SILVER_PICKAXE, "Silver Pickaxe");
-        translationBuilder.add(ModItems.SILVER_AXE, "Silver Axe");
-        translationBuilder.add(ModItems.SILVER_SHOVEL, "Silver Shovel");
-        translationBuilder.add(ModItems.SILVER_HOE, "Silver Hoe");
-        translationBuilder.add(ModItems.SILVER_SWORD, "Silver Sword");
-        translationBuilder.add(ModItems.SILVER_DAGGER, "Silver Dagger");
-        translationBuilder.add(ModItems.COPPER_KHOPESH, "Copper Khopesh");
-        translationBuilder.add(ModItems.WEIGHTLESS_DAGGER_TIER_1, "Weightless Dagger");
-        translationBuilder.add(ModItems.WEIGHTLESS_DAGGER_TIER_2, "Weightless Dagger");
-        translationBuilder.add(ModItems.SHORT_COPPER_BOW, "Short Copper Bow");
-        translationBuilder.add(ModItems.TWOBOW, "Twobow");
-        translationBuilder.add(ModItems.SILVER_HELMET, "Silver Helmet");
-        translationBuilder.add(ModItems.SILVER_CHESTPLATE, "Silver Chestplate");
-        translationBuilder.add(ModItems.SILVER_LEGGINGS, "Silver Leggings");
-        translationBuilder.add(ModItems.SILVER_BOOTS, "Silver Boots");
-        translationBuilder.add(ModItems.COPPERSTONE_FORGE_BLUEPRINT, "Filled Blueprint");
+        translationBuilder.add(MedievalStuffItems.SILVER_PICKAXE, "Silver Pickaxe");
+        translationBuilder.add(MedievalStuffItems.SILVER_AXE, "Silver Axe");
+        translationBuilder.add(MedievalStuffItems.SILVER_SHOVEL, "Silver Shovel");
+        translationBuilder.add(MedievalStuffItems.SILVER_HOE, "Silver Hoe");
+        translationBuilder.add(MedievalStuffItems.SILVER_SWORD, "Silver Sword");
+        translationBuilder.add(MedievalStuffItems.SILVER_DAGGER, "Silver Dagger");
+        translationBuilder.add(MedievalStuffItems.COPPER_KHOPESH, "Copper Khopesh");
+        translationBuilder.add(MedievalStuffItems.WEIGHTLESS_DAGGER_TIER_1, "Weightless Dagger");
+        translationBuilder.add(MedievalStuffItems.WEIGHTLESS_DAGGER_TIER_2, "Weightless Dagger");
+        translationBuilder.add(MedievalStuffItems.SHORT_COPPER_BOW, "Short Copper Bow");
+        translationBuilder.add(MedievalStuffItems.TWOBOW, "Twobow");
+        translationBuilder.add(MedievalStuffItems.SILVER_HELMET, "Silver Helmet");
+        translationBuilder.add(MedievalStuffItems.SILVER_CHESTPLATE, "Silver Chestplate");
+        translationBuilder.add(MedievalStuffItems.SILVER_LEGGINGS, "Silver Leggings");
+        translationBuilder.add(MedievalStuffItems.SILVER_BOOTS, "Silver Boots");
+        translationBuilder.add(MedievalStuffItems.COPPERSTONE_FORGE_BLUEPRINT, "Filled Blueprint");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_1, "Ash Bucket");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_2, "Ash Bucket");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_3, "Ash Bucket");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_4, "Ash Bucket");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_5, "Ash Bucket");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_6, "Ash Bucket");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_7, "Ash Bucket");
+        translationBuilder.add(MedievalStuffItems.ASH_BUCKET_8, "Ash Bucket");
 
-        translationBuilder.add(ModItems.JELLY_SPAWN_EGG, "Jelly Spawn Egg");
-        translationBuilder.add(ModItems.FALLEN_KNIGHT_SPAWN_EGG, "Fallen Knight Spawn Egg");
+        translationBuilder.add(MedievalStuffItems.JELLY_SPAWN_EGG, "Jelly Spawn Egg");
+        translationBuilder.add(MedievalStuffItems.FALLEN_KNIGHT_SPAWN_EGG, "Fallen Knight Spawn Egg");
 
 
         // Item groups
@@ -68,17 +76,19 @@ public class ModEnUSTranslationProvider extends FabricLanguageProvider {
 
 
         // Blocks
-        translationBuilder.add(ModBlocks.SILVER_ORE, "Silver Ore");
-        translationBuilder.add(ModBlocks.DEEPSLATE_SILVER_ORE, "Deepslate Silver Ore");
-        translationBuilder.add(ModBlocks.RAW_SILVER_BLOCK, "Raw Silver Block");
-        translationBuilder.add(ModBlocks.SILVER_BLOCK, "Silver Block");
-        translationBuilder.add(ModBlocks.COPPERSTONE_BRICKS, "Copperstone Bricks");
+        translationBuilder.add(MedievalStuffBlocks.SILVER_ORE, "Silver Ore");
+        translationBuilder.add(MedievalStuffBlocks.DEEPSLATE_SILVER_ORE, "Deepslate Silver Ore");
+        translationBuilder.add(MedievalStuffBlocks.RAW_SILVER_BLOCK, "Block of Raw Silver");
+        translationBuilder.add(MedievalStuffBlocks.SILVER_BLOCK, "Block of Silver");
+        translationBuilder.add(MedievalStuffBlocks.COPPERSTONE_BRICKS, "Copperstone Bricks");
 
-        translationBuilder.add(ModBlocks.WILD_BLUEBERRY_BUSH, "Wild Blueberry Bush");
+        translationBuilder.add(MedievalStuffBlocks.WILD_BLUEBERRY_BUSH, "Wild Blueberry Bush");
 
-        translationBuilder.add(ModBlocks.COPPERSTONE_HEATER, "Copperstone Heater");
-        translationBuilder.add(ModBlocks.COPPER_TANK, "Copper Tank");
-        translationBuilder.add(ModBlocks.COPPERSTONE_FORGE_CONTROLLER, "Copperstone Forge Controller");
+        translationBuilder.add(MedievalStuffBlocks.ASH, "Ash");
+
+        translationBuilder.add(MedievalStuffBlocks.COPPERSTONE_HEATER, "Copperstone Heater");
+        translationBuilder.add(MedievalStuffBlocks.COPPER_TANK, "Copper Tank");
+        translationBuilder.add(MedievalStuffBlocks.COPPERSTONE_FORGE_CONTROLLER, "Copperstone Forge Controller");
 
 
         // Entities
@@ -99,6 +109,7 @@ public class ModEnUSTranslationProvider extends FabricLanguageProvider {
         // Tooltips
         addTooltip("keyboard_shift", "§8Press§r §7Shift §8to see the characteristics", translationBuilder);
         addTooltip("keyboard_control", "§8Press§r §7Control §8to see the description", translationBuilder);
+        addTooltip("ash_bucket.tooltip", "Ash: ", translationBuilder);
         addTooltip("jelly.description", "§7When eaten might give §5levitation§7 effect for", translationBuilder);
         addTooltip("jar_of_jelly.description", "§7When eaten might give §5levitation§7 effect for", translationBuilder);
         addTooltip("nature.cultivation", "§7Cultivation: ", translationBuilder);

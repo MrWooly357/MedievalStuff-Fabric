@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.util.ModTags;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +27,7 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
     private void getFovMultiplierMixin(CallbackInfoReturnable<Float> info, float f) {
         ItemStack itemStack = getActiveItem();
 
-        if (isUsingItem() && itemStack.isIn(ModTags.Items.CUSTOM_BOWS)) {
+        if (isUsingItem() && itemStack.isIn(MedievalStuffTags.Items.CUSTOM_BOWS)) {
             int useTime = getItemUseTime();
             float g = (float) useTime / 20.0f;
             g = g > 1.0f ? 1.0f : g * g;

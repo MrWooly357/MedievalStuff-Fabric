@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "medievalstuff:block/ash",
+    "north": "medievalstuff:block/ash",
+    "east": "medievalstuff:block/ash",
+    "south": "medievalstuff:block/ash",
+    "west": "medievalstuff:block/ash",
+    "up": "medievalstuff:block/ash",
+    "particle": "medievalstuff:block/ash"
+  }
+}

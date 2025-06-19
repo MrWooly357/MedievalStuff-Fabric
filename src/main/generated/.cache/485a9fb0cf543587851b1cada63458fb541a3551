@@ -1,10 +1,9 @@
-// 1.21.1	2025-06-09T23:11:09.1181287	Medieval Stuff/Tags for minecraft:item
+// 1.21.1	2025-06-18T22:03:10.0972311	Medieval Stuff/Tags for minecraft:item
 fbfdef6843809236f08c714d9b952f56a1b1bd53 data\medievalstuff\tags\item\custom_bows.json
 50e13739c5004ff1f5177fb29ecff7b5d3d45cd3 data\medievalstuff\tags\item\heater_crafting_recipe_fuel.json
 2ca8d7824e0025b25d3f5fde76f3a4208836c856 data\minecraft\tags\item\shovels.json
 8326302ec71114cdb803bc372ceee92eb4af88f6 data\medievalstuff\tags\item\forge_controller_meltable.json
 a989e52a30a9388a5e7f8e50e4b904ee082df21a data\medievalstuff\tags\item\heater_arsonists.json
-efe9e0caf089100a228c46379f3aa70d7f602ddc data\medievalstuff\tags\item\heater_fuel_exceptions.json
 f14820418c03b85af4cb495613cef496bad57f89 data\minecraft\tags\item\axes.json
 8dd910829b8afac05f72aa264c97e9c013440086 data\minecraft\tags\item\pickaxes.json
 2c562ce1edfd5a5f0c2f6daa30a287f6c1171e81 data\minecraft\tags\item\hoes.json
