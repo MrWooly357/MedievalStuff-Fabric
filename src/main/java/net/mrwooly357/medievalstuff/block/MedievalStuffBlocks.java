@@ -75,10 +75,9 @@ public class MedievalStuffBlocks {
     public static final Block ASH = registerWithoutItem(
             "ash", new AshBlock(
                     new ColorCode(1781911911), AbstractBlock.Settings.create()
-                    .strength(0.25F, 0.2F)
+                    .strength(0.15F, 0.1F)
                     .mapColor(MapColor.LIGHT_GRAY)
-                    .sounds(BlockSoundGroup.SAND)
-                    .instrument(NoteBlockInstrument.SNARE)
+                    .sounds(BlockSoundGroup.POWDER_SNOW)
             )
     );
 
