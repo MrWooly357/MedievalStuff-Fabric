@@ -34,7 +34,7 @@ public abstract class HeaterScreenHandler extends ScreenHandler {
         this.inventory = (Inventory) entity;
         this.delegate = delegate;
         INPUT_START_SLOT = playerInventoryMainSize;
-        INPUT_END_SLOT = playerInventoryMainSize + inventorySize;
+        INPUT_END_SLOT = playerInventoryMainSize + inventorySize - 1;
         INVENTORY_START_SLOT = 0;
         INVENTORY_END_SLOT = playerInventoryMainSize - 10;
         HOTBAR_START_SLOT = playerInventoryMainSize - 9;
@@ -57,18 +57,18 @@ public abstract class HeaterScreenHandler extends ScreenHandler {
 
             if (actualSlot instanceof FuelSlot) {
 
-                if (!insertItem(stackInSlot, INVENTORY_START_SLOT, HOTBAR_END_SLOT, false))
+                if (!insertItem(stackInSlot, INVENTORY_START_SLOT, HOTBAR_END_SLOT + 1, false))
                     return ItemStack.EMPTY;
             } else if (HeaterBlockEntity.createFuelsMap().containsKey(Registries.ITEM.getId(stackInSlot.getItem())) && inventory.isEmpty()) {
 
-                if (!insertItem(stackInSlot, INPUT_START_SLOT, INPUT_END_SLOT, false)) {
+                if (!insertItem(stackInSlot, INPUT_START_SLOT, INPUT_END_SLOT + 1, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (slot >= INVENTORY_START_SLOT && slot <= INVENTORY_END_SLOT) {
 
                 if (!insertItem(stackInSlot, HOTBAR_START_SLOT, HOTBAR_END_SLOT + 1, false))
                     return ItemStack.EMPTY;
-            } else if (slot >= HOTBAR_START_SLOT && slot <= HOTBAR_END_SLOT && !insertItem(stackInSlot, INVENTORY_START_SLOT, INVENTORY_END_SLOT, false)) {
+            } else if (slot >= HOTBAR_START_SLOT && slot <= HOTBAR_END_SLOT && !insertItem(stackInSlot, INVENTORY_START_SLOT, INVENTORY_END_SLOT + 1, false)) {
                 return ItemStack.EMPTY;
             }
 
