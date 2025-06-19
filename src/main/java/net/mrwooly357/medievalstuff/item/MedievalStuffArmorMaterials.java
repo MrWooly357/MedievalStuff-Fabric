@@ -16,7 +16,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class ModArmorMaterials {
+public class MedievalStuffArmorMaterials {
 
     public static final RegistryEntry<ArmorMaterial> SILVER_ARMOR_MATERIAL = register(
             "silver_armor_material", Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
@@ -54,7 +54,7 @@ public class ModArmorMaterials {
         return Registry.registerReference(Registries.ARMOR_MATERIAL, Identifier.of(MedievalStuff.MOD_ID, name), new ArmorMaterial(enumMap, enchantability, equipSound, repairIngredient, layers, toughness, knockbackResistance));
     }
 
-    public static void init() {
+    public static void initialize() {
         MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " armor materials");
     }
 }

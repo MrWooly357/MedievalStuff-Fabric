@@ -2,7 +2,6 @@ package net.mrwooly357.medievalstuff.item;
 
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.mrwooly357.medievalstuff.MedievalStuff;
@@ -101,13 +100,13 @@ public class MedievalStuffItems {
     public static final Item PIECE_OF_JELLY = register(
             "piece_of_jelly", new PieceOfJellyItem(
                     new Item.Settings()
-                            .food(ModFoodComponents.PIECE_OF_JELLY)
+                            .food(MedievalStuffFoodComponents.PIECE_OF_JELLY)
             )
     );
     public static final Item JAR_OF_JELLY = register(
             "jar_of_jelly", new JarOfJellyItem(
                     new Item.Settings()
-                            .food(ModFoodComponents.JAR_OF_JELLY)
+                            .food(MedievalStuffFoodComponents.JAR_OF_JELLY)
                             .recipeRemainder(MedievalStuffItems.JAR)
                             .maxCount(16)
             )
@@ -115,13 +114,13 @@ public class MedievalStuffItems {
     public static final Item WILD_BLUEBERRIES = register(
             "wild_blueberries", new AliasedBlockItem(
                     MedievalStuffBlocks.WILD_BLUEBERRY_BUSH, new Item.Settings()
-                    .food(ModFoodComponents.WILD_BLUEBERRIES)
+                    .food(MedievalStuffFoodComponents.WILD_BLUEBERRIES)
             )
     );
     public static final Item CULTIVATED_BLUEBERRIES = register(
             "cultivated_blueberries", new Item(
                     new Item.Settings()
-                            .food(ModFoodComponents.CULTIVATED_BLUEBERRIES)
+                            .food(MedievalStuffFoodComponents.CULTIVATED_BLUEBERRIES)
             )
     );
 
@@ -129,60 +128,60 @@ public class MedievalStuffItems {
     // Equipment
     public static final Item SILVER_PICKAXE = register(
             "silver_pickaxe", new PickaxeItem(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             PickaxeItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, 1.0F, -2.7F
+                                    MedievalStuffToolMaterials.SILVER, 1.0F, -2.7F
                             )
                     )
             )
     );
     public static final Item SILVER_AXE = register(
             "silver_axe", new AxeItem(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             AxeItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, 6.0F, -3.0F
+                                    MedievalStuffToolMaterials.SILVER, 6.0F, -3.0F
                             )
                     )
             )
     );
     public static final Item SILVER_SHOVEL = register(
             "silver_shovel", new ShovelItem(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             ShovelItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, 1.5F, -2.9F
+                                    MedievalStuffToolMaterials.SILVER, 1.5F, -2.9F
                             )
                     )
             )
     );
     public static final Item SILVER_HOE = register(
             "silver_hoe", new HoeItem(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             HoeItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, -2.0F, -0.9F
+                                    MedievalStuffToolMaterials.SILVER, -2.0F, -0.9F
                             )
                     )
             )
     );
 
     public static final Item SILVER_SWORD = register("silver_sword", new SwordItem(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             SwordItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, 3, -2.3F
+                                    MedievalStuffToolMaterials.SILVER, 3, -2.3F
                             )
                     )
             )
     );
     public static final Item SILVER_DAGGER = register(
             "silver_dagger", new AdvancedSweepMeleeWeaponItem(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             AdvancedSweepMeleeWeaponItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, 1, -2F, -1, -1
+                                    MedievalStuffToolMaterials.SILVER, 1, -2F, -1, -1
                             )
                     )
             )
@@ -200,10 +199,10 @@ public class MedievalStuffItems {
     );
     public static final Item WEIGHTLESS_DAGGER_TIER_1 = register(
             "weightless_dagger_tier_1", new WeightlessDaggerItem(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             AdvancedSweepMeleeWeaponItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, 1, -2.0F, -1, -1
+                                    MedievalStuffToolMaterials.SILVER, 1, -2.0F, -1, -1
                             )
                     ),
                     StatusEffects.LEVITATION
@@ -211,10 +210,10 @@ public class MedievalStuffItems {
     );
     public static final Item WEIGHTLESS_DAGGER_TIER_2 = register(
             "weightless_dagger_tier_2", new WeightlessDaggerTier2Item(
-                    ModToolMaterials.SILVER, new Item.Settings()
+                    MedievalStuffToolMaterials.SILVER, new Item.Settings()
                     .attributeModifiers(
                             AdvancedSweepMeleeWeaponItem.createAttributeModifiers(
-                                    ModToolMaterials.SILVER, 1, -1.9F, -1, -1
+                                    MedievalStuffToolMaterials.SILVER, 1, -1.9F, -1, -1
                             )
                     ),
                     StatusEffects.LEVITATION
@@ -237,53 +236,53 @@ public class MedievalStuffItems {
 
     public static final Item SILVER_HELMET = register(
             "silver_helmet", new ArmorItem(
-                    ModArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.HELMET, new Item.Settings()
+                    MedievalStuffArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.HELMET, new Item.Settings()
                     .maxDamage(ArmorItem.Type.HELMET.getMaxDamage(16)
                     )
             )
     );
     public static final Item SILVER_CHESTPLATE = register(
             "silver_chestplate", new ArmorItem(
-                    ModArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.CHESTPLATE, new Item.Settings()
+                    MedievalStuffArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.CHESTPLATE, new Item.Settings()
                     .maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(16)
                     )
             )
     );
     public static final Item SILVER_LEGGINGS = register(
             "silver_leggings", new ArmorItem(
-                    ModArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings()
+                    MedievalStuffArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings()
                     .maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(16)
                     )
             )
     );
     public static final Item SILVER_BOOTS = register(
             "silver_boots", new ArmorItem(
-                    ModArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.BOOTS, new Item.Settings()
+                    MedievalStuffArmorMaterials.SILVER_ARMOR_MATERIAL, ArmorItem.Type.BOOTS, new Item.Settings()
                     .maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(16)
                     )
             )
     );
     public static final Item SOULSTEEL_HELMET = register(
             "soulsteel_helmet", new ArmorItem(
-                    ModArmorMaterials.SOULSTEEL, ArmorItem.Type.HELMET, new Item.Settings()
+                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.HELMET, new Item.Settings()
                     .maxDamage(ArmorItem.Type.HELMET.getMaxDamage(16))
             )
     );
     public static final Item SOULSTEEL_CHESTPLATE = register(
             "soulsteel_chestplate", new ArmorItem(
-                    ModArmorMaterials.SOULSTEEL, ArmorItem.Type.CHESTPLATE, new Item.Settings()
+                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.CHESTPLATE, new Item.Settings()
                     .maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(16))
             )
     );
     public static final Item SOULSTEEL_LEGGINGS = register(
             "soulsteel_leggings", new ArmorItem(
-                    ModArmorMaterials.SOULSTEEL, ArmorItem.Type.LEGGINGS, new Item.Settings()
+                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.LEGGINGS, new Item.Settings()
                     .maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(16))
             )
     );
     public static final Item SOULSTEEL_BOOTS = register(
             "soulsteel_boots", new ArmorItem(
-                    ModArmorMaterials.SOULSTEEL, ArmorItem.Type.BOOTS, new Item.Settings()
+                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.BOOTS, new Item.Settings()
                     .maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(16))
             )
     );

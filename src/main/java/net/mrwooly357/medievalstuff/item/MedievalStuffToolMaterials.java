@@ -9,7 +9,8 @@ import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 import java.util.function.Supplier;
 
-public enum ModToolMaterials implements ToolMaterial {
+public enum MedievalStuffToolMaterials implements ToolMaterial {
+
     SILVER(MedievalStuffTags.Blocks.INCORRECT_FOR_SILVER_TOOL, 325, 6.5F, 2F, 16, () -> Ingredient.ofItems(MedievalStuffItems.SILVER_INGOT));
 
 
@@ -20,14 +21,7 @@ public enum ModToolMaterials implements ToolMaterial {
     private final int enchantability;
     private final Supplier<Ingredient> repairIngredient;
 
-    ModToolMaterials(
-            final TagKey<Block> inverseTag,
-            final int itemDurability,
-            final float miningSpeed,
-            final float attackDamage,
-            final int enchantability,
-            final Supplier<Ingredient> repairIngredient
-    ) {
+    MedievalStuffToolMaterials(final TagKey<Block> inverseTag, final int itemDurability, final float miningSpeed, final float attackDamage, final int enchantability, final Supplier<Ingredient> repairIngredient) {
         this.inverseTag = inverseTag;
         this.itemDurability = itemDurability;
         this.miningSpeed = miningSpeed;
@@ -35,6 +29,7 @@ public enum ModToolMaterials implements ToolMaterial {
         this.enchantability = enchantability;
         this.repairIngredient = Suppliers.memoize(repairIngredient::get);
     }
+
 
     @Override
     public int getDurability() {

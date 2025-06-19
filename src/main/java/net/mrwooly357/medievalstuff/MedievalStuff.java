@@ -12,7 +12,7 @@ import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
 import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntity;
 import net.mrwooly357.medievalstuff.entity.mob.passive.jelly.JellyEntity;
-import net.mrwooly357.medievalstuff.item.ModArmorMaterials;
+import net.mrwooly357.medievalstuff.item.MedievalStuffArmorMaterials;
 import net.mrwooly357.medievalstuff.item.MedievalStuffItemGroups;
 import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import net.mrwooly357.medievalstuff.compound.Compounds;
@@ -53,7 +53,7 @@ public class MedievalStuff implements ModInitializer, TerraBlenderApi, WoolEntry
 		HybridWeaponMaterials.registerHybridWeaponMaterials();
 		HybridWeaponFamilies.registerHybridWeaponFamilies();
 		HybridWeaponClasses.registerHybridWeaponClasses();
-		ModArmorMaterials.init();
+		MedievalStuffArmorMaterials.initialize();
 		MedievalStuffBlocks.init();
 		ModMultiblockConstructionBlueprints.init();
 		ModBlockEntities.registerModBlockEntities();
