@@ -6,7 +6,7 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleEffect;
 import net.mrwooly357.medievalstuff.entity.damage.ModDamageTypes;
-import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
+import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 public class SoulDecayStatusEffect extends StatusEffect {
@@ -22,7 +22,7 @@ public class SoulDecayStatusEffect extends StatusEffect {
 
     @Override
     public boolean applyUpdateEffect(LivingEntity livingEntity, int amplifier) {
-        if (!livingEntity.hasStatusEffect(ModStatusEffects.SOUL_PROTECTION)) {
+        if (!livingEntity.hasStatusEffect(MedievalStuffStatusEffects.SOUL_PROTECTION)) {
             livingEntity.damage(livingEntity.getDamageSources().create(ModDamageTypes.SOUL_DECAY), 1.0F +  (livingEntity.getMaxHealth() - livingEntity.getHealth()) * 0.2F);
 
             if (livingEntity instanceof PlayerEntity playerEntity) {

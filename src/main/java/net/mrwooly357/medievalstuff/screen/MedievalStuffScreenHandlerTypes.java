@@ -8,9 +8,10 @@ import net.minecraft.util.math.BlockPos;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.screen.custom.forge_controller.CopperstoneForgeControllerScreenHandler;
 import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreenHandler;
+import net.mrwooly357.wool.config.custom.WoolConfig;
 import net.mrwooly357.wool.registry.ScreenHandlerTypeRegistryHelper;
 
-public class ModScreenHandlerTypes {
+public class MedievalStuffScreenHandlerTypes {
 
     public static final ScreenHandlerType<CopperstoneHeaterScreenHandler> COPPERSTONE_HEATER_SCREEN_HANDLER = register(
             "copperstone_heater_screen_handler", new ExtendedScreenHandlerType<>(
@@ -24,11 +25,12 @@ public class ModScreenHandlerTypes {
     );
 
 
-    private static <T extends ScreenHandler> ScreenHandlerType<T> register(String name, ScreenHandlerType<T> screenHandlerType) {
-        return ScreenHandlerTypeRegistryHelper.register(Identifier.of(MedievalStuff.MOD_ID, name), screenHandlerType);
+    private static <T extends ScreenHandler> ScreenHandlerType<T> register(String name, ScreenHandlerType<T> type) {
+        return ScreenHandlerTypeRegistryHelper.register(Identifier.of(MedievalStuff.MOD_ID, name), type);
     }
 
-    public static void init() {
-        MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " screen handlers");
+    public static void initialize() {
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " screen handlers");
     }
 }

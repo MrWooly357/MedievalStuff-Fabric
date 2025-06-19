@@ -8,17 +8,17 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
-import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
+import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntities;
 import net.mrwooly357.medievalstuff.block.entity.renderer.TankBlockEntityRenderer;
-import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityTypes;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntityModel;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntityRenderer;
 import net.mrwooly357.medievalstuff.entity.mob.passive.jelly.JellyEntityModel;
 import net.mrwooly357.medievalstuff.entity.mob.passive.jelly.JellyEntityRenderer;
-import net.mrwooly357.medievalstuff.entity.ModEntityModelLayers;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityModelLayers;
 import net.mrwooly357.medievalstuff.entity.projectile.khopesh.ThrownCopperKhopeshEntityModel;
 import net.mrwooly357.medievalstuff.entity.projectile.khopesh.ThrownCopperKhopeshEntityRenderer;
-import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
+import net.mrwooly357.medievalstuff.screen.MedievalStuffScreenHandlerTypes;
 import net.mrwooly357.medievalstuff.screen.custom.forge_controller.CopperstoneForgeControllerScreen;
 import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreen;
 import net.mrwooly357.medievalstuff.util.ModModelPredicates;
@@ -32,22 +32,22 @@ public class MedievalStuffClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(MedievalStuffBlocks.COPPER_TANK, RenderLayer.getTranslucent());
 
         //Block entity renderers
-        BlockEntityRendererFactories.register(ModBlockEntities.COPPER_TANK_BE, TankBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(MedievalStuffBlockEntities.COPPER_TANK, TankBlockEntityRenderer::new);
 
         //Entities
-        EntityModelLayerRegistry.registerModelLayer(ModEntityModelLayers.JELLY_NORMAL, JellyEntityModel::getNormalTexturedModelData);
-        EntityModelLayerRegistry.registerModelLayer(ModEntityModelLayers.JELLY_TRANSLUCENT, JellyEntityModel::getTranslucentTexturedModelData);
-        EntityRendererRegistry.register(ModEntityTypes.JELLY, JellyEntityRenderer::new);
-        EntityModelLayerRegistry.registerModelLayer(ModEntityModelLayers.FALLEN_KNIGHT, FallenKnightEntityModel::getTexturedModelData);
-        EntityModelLayerRegistry.registerModelLayer(ModEntityModelLayers.FALLEN_KNIGHT_INNER_ARMOR, FallenKnightEntityModel::getInnerArmorTexturedModelData);
-        EntityModelLayerRegistry.registerModelLayer(ModEntityModelLayers.FALLEN_KNIGHT_OUTER_ARMOR, FallenKnightEntityModel::getOuterArmorTexturedModelData);
-        EntityRendererRegistry.register(ModEntityTypes.FALLEN_KNIGHT, FallenKnightEntityRenderer::new);
-        EntityModelLayerRegistry.registerModelLayer(ModEntityModelLayers.THROWN_COPPER_KHOPESH, ThrownCopperKhopeshEntityModel::getTexturedModelData);
-        EntityRendererRegistry.register(ModEntityTypes.THROWN_COPPER_KHOPESH, ThrownCopperKhopeshEntityRenderer::new);
+        EntityModelLayerRegistry.registerModelLayer(MedievalStuffEntityModelLayers.JELLY_NORMAL, JellyEntityModel::getNormalTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(MedievalStuffEntityModelLayers.JELLY_TRANSLUCENT, JellyEntityModel::getTranslucentTexturedModelData);
+        EntityRendererRegistry.register(MedievalStuffEntityTypes.JELLY, JellyEntityRenderer::new);
+        EntityModelLayerRegistry.registerModelLayer(MedievalStuffEntityModelLayers.FALLEN_KNIGHT, FallenKnightEntityModel::getTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(MedievalStuffEntityModelLayers.FALLEN_KNIGHT_INNER_ARMOR, FallenKnightEntityModel::getInnerArmorTexturedModelData);
+        EntityModelLayerRegistry.registerModelLayer(MedievalStuffEntityModelLayers.FALLEN_KNIGHT_OUTER_ARMOR, FallenKnightEntityModel::getOuterArmorTexturedModelData);
+        EntityRendererRegistry.register(MedievalStuffEntityTypes.FALLEN_KNIGHT, FallenKnightEntityRenderer::new);
+        EntityModelLayerRegistry.registerModelLayer(MedievalStuffEntityModelLayers.THROWN_COPPER_KHOPESH, ThrownCopperKhopeshEntityModel::getTexturedModelData);
+        EntityRendererRegistry.register(MedievalStuffEntityTypes.THROWN_COPPER_KHOPESH, ThrownCopperKhopeshEntityRenderer::new);
 
         //Screen handlers
-        HandledScreens.register(ModScreenHandlerTypes.COPPERSTONE_HEATER_SCREEN_HANDLER, CopperstoneHeaterScreen::new);
-        HandledScreens.register(ModScreenHandlerTypes.COPPERSTONE_FORGE_CONTROLLER_SCREEN_HANDLER, CopperstoneForgeControllerScreen::new);
+        HandledScreens.register(MedievalStuffScreenHandlerTypes.COPPERSTONE_HEATER_SCREEN_HANDLER, CopperstoneHeaterScreen::new);
+        HandledScreens.register(MedievalStuffScreenHandlerTypes.COPPERSTONE_FORGE_CONTROLLER_SCREEN_HANDLER, CopperstoneForgeControllerScreen::new);
 
         //Additional
         ModModelPredicates.registerModModelPredicates();

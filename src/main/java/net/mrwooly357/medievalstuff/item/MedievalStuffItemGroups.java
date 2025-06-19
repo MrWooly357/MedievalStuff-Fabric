@@ -112,6 +112,7 @@ public class MedievalStuffItemGroups {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode) MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " item groups");
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " item groups");
     }
 }

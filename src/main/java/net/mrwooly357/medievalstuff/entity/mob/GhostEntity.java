@@ -2,7 +2,7 @@ package net.mrwooly357.medievalstuff.entity.mob;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
+import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
 
 /**
  * Represents that an entity is a some type of ghost.
@@ -26,7 +26,7 @@ public interface GhostEntity {
     boolean isShaking();
 
     default boolean isShaking(MobEntity mobEntity) {
-        return mobEntity.hasStatusEffect(ModStatusEffects.SOUL_DECAY) && !mobEntity.hasStatusEffect(ModStatusEffects.SOUL_PROTECTION) || mobEntity.isOnFire();
+        return mobEntity.hasStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY) && !mobEntity.hasStatusEffect(MedievalStuffStatusEffects.SOUL_PROTECTION) || mobEntity.isOnFire();
     }
 
     default void additionalBurnBehavior(Entity entity, float damage) {

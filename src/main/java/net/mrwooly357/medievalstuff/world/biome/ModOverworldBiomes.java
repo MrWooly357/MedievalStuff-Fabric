@@ -20,7 +20,7 @@ public class ModOverworldBiomes {
         SpawnSettings.Builder spawnBuilder = new SpawnSettings.Builder();
 
         DefaultBiomeFeatures.addBatsAndMonsters(spawnBuilder);
-        //spawnBuilder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(ModEntityTypes.TOAD, 25, 1, 3));
+        //spawnBuilder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(MedievalStuffEntityTypes.TOAD, 25, 1, 3));
 
         GenerationSettings.LookupBackedBuilder biomeBuilder = new GenerationSettings.LookupBackedBuilder(placedFeatureGetter, carverGetter);
 

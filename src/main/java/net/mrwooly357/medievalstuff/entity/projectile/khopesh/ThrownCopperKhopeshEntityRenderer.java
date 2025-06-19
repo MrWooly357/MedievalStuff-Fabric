@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.entity.ModEntityModelLayers;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityModelLayers;
 
 public class ThrownCopperKhopeshEntityRenderer extends EntityRenderer<ThrownCopperKhopeshEntity> {
 
@@ -20,7 +20,7 @@ public class ThrownCopperKhopeshEntityRenderer extends EntityRenderer<ThrownCopp
 
     public ThrownCopperKhopeshEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
-        model = new ThrownCopperKhopeshEntityModel(ctx.getPart(ModEntityModelLayers.THROWN_COPPER_KHOPESH));
+        model = new ThrownCopperKhopeshEntityModel(ctx.getPart(MedievalStuffEntityModelLayers.THROWN_COPPER_KHOPESH));
     }
 
 

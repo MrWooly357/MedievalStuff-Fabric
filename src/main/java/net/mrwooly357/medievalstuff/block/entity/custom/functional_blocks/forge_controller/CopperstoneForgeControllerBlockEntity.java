@@ -21,8 +21,8 @@ import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.forge_controller.CopperstoneForgeControllerBlock;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.CopperTankBlock;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.TankBlock;
-import net.mrwooly357.medievalstuff.block.util.ModMultiblockConstructionBlueprints;
-import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
+import net.mrwooly357.medievalstuff.block.util.MedievalStuffMultiblockConstructionBlueprints;
+import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntities;
 import net.mrwooly357.medievalstuff.recipe.MedievalStuffRecipeTypes;
 import net.mrwooly357.medievalstuff.recipe.custom.CopperstoneForgeControllerMeltingRecipe;
 import net.mrwooly357.medievalstuff.recipe.custom.CopperstoneForgeControllerMeltingRecipeInput;
@@ -73,7 +73,7 @@ public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockE
     private BlockPos resultTankPos;
 
     public CopperstoneForgeControllerBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.COPPERSTONE_FORGE_CONTROLLER_BE, pos, state);
+        super(MedievalStuffBlockEntities.COPPERSTONE_FORGE_CONTROLLER, pos, state);
     }
 
 
@@ -227,7 +227,7 @@ public class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockE
 
     @Override
     public @NotNull MultiblockConstructionBuilder getBuilder() {
-        return new MultiblockConstructionBuilder(ModMultiblockConstructionBlueprints.COPPERSTONE_FORGE, getWorld());
+        return new MultiblockConstructionBuilder(MedievalStuffMultiblockConstructionBlueprints.COPPERSTONE_FORGE, getWorld());
     }
 
     @Override

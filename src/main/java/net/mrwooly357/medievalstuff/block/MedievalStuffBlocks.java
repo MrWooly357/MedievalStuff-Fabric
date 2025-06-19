@@ -1,7 +1,6 @@
 package net.mrwooly357.medievalstuff.block;
 
 import net.minecraft.block.*;
-import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.Properties;
@@ -131,7 +130,8 @@ public class MedievalStuffBlocks {
         BlockRegistryHelper.registerBlockItem(Identifier.of(MedievalStuff.MOD_ID, name), block);
     }
 
-    public static void init() {
-        if (WoolConfig.developerMode) MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " blocks");
+    public static void initialize() {
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " blocks");
     }
 }

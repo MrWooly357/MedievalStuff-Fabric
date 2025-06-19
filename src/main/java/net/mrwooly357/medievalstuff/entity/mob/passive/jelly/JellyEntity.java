@@ -16,7 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityTypes;
 import org.jetbrains.annotations.Nullable;
 
 public class JellyEntity extends AnimalEntity {
@@ -73,7 +73,7 @@ public class JellyEntity extends AnimalEntity {
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return ModEntityTypes.JELLY.create(world);
+        return MedievalStuffEntityTypes.JELLY.create(world);
     }
 
     /* SOUNDS */

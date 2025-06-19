@@ -11,6 +11,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.mrwooly357.medievalstuff.MedievalStuff;
+import net.mrwooly357.wool.config.custom.WoolConfig;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -55,6 +56,7 @@ public class MedievalStuffArmorMaterials {
     }
 
     public static void initialize() {
-        MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " armor materials");
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " armor materials");
     }
 }

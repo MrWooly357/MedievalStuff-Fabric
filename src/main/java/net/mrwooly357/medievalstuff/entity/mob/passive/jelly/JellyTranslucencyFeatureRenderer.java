@@ -11,14 +11,14 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import net.mrwooly357.medievalstuff.entity.ModEntityModelLayers;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityModelLayers;
 
 public class JellyTranslucencyFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, JellyEntityModel<T>> {
     private final EntityModel<T> model;
 
     public JellyTranslucencyFeatureRenderer(FeatureRendererContext<T, JellyEntityModel<T>> context, EntityModelLoader loader) {
         super(context);
-        this.model = new JellyEntityModel<>(loader.getModelPart(ModEntityModelLayers.JELLY_TRANSLUCENT));
+        this.model = new JellyEntityModel<>(loader.getModelPart(MedievalStuffEntityModelLayers.JELLY_TRANSLUCENT));
     }
 
     public void render(

@@ -3,7 +3,7 @@ package net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.registry.ModRegistries;
+import net.mrwooly357.medievalstuff.registry.MedievalStuffRegistries;
 
 public class HybridWeaponFamilies {
 
@@ -29,7 +29,7 @@ public class HybridWeaponFamilies {
         hybridWeaponFamily.name(name);
         hybridWeaponFamily.getTranslationKey(MedievalStuff.MOD_ID);
 
-        return Registry.register(ModRegistries.HYBRID_WEAPON_FAMILY, Identifier.of(MedievalStuff.MOD_ID, name), hybridWeaponFamily);
+        return Registry.register(MedievalStuffRegistries.HYBRID_WEAPON_FAMILY, Identifier.of(MedievalStuff.MOD_ID, name), hybridWeaponFamily);
     }
 
     public static void registerHybridWeaponFamilies() {

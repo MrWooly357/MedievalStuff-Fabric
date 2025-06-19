@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 
 
-public class ModEntityModelLayers {
+public class MedievalStuffEntityModelLayers {
 
     public static final EntityModelLayer JELLY_NORMAL = create(
             "jelly", "main"
@@ -27,15 +27,15 @@ public class ModEntityModelLayers {
     );
 
 
+    private static EntityModelLayer create(String idName, String layer) {
+        return new EntityModelLayer(Identifier.of(MedievalStuff.MOD_ID, idName), layer);
+    }
+
     private static EntityModelLayer createInnerArmor(String idName) {
         return create(idName, "inner_armor");
     }
 
     private static EntityModelLayer createOuterArmor(String idName) {
         return create(idName, "outer_armor");
-    }
-
-    private static EntityModelLayer create(String idName, String layer) {
-        return new EntityModelLayer(Identifier.of(MedievalStuff.MOD_ID, idName), layer);
     }
 }

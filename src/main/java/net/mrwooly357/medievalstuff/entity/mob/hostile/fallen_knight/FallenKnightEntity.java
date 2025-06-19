@@ -25,7 +25,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
+import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
 import net.mrwooly357.medievalstuff.entity.mob.GhostEntity;
 import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
@@ -302,7 +302,7 @@ public class FallenKnightEntity extends HostileEntity implements GhostEntity {
 
     @Override
     public boolean isFireImmune() {
-        return hasStatusEffect(StatusEffects.FIRE_RESISTANCE) && !hasStatusEffect(ModStatusEffects.SOUL_DECAY);
+        return hasStatusEffect(StatusEffects.FIRE_RESISTANCE) && !hasStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY);
     }
 
     @Override

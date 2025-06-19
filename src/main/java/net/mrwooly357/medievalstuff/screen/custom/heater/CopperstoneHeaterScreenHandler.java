@@ -6,7 +6,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
+import net.mrwooly357.medievalstuff.screen.MedievalStuffScreenHandlerTypes;
 
 public class CopperstoneHeaterScreenHandler extends HeaterScreenHandler {
 
@@ -15,7 +15,7 @@ public class CopperstoneHeaterScreenHandler extends HeaterScreenHandler {
     }
 
     public CopperstoneHeaterScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate delegate) {
-        super(ModScreenHandlerTypes.COPPERSTONE_HEATER_SCREEN_HANDLER, syncId, playerInventory, entity, delegate, 1);
+        super(MedievalStuffScreenHandlerTypes.COPPERSTONE_HEATER_SCREEN_HANDLER, syncId, playerInventory, entity, delegate, 1);
 
         checkSize((Inventory) entity, 1);
 

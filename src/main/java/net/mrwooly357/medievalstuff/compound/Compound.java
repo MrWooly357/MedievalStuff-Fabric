@@ -2,7 +2,7 @@ package net.mrwooly357.medievalstuff.compound;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.mrwooly357.medievalstuff.registry.ModRegistries;
+import net.mrwooly357.medievalstuff.registry.MedievalStuffRegistries;
 import org.jetbrains.annotations.Nullable;
 
 public class Compound {
@@ -18,7 +18,7 @@ public class Compound {
 
     public @Nullable String getTranslationKey() {
 
-        return Util.createTranslationKey("compound", ModRegistries.COMPOUND.getId(this));
+        return Util.createTranslationKey("compound", MedievalStuffRegistries.COMPOUND.getId(this));
     }
 
 

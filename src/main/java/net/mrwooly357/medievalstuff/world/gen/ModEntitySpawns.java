@@ -8,25 +8,25 @@ import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.BiomeKeys;
-import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityTypes;
 import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnightEntity;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
 
 public class ModEntitySpawns {
 
-    public static void addSpawns() {
-        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST),
-                SpawnGroup.CREATURE, ModEntityTypes.JELLY, 100,  2, 5
-        );
-        SpawnRestriction.register(ModEntityTypes.JELLY, SpawnLocationTypes.ON_GROUND,
-                Heightmap.Type.WORLD_SURFACE, AnimalEntity::isValidNaturalSpawn
-        );
 
-        BiomeModifications.addSpawn(BiomeSelectors.tag(MedievalStuffTags.Biomes.FALLEN_KNIGHT_SPAWNABLE),
-                SpawnGroup.MONSTER, ModEntityTypes.FALLEN_KNIGHT, 50,  1, 2
+    public static void addSpawns() {
+        BiomeModifications.addSpawn(
+                BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST), SpawnGroup.CREATURE, MedievalStuffEntityTypes.JELLY, 100,  2, 5
         );
-        SpawnRestriction.register(ModEntityTypes.FALLEN_KNIGHT, SpawnLocationTypes.ON_GROUND,
-                Heightmap.Type.WORLD_SURFACE, FallenKnightEntity::canSpawnInDark
+        SpawnRestriction.register(
+                MedievalStuffEntityTypes.JELLY, SpawnLocationTypes.ON_GROUND, Heightmap.Type.WORLD_SURFACE, AnimalEntity::isValidNaturalSpawn
+        );
+        BiomeModifications.addSpawn(
+                BiomeSelectors.tag(MedievalStuffTags.Biomes.FALLEN_KNIGHT_SPAWNABLE), SpawnGroup.MONSTER, MedievalStuffEntityTypes.FALLEN_KNIGHT, 50,  1, 2
+        );
+        SpawnRestriction.register(
+                MedievalStuffEntityTypes.FALLEN_KNIGHT, SpawnLocationTypes.ON_GROUND, Heightmap.Type.WORLD_SURFACE, FallenKnightEntity::canSpawnInDark
         );
     }
 }

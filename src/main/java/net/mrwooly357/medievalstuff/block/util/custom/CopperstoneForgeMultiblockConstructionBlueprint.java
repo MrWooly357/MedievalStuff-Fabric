@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.block.util;
+package net.mrwooly357.medievalstuff.block.util.custom;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.state.property.Properties;

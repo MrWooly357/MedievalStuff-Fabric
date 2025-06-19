@@ -5,7 +5,8 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.registry.ModRegistries;
+import net.mrwooly357.medievalstuff.registry.MedievalStuffRegistries;
+import net.mrwooly357.wool.config.custom.WoolConfig;
 
 public class HybridWeaponMaterials {
 
@@ -29,14 +30,15 @@ public class HybridWeaponMaterials {
     );
 
 
-    protected static HybridWeaponMaterial registerHybridWeaponMaterial(String name, HybridWeaponMaterial hybridWeaponMaterial) {
-        hybridWeaponMaterial.name(name);
-        hybridWeaponMaterial.translationModId(MedievalStuff.MOD_ID);
+    private static HybridWeaponMaterial registerHybridWeaponMaterial(String name, HybridWeaponMaterial material) {
+        material.name(name);
+        material.translationModId(MedievalStuff.MOD_ID);
 
-        return Registry.register(ModRegistries.HYBRID_WEAPON_MATERIAL, Identifier.of(MedievalStuff.MOD_ID, name), hybridWeaponMaterial);
+        return Registry.register(MedievalStuffRegistries.HYBRID_WEAPON_MATERIAL, Identifier.of(MedievalStuff.MOD_ID, name), material);
     }
 
-    public static void registerHybridWeaponMaterials() {
-        MedievalStuff.LOGGER.info("Registering hybrid weapon materials for " + MedievalStuff.MOD_ID);
+    public static void initialize() {
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " hybrid weapon materials");
     }
 }

@@ -6,8 +6,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
-import net.mrwooly357.medievalstuff.block.util.ModMultiblockConstructionBlueprints;
-import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
+import net.mrwooly357.medievalstuff.block.util.MedievalStuffMultiblockConstructionBlueprints;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityTypes;
 import net.mrwooly357.medievalstuff.item.custom.*;
 import net.mrwooly357.medievalstuff.item.custom.equipment.misc.AshBucketItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FilledBlueprintItem;
@@ -290,7 +290,7 @@ public class MedievalStuffItems {
     public static final Item COPPERSTONE_FORGE_BLUEPRINT = register(
             "copperstone_forge_blueprint", new FilledBlueprintItem(
                     new Item.Settings()
-                            .maxDamage(4), ModMultiblockConstructionBlueprints.COPPERSTONE_FORGE
+                            .maxDamage(4), MedievalStuffMultiblockConstructionBlueprints.COPPERSTONE_FORGE
             )
                     .tooltipKey("medievalstuff.copperstone_forge_blueprint.tooltip")
     );
@@ -299,12 +299,12 @@ public class MedievalStuffItems {
     // Spawn items
     public static final Item JELLY_SPAWN_EGG = register(
             "jelly_spawn_egg", new SpawnEggItem(
-                    ModEntityTypes.JELLY, 0x465ae0, 0x545978, new Item.Settings()
+                    MedievalStuffEntityTypes.JELLY, 0x465ae0, 0x545978, new Item.Settings()
             )
     );
     public static final Item FALLEN_KNIGHT_SPAWN_EGG = register(
             "fallen_knight_spawn_egg", new SpawnEggItem(
-                    ModEntityTypes.FALLEN_KNIGHT, MedievalStuffUtil.rgbToPackedInt(151, 151, 151), MedievalStuffUtil.rgbToPackedInt(27, 121, 193), new Item.Settings()
+                    MedievalStuffEntityTypes.FALLEN_KNIGHT, MedievalStuffUtil.rgbToPackedInt(151, 151, 151), MedievalStuffUtil.rgbToPackedInt(27, 121, 193), new Item.Settings()
             )
     );
 
@@ -314,6 +314,7 @@ public class MedievalStuffItems {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode) MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " items");
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " items");
     }
 }

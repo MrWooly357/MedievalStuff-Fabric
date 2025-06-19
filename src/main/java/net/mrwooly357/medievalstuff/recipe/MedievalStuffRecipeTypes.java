@@ -25,6 +25,7 @@ public class MedievalStuffRecipeTypes {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode) MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " recipe types");
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " recipe types");
     }
 }

@@ -5,7 +5,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ArrayPropertyDelegate;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.screen.ModScreenHandlerTypes;
+import net.mrwooly357.medievalstuff.screen.MedievalStuffScreenHandlerTypes;
 
 public class CopperstoneForgeControllerScreenHandler extends ForgeControllerScreenHandler {
 
@@ -14,7 +14,7 @@ public class CopperstoneForgeControllerScreenHandler extends ForgeControllerScre
     }
 
     public CopperstoneForgeControllerScreenHandler(int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate delegate) {
-        super(ModScreenHandlerTypes.COPPERSTONE_FORGE_CONTROLLER_SCREEN_HANDLER, syncId, playerInventory, entity, delegate, 2);
+        super(MedievalStuffScreenHandlerTypes.COPPERSTONE_FORGE_CONTROLLER_SCREEN_HANDLER, syncId, playerInventory, entity, delegate, 2);
 
         addSlot(new MeltingIngredientSlot(inventory, 0, 44, 43));
         addSlot(new CompoundSlot(inventory, 1, 80, 35));

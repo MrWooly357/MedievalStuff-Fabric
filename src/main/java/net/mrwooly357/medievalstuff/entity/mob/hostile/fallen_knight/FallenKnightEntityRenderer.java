@@ -10,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.medievalstuff.entity.ModEntityModelLayers;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityModelLayers;
 
 public class FallenKnightEntityRenderer<T extends HostileEntity> extends BipedEntityRenderer<T, FallenKnightEntityModel<T>> {
 
@@ -28,7 +28,7 @@ public class FallenKnightEntityRenderer<T extends HostileEntity> extends BipedEn
     );
 
     public FallenKnightEntityRenderer(EntityRendererFactory.Context context) {
-        this(context, ModEntityModelLayers.FALLEN_KNIGHT, ModEntityModelLayers.FALLEN_KNIGHT_OUTER_ARMOR, ModEntityModelLayers.FALLEN_KNIGHT_INNER_ARMOR);
+        this(context, MedievalStuffEntityModelLayers.FALLEN_KNIGHT, MedievalStuffEntityModelLayers.FALLEN_KNIGHT_OUTER_ARMOR, MedievalStuffEntityModelLayers.FALLEN_KNIGHT_INNER_ARMOR);
     }
 
     public FallenKnightEntityRenderer(EntityRendererFactory.Context context, EntityModelLayer entityModelLayer, EntityModelLayer legArmorLayer, EntityModelLayer bodyArmorLayer) {

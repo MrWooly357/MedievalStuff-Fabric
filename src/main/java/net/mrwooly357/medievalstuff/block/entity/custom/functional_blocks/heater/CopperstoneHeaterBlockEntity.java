@@ -9,7 +9,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.mrwooly357.medievalstuff.block.entity.ModBlockEntities;
+import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntities;
 import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +47,7 @@ public class CopperstoneHeaterBlockEntity extends HeaterBlockEntity {
     };
 
     public CopperstoneHeaterBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.COPPERSTONE_HEATER_BE, pos, state, 1.0F, 10, 175, 16, 4);
+        super(MedievalStuffBlockEntities.COPPERSTONE_HEATER, pos, state, 1.0F, 10, 175, 16, 4);
     }
 
 

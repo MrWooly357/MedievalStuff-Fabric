@@ -10,9 +10,10 @@ import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.entity.effect.custom.ReachStatusEffect;
 import net.mrwooly357.medievalstuff.entity.effect.custom.SoulDecayStatusEffect;
 import net.mrwooly357.medievalstuff.entity.effect.custom.SoulProtectionStatusEffect;
+import net.mrwooly357.wool.config.custom.WoolConfig;
 import net.mrwooly357.wool.registry.StatusEffectRegistryHelper;
 
-public class ModStatusEffects {
+public class MedievalStuffStatusEffects {
 
     public static final RegistryEntry<StatusEffect> REACH = register(
             "reach", new ReachStatusEffect(
@@ -40,11 +41,12 @@ public class ModStatusEffects {
     );
 
 
-    private static RegistryEntry<StatusEffect> register(String name, StatusEffect statusEffect) {
-        return StatusEffectRegistryHelper.register(Identifier.of(MedievalStuff.MOD_ID, name), statusEffect);
+    private static RegistryEntry<StatusEffect> register(String name, StatusEffect effect) {
+        return StatusEffectRegistryHelper.register(Identifier.of(MedievalStuff.MOD_ID, name), effect);
     }
 
-    public static void init()  {
-        MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " status effects");
+    public static void initialize()  {
+        if (WoolConfig.developerMode)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " status effects");
     }
 }

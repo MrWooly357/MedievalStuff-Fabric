@@ -8,8 +8,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
-import net.mrwooly357.medievalstuff.entity.ModEntityTypes;
-import net.mrwooly357.medievalstuff.entity.effect.ModStatusEffects;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityTypes;
+import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
 import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponClass;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponFamily;
@@ -92,13 +92,13 @@ public class ModEnUSTranslationProvider extends FabricLanguageProvider {
 
 
         // Entities
-        translationBuilder.add(ModEntityTypes.JELLY, "Jelly");
-        translationBuilder.add(ModEntityTypes.THROWN_COPPER_KHOPESH, "Copper Khopesh");
-        translationBuilder.add(ModEntityTypes.FALLEN_KNIGHT, "Fallen Knight");
+        translationBuilder.add(MedievalStuffEntityTypes.JELLY, "Jelly");
+        translationBuilder.add(MedievalStuffEntityTypes.THROWN_COPPER_KHOPESH, "Copper Khopesh");
+        translationBuilder.add(MedievalStuffEntityTypes.FALLEN_KNIGHT, "Fallen Knight");
 
 
         // Effects
-        translationBuilder.add(ModStatusEffects.REACH.value(), "Reach");
+        translationBuilder.add(MedievalStuffStatusEffects.REACH.value(), "Reach");
 
 
         // GUIs
