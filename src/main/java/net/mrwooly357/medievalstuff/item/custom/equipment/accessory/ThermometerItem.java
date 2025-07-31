@@ -69,7 +69,7 @@ public final class ThermometerItem extends AccessoryItem {
 
                 if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockEntity(((BlockHitResult) hitResult).getBlockPos()) instanceof TemperatureDataHolder temperatureDataHolder) {
                     show = true;
-                    temperatureData = temperatureDataHolder.get();
+                    temperatureData = temperatureDataHolder.getTemperatureData();
                 } else
                     temperatureData = new TemperatureData();
 

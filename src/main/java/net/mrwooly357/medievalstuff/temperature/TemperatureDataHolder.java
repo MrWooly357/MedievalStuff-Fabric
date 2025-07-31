@@ -6,7 +6,5 @@ public interface TemperatureDataHolder {
 
 
     @Nullable
-    TemperatureData get();
-
-    void set(@Nullable TemperatureData data);
+    TemperatureData getTemperatureData();
 }

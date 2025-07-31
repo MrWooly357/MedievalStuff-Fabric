@@ -248,9 +248,17 @@ public abstract class HeaterBlock extends BlockWithEntity {
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (!world.isClient && entity instanceof LivingEntity && state.get(LIT) && world.getBlockEntity(pos) instanceof HeaterBlockEntity blockEntity && blockEntity.get().getTemperature() > 50.0F) {
-            entity.damage(entity.getDamageSources().onFire(), blockEntity.get().getTemperature() * 0.02F);
-            entity.setOnFireForTicks((int) blockEntity.get().getTemperature() / 2);
+        if (!world.isClient && entity instanceof LivingEntity && state.get(LIT) && world.getBlockEntity(pos) instanceof HeaterBlockEntity heaterBlockEntity) {
+            float temperature = heaterBlockEntity.getTemperatureData().getTemperature();
+
+            if (temperature > 100.0F) {
+
+                if (world.getTime() % 40 == 0)
+                    entity.damage(world.getDamageSources().inFire(), temperature * 0.02F);
+
+                if (!entity.isOnFire())
+                    entity.setOnFireForTicks((int) (temperature * 0.75F));
+            }
         }
     }
 

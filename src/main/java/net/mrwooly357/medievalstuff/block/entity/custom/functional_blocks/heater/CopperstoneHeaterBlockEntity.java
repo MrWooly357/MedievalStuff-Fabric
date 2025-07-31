@@ -9,11 +9,12 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
 import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreenHandler;
 import org.jetbrains.annotations.Nullable;
 
-public class CopperstoneHeaterBlockEntity extends HeaterBlockEntity {
+public final class CopperstoneHeaterBlockEntity extends HeaterBlockEntity {
 
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
@@ -47,7 +48,7 @@ public class CopperstoneHeaterBlockEntity extends HeaterBlockEntity {
     };
 
     public CopperstoneHeaterBlockEntity(BlockPos pos, BlockState state) {
-        super(MedievalStuffBlockEntityTypes.COPPERSTONE_HEATER, pos, state, 1.0F, 10, 175, 16, 4);
+        super(MedievalStuffBlockEntityTypes.COPPERSTONE_HEATER, pos, state, 1.0F, 10.0F, 250.0F, 16, 4);
     }
 
 
@@ -58,7 +59,7 @@ public class CopperstoneHeaterBlockEntity extends HeaterBlockEntity {
 
     @Override
     public Text getDisplayName() {
-        return Text.translatable("gui.medievalstuff.copperstone_heater");
+        return Text.translatable("gui." + MedievalStuff.MOD_ID + ".copperstone_heater");
     }
 
     @Override

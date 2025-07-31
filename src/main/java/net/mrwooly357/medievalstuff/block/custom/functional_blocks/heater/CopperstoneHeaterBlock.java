@@ -12,7 +12,7 @@ import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
 import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater.CopperstoneHeaterBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
-public class CopperstoneHeaterBlock extends HeaterBlock {
+public final class CopperstoneHeaterBlock extends HeaterBlock {
 
     public static final MapCodec<CopperstoneHeaterBlock> CODEC = createCodec(CopperstoneHeaterBlock::new);
 
