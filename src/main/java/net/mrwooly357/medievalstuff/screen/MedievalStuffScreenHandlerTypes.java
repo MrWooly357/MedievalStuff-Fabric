@@ -9,7 +9,7 @@ import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.screen.custom.forge_controller.CopperstoneForgeControllerScreenHandler;
 import net.mrwooly357.medievalstuff.screen.custom.heater.CopperstoneHeaterScreenHandler;
 import net.mrwooly357.wool.config.custom.WoolConfig;
-import net.mrwooly357.wool.registry.ScreenHandlerTypeRegistryHelper;
+import net.mrwooly357.wool.registry.helper.ScreenHandlerTypeRegistryHelper;
 
 public class MedievalStuffScreenHandlerTypes {
 
@@ -30,7 +30,7 @@ public class MedievalStuffScreenHandlerTypes {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode)
+        if (true)
             MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " screen handlers");
     }
 }

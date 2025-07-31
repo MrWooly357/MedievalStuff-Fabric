@@ -28,15 +28,6 @@ public class MedievalStuffArmorMaterials {
                         map.put(ArmorItem.Type.BODY, 5);
             }), 16, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.1F, 0.1F, () -> Ingredient.ofItems(MedievalStuffItems.SILVER_INGOT)
     );
-    public static final RegistryEntry<ArmorMaterial> SOULSTEEL = register(
-            "soulsteel", Util.make(new EnumMap<>(ArmorItem.Type.class), map -> {
-                        map.put(ArmorItem.Type.HELMET, 4);
-                        map.put(ArmorItem.Type.CHESTPLATE, 6);
-                        map.put(ArmorItem.Type.LEGGINGS, 5);
-                        map.put(ArmorItem.Type.BOOTS, 3);
-                        map.put(ArmorItem.Type.BODY, 6);
-                    }), 20, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, 0.2F, 0.15F, () -> Ingredient.ofItems(MedievalStuffItems.SOULSTEEL_PLATE)
-    );
 
 
     private static RegistryEntry<ArmorMaterial> register(String name, EnumMap<ArmorItem.Type, Integer> defense, int enchantability, RegistryEntry<SoundEvent> equipSound, float toughness, float knockbackResistance, Supplier<Ingredient> repairIngredient) {
@@ -56,7 +47,7 @@ public class MedievalStuffArmorMaterials {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode)
+        if (true)
             MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " armor materials");
     }
 }

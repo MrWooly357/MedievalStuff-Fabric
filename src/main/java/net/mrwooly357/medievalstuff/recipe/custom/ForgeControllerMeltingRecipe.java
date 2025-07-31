@@ -14,17 +14,17 @@ public abstract class ForgeControllerMeltingRecipe<I extends RecipeInput> implem
     protected final RecipeType<?> type;
     protected final float minTemperature;
     protected final float maxTemperature;
-    protected final boolean invertTemperatures;
+    protected final boolean invertTemperature;
     protected final Ingredient ingredient;
     protected final int meltingTime;
     protected final String result;
     protected final long amount;
 
-    protected ForgeControllerMeltingRecipe(RecipeType<?> type, float minTemperature, float maxTemperature, boolean invertTemperatures, Ingredient ingredient, int meltingTime, String result, long amount) {
+    protected ForgeControllerMeltingRecipe(RecipeType<?> type, float minTemperature, float maxTemperature, boolean invertTemperature, Ingredient ingredient, int meltingTime, String result, long amount) {
         this.type = type;
         this.minTemperature = minTemperature;
         this.maxTemperature = maxTemperature;
-        this.invertTemperatures = invertTemperatures;
+        this.invertTemperature = invertTemperature;
         this.ingredient = ingredient;
         this.meltingTime = meltingTime;
         this.result = result;
@@ -72,8 +72,8 @@ public abstract class ForgeControllerMeltingRecipe<I extends RecipeInput> implem
         return maxTemperature;
     }
 
-    public boolean isInvertTemperatures() {
-        return invertTemperatures;
+    public boolean isInvertTemperature() {
+        return invertTemperature;
     }
 
     public int getMeltingTime() {

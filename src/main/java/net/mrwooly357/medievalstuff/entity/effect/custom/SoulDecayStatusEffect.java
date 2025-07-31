@@ -4,33 +4,32 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleEffect;
-import net.mrwooly357.medievalstuff.entity.damage.ModDamageTypes;
+import net.minecraft.particle.SimpleParticleType;
+import net.mrwooly357.medievalstuff.entity.damage.MedievalStuffDamageTypes;
 import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
+import net.mrwooly357.medievalstuff.particle.MedievalStuffParticleTypes;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
+import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
 
 public class SoulDecayStatusEffect extends StatusEffect {
 
-    public SoulDecayStatusEffect(StatusEffectCategory category, int color) {
-        super(category, color);
-    }
-
-    public SoulDecayStatusEffect(StatusEffectCategory category, int color, ParticleEffect particleEffect) {
-        super(category, color, particleEffect);
+    public SoulDecayStatusEffect() {
+        super(StatusEffectCategory.HARMFUL, MedievalStuffUtil.rgbToPackedInt(127, 189, 193), (SimpleParticleType) MedievalStuffParticleTypes.SOUL_DECAY);
     }
 
 
     @Override
-    public boolean applyUpdateEffect(LivingEntity livingEntity, int amplifier) {
-        if (!livingEntity.hasStatusEffect(MedievalStuffStatusEffects.SOUL_PROTECTION)) {
-            livingEntity.damage(livingEntity.getDamageSources().create(ModDamageTypes.SOUL_DECAY), 1.0F +  (livingEntity.getMaxHealth() - livingEntity.getHealth()) * 0.2F);
+    public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+        if (!entity.hasStatusEffect(MedievalStuffStatusEffects.SOUL_PROTECTION)) {
+            entity.damage(entity.getDamageSources().create(MedievalStuffDamageTypes.SOUL_DECAY),
+                    (1.0F + (entity.getMaxHealth() - entity.getHealth()) * 0.2F) * (entity.getType().isIn(MedievalStuffTags.EntityTypes.SOUL_MOBS) ? 1.5F : 1.0F));
 
-            if (livingEntity instanceof PlayerEntity playerEntity) {
+            if (entity instanceof PlayerEntity playerEntity) {
                 playerEntity.getHungerManager().addExhaustion(0.15F * (float) (amplifier + 1));
             }
         }
 
-        return livingEntity.getType().isIn(MedievalStuffTags.EntityTypes.SOULFUL) && !livingEntity.getType().isIn(MedievalStuffTags.EntityTypes.SOULLESS);
+        return !entity.getType().isIn(MedievalStuffTags.EntityTypes.SOULLESS);
     }
 
     @Override

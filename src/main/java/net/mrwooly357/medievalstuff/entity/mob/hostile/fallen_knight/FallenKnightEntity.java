@@ -1,8 +1,10 @@
 package net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight;
 
+import com.mojang.serialization.Dynamic;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -11,71 +13,55 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.entity.mob.Monster;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
-import net.mrwooly357.medievalstuff.entity.mob.GhostEntity;
-import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
-import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
+import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
+import net.mrwooly357.wool.util.misc.WoolUtil;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.function.Predicate;
+import java.util.*;
 
-public class FallenKnightEntity extends HostileEntity implements GhostEntity {
+public class FallenKnightEntity extends HostileEntity {
 
-    public List<ItemStack> equipment = new ArrayList<>();
+    public AnimationState idleAnimationState = new AnimationState();
+    public AnimationState attackAnimationState = new AnimationState();
+    public AnimationState prepareForChargeAnimationState = new AnimationState();
+
+    public static final TrackedData<Boolean> CAN_ATTACK = DataTracker.registerData(FallenKnightEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Integer> LAST_RECEIVED_DAMAGE_AGE = DataTracker.registerData(FallenKnightEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    public static final TrackedData<Boolean> ATTACKING = DataTracker.registerData(FallenKnightEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    public static final TrackedData<Boolean> PREPARING_FOR_CHARGE = DataTracker.registerData(FallenKnightEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Boolean> CHARGING = DataTracker.registerData(FallenKnightEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    Predicate<Difficulty> CHARGE_REQUIRED_DIFFICULTY = difficulty -> difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD;
-    Predicate<Difficulty> TURN_INVISIBLE_REQUIRED_DIFFICULTY_CHECKER = difficulty -> difficulty == Difficulty.HARD;
-    Random random = Random.create();
-    boolean isCharging;
-    int chargeCooldownTimer;
-    int chargeTimer;
-    boolean charged;
 
-    public FallenKnightEntity(EntityType<? extends HostileEntity> entityType, World world) {
-        super(entityType, world);
+    public FallenKnightEntity(EntityType<? extends HostileEntity> type, World world) {
+        super(type, world);
+
+        experiencePoints = Monster.STRONGER_MONSTER_XP;
     }
 
 
     public static DefaultAttributeContainer createAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48)
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 50)
                 .add(EntityAttributes.GENERIC_ARMOR, 4)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3)
-                .add(EntityAttributes.GENERIC_ATTACK_SPEED, 0.5)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48)
                 .build();
-    }
-
-    @Override
-    protected void initGoals() {
-        super.initGoals();
-
-        targetSelector.add(0, new AvoidSunlightGoal(this));
-        goalSelector.add(1, new ChargeAtTargetGoal(this));
-        targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, false));
-        goalSelector.add(2, new MeleeAttackGoal(this, 1.25F, true));
-        goalSelector.add(3, new WanderAroundGoal(this, 1.0F));
-        goalSelector.add(4, new WanderAroundFarGoal(this, 1.0F));
-        goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 16.0F));
-        goalSelector.add(5, new LookAroundGoal(this));
     }
 
     @Override
@@ -89,72 +75,195 @@ public class FallenKnightEntity extends HostileEntity implements GhostEntity {
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
 
+        builder.add(CAN_ATTACK, true);
+        builder.add(LAST_RECEIVED_DAMAGE_AGE, 0);
+        builder.add(ATTACKING, false);
+        builder.add(PREPARING_FOR_CHARGE, false);
         builder.add(CHARGING, false);
     }
 
     @Override
+    public void onTrackedDataSet(TrackedData<?> data) {
+        super.onTrackedDataSet(data);
+
+        if (getWorld().isClient() && (ATTACKING.equals(data) || PREPARING_FOR_CHARGE.equals(data) || CHARGING.equals(data))) {
+            boolean attacking = dataTracker.get(ATTACKING);
+            boolean preparingForCharge = dataTracker.get(PREPARING_FOR_CHARGE);
+
+            if (!attacking && !preparingForCharge && !dataTracker.get(CHARGING) && idleAnimationState != null) {
+                idleAnimationState.startIfNotRunning(age);
+            } else
+                stopAnimation(idleAnimationState);
+
+            if (attacking) {
+                attackAnimationState.startIfNotRunning(age);
+            } else
+                stopAnimation(attackAnimationState);
+
+            if (preparingForCharge) {
+                prepareForChargeAnimationState.startIfNotRunning(age);
+            } else
+                stopAnimation(prepareForChargeAnimationState);
+        }
+    }
+
+    private void stopAnimation(AnimationState animationState) {
+        if (idleAnimationState != null && animationState == idleAnimationState)
+            idleAnimationState.stop();
+
+        if (attackAnimationState != null && animationState == attackAnimationState)
+            attackAnimationState.stop();
+
+        if (prepareForChargeAnimationState != null && animationState == prepareForChargeAnimationState)
+            prepareForChargeAnimationState.stop();
+    }
+
+    @Override
     protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
+        List<ItemStack> equipment = new ArrayList<>();
         int armorRandomizer = MathHelper.nextInt(random, 0, 3);
-        //ItemStack sword = new ItemStack(MedievalStuffItems.SOULSTEEL_SWORD);
-        ItemStack helmet = new ItemStack(MedievalStuffItems.SOULSTEEL_HELMET);
-        ItemStack chestplate = new ItemStack(MedievalStuffItems.SOULSTEEL_CHESTPLATE);
-        ItemStack leggings = new ItemStack(MedievalStuffItems.SOULSTEEL_LEGGINGS);
-        ItemStack boots = new ItemStack(MedievalStuffItems.SOULSTEEL_BOOTS);
+        ItemStack swordStack = new ItemStack(Items.IRON_SWORD);
+        ItemStack helmetStack = new ItemStack(Items.IRON_HELMET);
+        ItemStack chestplateStack = new ItemStack(Items.IRON_CHESTPLATE);
+        ItemStack leggingsStack = new ItemStack(Items.IRON_LEGGINGS);
+        ItemStack bootsStack = new ItemStack(Items.IRON_BOOTS);
+        int swordStackMaxDamage = swordStack.getMaxDamage();
+        int helmetStackMaxDamage = helmetStack.getMaxDamage();
+        int chestplateStackMaxDamage = chestplateStack.getMaxDamage();
+        int leggingsStackMaxDamage = leggingsStack.getMaxDamage();
+        int bootsStackMaxDamage = bootsStack.getMaxDamage();
 
-        //sword.setDamage(MathHelper.nextInt(random, 0, (int) (sword.getMaxDamage() * 0.75)));
-        helmet.setDamage(MathHelper.nextInt(random, 0, (int) (helmet.getMaxDamage() * 0.75)));
-        chestplate.setDamage(MathHelper.nextInt(random, 0, (int) (chestplate.getMaxDamage() * 0.75)));
-        leggings.setDamage(MathHelper.nextInt(random, 0, (int) (leggings.getMaxDamage() * 0.75)));
-        boots.setDamage(MathHelper.nextInt(random, 0, (int) (boots.getMaxDamage() * 0.75)));
-
-        //equipment.add(sword);
-        equipment.add(helmet);
-        equipment.add(chestplate);
-        equipment.add(leggings);
-        equipment.add(boots);
+        swordStack.setDamage(MathHelper.nextInt(random, swordStackMaxDamage / 2, (int) (swordStackMaxDamage * 0.75F)));
+        helmetStack.setDamage(MathHelper.nextInt(random, helmetStackMaxDamage / 2, (int) (helmetStackMaxDamage * 0.75F)));
+        chestplateStack.setDamage(MathHelper.nextInt(random, chestplateStackMaxDamage / 2, (int) (chestplateStackMaxDamage * 0.75F)));
+        leggingsStack.setDamage(MathHelper.nextInt(random, leggingsStackMaxDamage / 2, (int) (leggingsStackMaxDamage * 0.75F)));
+        bootsStack.setDamage(MathHelper.nextInt(random, bootsStackMaxDamage / 2, (int) (bootsStackMaxDamage * 0.75F)));
+        equipment.add(swordStack);
+        equipment.add(helmetStack);
+        equipment.add(chestplateStack);
+        equipment.add(leggingsStack);
+        equipment.add(bootsStack);
 
         if (armorRandomizer == 0) {
-            equipment.remove(helmet);
-
+            equipment.remove(helmetStack);
         } else if (armorRandomizer == 1) {
-            equipment.remove(chestplate);
-
+            equipment.remove(chestplateStack);
         } else if (armorRandomizer == 2) {
-            equipment.remove(leggings);
+            equipment.remove(leggingsStack);
+        } else if (armorRandomizer == 3)
+            equipment.remove(bootsStack);
 
-        } else if (armorRandomizer == 3) {
-            equipment.remove(boots);
+        for (ItemStack stack : equipment) {
+            if (stack.isIn(ItemTags.SWORDS)) {
+                equipStack(EquipmentSlot.MAINHAND, stack);
+            } else if (stack.isIn(ItemTags.HEAD_ARMOR)) {
+                equipStack(EquipmentSlot.HEAD, stack);
+            } else if (stack.isIn(ItemTags.CHEST_ARMOR)) {
+                equipStack(EquipmentSlot.CHEST, stack);
+            } else if (stack.isIn(ItemTags.LEG_ARMOR)) {
+                equipStack(EquipmentSlot.LEGS, stack);
+            } else if (stack.isIn(ItemTags.FOOT_ARMOR))
+                equipStack(EquipmentSlot.FEET, stack);
         }
+    }
 
-        for (ItemStack element : equipment) {
-            if (element.isIn(ItemTags.SWORDS)) {
-                equipStack(EquipmentSlot.MAINHAND, element);
+    @SuppressWarnings("unchecked")
+    @Override
+    public Brain<FallenKnightEntity> getBrain() {
+        return (Brain<FallenKnightEntity>) super.getBrain();
+    }
 
-            } else if (element.isIn(ItemTags.HEAD_ARMOR)) {
-                equipStack(EquipmentSlot.HEAD, element);
+    @Override
+    protected Brain.Profile<FallenKnightEntity> createBrainProfile() {
+        return Brain.createProfile(FallenKnightBrain.MEMORY_MODULES, FallenKnightBrain.SENSORS);
+    }
 
-            } else if (element.isIn(ItemTags.CHEST_ARMOR)) {
-                equipStack(EquipmentSlot.CHEST, element);
+    @Override
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        return FallenKnightBrain.create(this, createBrainProfile().deserialize(dynamic));
+    }
 
-            } else if (element.isIn(ItemTags.LEG_ARMOR)) {
-                equipStack(EquipmentSlot.LEGS, element);
+    @Override
+    public void tick() {
+        if (!dataTracker.get(CAN_ATTACK) && age > dataTracker.get(LAST_RECEIVED_DAMAGE_AGE) + 40)
+            dataTracker.set(CAN_ATTACK, true);
 
-            } else if (element.isIn(ItemTags.FOOT_ARMOR)) {
-                equipStack(EquipmentSlot.FEET, element);
+        super.tick();
+    }
+
+    @Override
+    protected void mobTick() {
+        World world = getWorld();
+        Profiler profiler = world.getProfiler();
+
+        profiler.push("fallenKnight");
+        getBrain().tick((ServerWorld) world, this);
+        profiler.swap("fallenKnightActivityUpdate");
+        FallenKnightBrain.updateActivities(this);
+        profiler.pop();
+
+        super.mobTick();
+    }
+
+    @Override
+    public void onDamaged(DamageSource damageSource) {
+        super.onDamaged(damageSource);
+
+        damageArmor(damageSource, MathHelper.nextInt(random, 1, 2));
+
+        dataTracker.set(CAN_ATTACK, false);
+        dataTracker.set(LAST_RECEIVED_DAMAGE_AGE, age);
+    }
+
+    @Override
+    public void damageArmor(DamageSource source, float amount) {
+        LivingEntity lastAttacker = getLastAttacker();
+
+        if (lastAttacker != null) {
+            int slot = MathHelper.nextInt(random, 0, 3);
+            ItemStack helmetStack = getEquippedStack(EquipmentSlot.HEAD);
+            ItemStack chestplateStack = getEquippedStack(EquipmentSlot.CHEST);
+            ItemStack leggingsStack = getEquippedStack(EquipmentSlot.LEGS);
+            ItemStack bootsStack = getEquippedStack(EquipmentSlot.FEET);
+
+            while (true) {
+                boolean helmetStackEmpty = helmetStack.isEmpty();
+                boolean chestplateStackEmpty = chestplateStack.isEmpty();
+                boolean leggingsStackEmpty = leggingsStack.isEmpty();
+                boolean bootsStackEmpty = bootsStack.isEmpty();
+
+                if (slot == 0 && !helmetStackEmpty) {
+                    helmetStack.damage((int) amount, lastAttacker, EquipmentSlot.HEAD);
+
+                    return;
+                } else if (slot == 1 && !chestplateStackEmpty) {
+                    chestplateStack.damage((int) amount, lastAttacker, EquipmentSlot.CHEST);
+
+                    return;
+                } else if (slot == 2 && !leggingsStackEmpty) {
+                    leggingsStack.damage((int) amount, lastAttacker, EquipmentSlot.LEGS);
+
+                    return;
+                } else if (slot == 3 && !bootsStackEmpty) {
+                    bootsStack.damage((int) amount, lastAttacker, EquipmentSlot.FEET);
+
+                    return;
+                } else if (helmetStackEmpty && chestplateStackEmpty && leggingsStackEmpty && bootsStackEmpty)
+                    return;
+
+                slot = MathHelper.nextInt(random, 0, 3);
             }
         }
     }
 
     @Override
-    public void tick() {
-        tryBurn();
-        additionalBurnBehavior(this, 3.0F);
+    public boolean tryAttack(Entity target) {
+        boolean successful = super.tryAttack(target);
 
-        if (!isCharging && chargeCooldownTimer > 0) {
-            chargeCooldownTimer--;
-        }
+        if (successful)
+            damageEquipment(getDamageSources().mobAttack(this), MathHelper.nextInt(random, 1, 3));
 
-        super.tick();
+        return successful;
     }
 
     protected boolean shouldPlayAdditionalSound() {
@@ -163,36 +272,29 @@ public class FallenKnightEntity extends HostileEntity implements GhostEntity {
 
     @Override
     protected float getSoundVolume() {
-        return MathHelper.nextFloat(random, 0.8F, 1.0F);
+        return MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
     }
 
     @Override
     public float getSoundPitch() {
-        return MathHelper.nextFloat(random, 0.8F, 1.0F);
+        return MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
     }
 
     protected float getAdditionalSoundVolume() {
         float min = 0.9F + calculateArmorSoundInfluence() / 2;
-        float max = min + 0.2F;
 
-        return MathHelper.nextFloat(random, min, max);
+        return MathHelper.nextFloat(Random.create(), min, min + 0.2F);
     }
 
     protected float getAdditionalSoundPitch() {
         float min = 0.9F - calculateArmorSoundInfluence() / 2;
 
-        float max = min + 0.2F;
-
-        return MathHelper.nextFloat(random, min, max);
+        return MathHelper.nextFloat(random, min, min + 0.2F);
     }
 
     private float calculateArmorSoundInfluence() {
-        float helmet = getEquippedStack(EquipmentSlot.HEAD).isEmpty() ? 0.0F : 0.2F;
-        float chestplate = getEquippedStack(EquipmentSlot.CHEST).isEmpty() ? 0.0F : 0.3F;
-        float leggings = getEquippedStack(EquipmentSlot.LEGS).isEmpty() ? 0.0F : 0.2F;
-        float boots = getEquippedStack(EquipmentSlot.FEET).isEmpty() ? 0.0F : 0.1F;
-
-        return helmet + chestplate + leggings + boots;
+        return (getEquippedStack(EquipmentSlot.HEAD).isEmpty() ? 0.0F : 0.2F) + (getEquippedStack(EquipmentSlot.CHEST).isEmpty() ? 0.0F : 0.3F) + (getEquippedStack(EquipmentSlot.LEGS).isEmpty() ? 0.0F : 0.2F)
+                + (getEquippedStack(EquipmentSlot.FEET).isEmpty() ? 0.0F : 0.1F);
     }
 
     @Override
@@ -258,232 +360,49 @@ public class FallenKnightEntity extends HostileEntity implements GhostEntity {
     }
 
     @Override
-    public boolean isShaking() {
-        return isShaking(this);
-    }
-
-    @Override
-    public boolean isAffectedBySun(Entity entity) {
-        return GhostEntity.super.isAffectedBySun(entity) && entity instanceof LivingEntity livingEntity && !livingEntity.hasStatusEffect(StatusEffects.INVISIBILITY);
-    }
-
-    @Override
-    public int defaultSunburnTime() {
-        return 50;
-    }
-
-    private void tryBurn() {
-        if (isAlive()) {
-
-            if (isAffectedBySun(this)) {
-                ItemStack itemStack = getEquippedStack(EquipmentSlot.HEAD);
-
-                if (!itemStack.isEmpty()) {
-
-                    if (itemStack.isDamageable()) {
-                        Item item = itemStack.getItem();
-                        int damage = MathHelper.nextInt(Random.create(), 1, 2);
-
-                        if (age % 20 == 0) {
-                            itemStack.damage(damage, this, EquipmentSlot.HEAD);
-
-                            if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-                                sendEquipmentBreakStatus(item, EquipmentSlot.HEAD);
-                                equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
-                            }
-                        }
-                    }
-                } else if (!isOnFire() || getFireTicks() == 1) {
-                    setOnFireForTicks((int) (defaultSunburnTime() / sunlightProtection()));
-                }
-            }
-        }
-    }
-
-    @Override
     public boolean isFireImmune() {
         return hasStatusEffect(StatusEffects.FIRE_RESISTANCE) && !hasStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY);
     }
 
-    @Override
-    public boolean collidesWith(Entity other) {
-        if (isCharging) {
-            return other == getTarget();
-        }
-
-        return super.collidesWith(other);
+    public Optional<LivingEntity> getHurtBy() {
+        return brain
+                .getOptionalRegisteredMemory(MemoryModuleType.HURT_BY)
+                .map(DamageSource::getAttacker)
+                .filter(attacker -> attacker instanceof LivingEntity)
+                .map(livingAttacker -> (LivingEntity) livingAttacker);
     }
 
     @Override
-    public boolean isCollidable() {
-        return !isCharging;
+    public boolean canTarget(EntityType<?> type) {
+        return !type.isIn(MedievalStuffTags.EntityTypes.SOUL_MOBS);
     }
 
     @Override
-    public boolean isPushable() {
-        return !isCharging;
+    public @Nullable LivingEntity getTarget() {
+        return getTargetInBrain();
     }
 
-    public void setChargeCooldownTimer(int chargeCooldownTimer) {
-        this.chargeCooldownTimer = chargeCooldownTimer;
+    public boolean canChargeTowards(LivingEntity target) {
+        Difficulty difficulty = getWorld().getDifficulty();
+        double distance = WoolUtil.getDistanceBetween(target.getX(), target.getY(), target.getZ(), getX(), getY(), getZ());
+
+        return difficulty != Difficulty.PEACEFUL && difficulty != Difficulty.EASY && distance >= getMinChargeDistance(difficulty) && distance <= getMaxChargeDistance(difficulty)
+                && !hasStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY);
     }
 
-    public void setCharging(boolean isCharging) {
-        this.isCharging = isCharging;
-    }
-
-    public void setCharged(boolean charged) {
-        this.charged = charged;
-    }
-
-    public int getChargeTimerRequirement() {
-        return switch (getWorld().getDifficulty()) {
-            case PEACEFUL, EASY -> 0;
-            case NORMAL -> 70;
-            case HARD -> 50;
-        };
-    }
-
-    public float getChargeDamage() {
-        return switch (getWorld().getDifficulty()) {
-            case PEACEFUL, EASY -> 0.0F;
-            case NORMAL -> 7.0F;
-            case HARD -> 10.0F;
-        };
-    }
-
-    public boolean canCharge() {
-        LivingEntity target = getTarget();
-
-        return chargeCooldownTimer == 0 && target != null && target.isAlive() && MedievalStuffUtil.getDistanceBetween(target.getX(), target.getY(), target.getZ(), getX(), getY(), getZ()) > getChargeTriggerDistance() && !isShaking() && isDifficultySufficientForCharge(getWorld().getDifficulty()) && !isCharging;
-    }
-
-    public boolean isCharging() {
-        return getDataTracker().get(CHARGING);
-    }
-
-    public boolean isDifficultySufficientForCharge(Difficulty difficulty) {
-        return CHARGE_REQUIRED_DIFFICULTY.test(difficulty);
-    }
-
-    public double getChargeTriggerDistance() {
-        return switch (getWorld().getDifficulty()) {
+    public static double getMinChargeDistance(Difficulty difficulty) {
+        return switch (difficulty) {
             case PEACEFUL, EASY -> 0.0;
             case NORMAL -> 10.0;
             case HARD -> 7.5;
         };
     }
 
-    public int getChargeCooldownTimer() {
-        return switch (getWorld().getDifficulty()) {
-            case PEACEFUL, EASY -> 0;
-            case NORMAL -> 150;
-            case HARD -> 100;
+    public static double getMaxChargeDistance(Difficulty difficulty) {
+        return switch (difficulty) {
+            case PEACEFUL, EASY -> 0.0;
+            case NORMAL -> 15.0;
+            case HARD -> 20.5;
         };
-    }
-
-    @Override
-    public void jump() {
-        if (!isCharging) {
-            super.jump();
-        }
-    }
-
-
-    class ChargeAtTargetGoal extends Goal {
-
-        LivingEntity attacker;
-
-        public ChargeAtTargetGoal(LivingEntity attacker) {
-            this.attacker = attacker;
-
-            setControls(EnumSet.of(Control.MOVE));
-        }
-
-
-        @Override
-        public boolean canStart() {
-            return canCharge();
-        }
-
-        @Override
-        public void start() {
-            chargeTimer++;
-
-            stopMovement();
-            setCharged(false);
-            setCharging(true);
-        }
-
-        @Override
-        public boolean shouldContinue() {
-            return isCharging && getTarget() != null && getTarget().isAlive();
-        }
-
-        @Override
-        public boolean canStop() {
-            return charged;
-        }
-
-        @Override
-        public void stop() {
-            velocityDirty = false;
-            velocityModified = false;
-            noClip = false;
-
-            dataTracker.set(CHARGING, false);
-            setCharging(false);
-            setChargeCooldownTimer(getChargeCooldownTimer());
-            setNoGravity(false);
-        }
-
-        @Override
-        public boolean shouldRunEveryTick() {
-            return true;
-        }
-
-        @Override
-        public void tick() {
-            if (chargeTimer > getChargeTimerRequirement()) {
-                LivingEntity target = getTarget();
-
-                if (target != null && target.isAlive()) {
-                   Vec3d targetPos = target.getPos();
-                   Vec3d currentPos = getPos();
-                   Vec3d direction = new Vec3d(targetPos.getX() - currentPos.getX(), targetPos.getY() - currentPos.getY(), targetPos.getZ() - currentPos.getZ());
-                   double dx = targetPos.getX() - getX();
-                   double dy = targetPos.getY() - (currentPos.getY() + getEyeHeight(getPose()));
-                   double dz = targetPos.getZ() - getZ();
-                   float yaw = (float) Math.atan2(dz, dx) - 90.0F;
-                   float pitch = (float) Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
-
-                   setYaw(yaw);
-                   setPitch(pitch);
-                   bodyYaw = yaw;
-                   headYaw = yaw;
-
-                   Vec3d movement = direction.normalize().multiply(1.5);
-
-                   setVelocity(movement);
-
-                   velocityDirty = true;
-                   velocityModified = true;
-                   noClip = true;
-
-                   dataTracker.set(CHARGING, true);
-                   setNoGravity(true);
-                   setCharged(true);
-
-                   if (getBoundingBox().intersects(target.getBoundingBox())) {
-                       target.damage(getDamageSources().mobAttack(attacker), getChargeDamage());
-                       stop();
-                   }
-                }
-            } else {
-                stopMovement();
-            }
-
-            chargeTimer++;
-        }
     }
 }

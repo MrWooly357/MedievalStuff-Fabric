@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.recipe.custom.CopperstoneForgeControllerMeltingRecipe;
 import net.mrwooly357.wool.config.custom.WoolConfig;
-import net.mrwooly357.wool.registry.RecipeSerializerRegistryHelper;
+import net.mrwooly357.wool.registry.helper.RecipeSerializerRegistryHelper;
 
 public class MedievalStuffRecipeSerializers {
 
@@ -20,7 +20,7 @@ public class MedievalStuffRecipeSerializers {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode)
+        if (true)
             MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " recipe serializers");
     }
 }

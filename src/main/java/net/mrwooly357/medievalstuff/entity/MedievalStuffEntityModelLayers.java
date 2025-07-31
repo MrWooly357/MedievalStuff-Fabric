@@ -1,10 +1,12 @@
 package net.mrwooly357.medievalstuff.entity;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 
-
+@Environment(EnvType.CLIENT)
 public class MedievalStuffEntityModelLayers {
 
     public static final EntityModelLayer JELLY_NORMAL = create(

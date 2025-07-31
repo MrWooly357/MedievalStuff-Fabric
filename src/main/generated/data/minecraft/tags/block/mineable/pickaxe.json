@@ -1,12 +1,13 @@
 {
   "values": [
-    "medievalstuff:copperstone_bricks",
     "medievalstuff:raw_silver_block",
     "medievalstuff:silver_block",
     "medievalstuff:silver_ore",
+    "medievalstuff:copperstone_bricks",
     "medievalstuff:deepslate_silver_ore",
     "medievalstuff:copperstone_heater",
     "medievalstuff:copper_tank",
-    "medievalstuff:copperstone_forge_controller"
+    "medievalstuff:copperstone_forge_controller",
+    "medievalstuff:redstone_spawner"
   ]
 }

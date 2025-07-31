@@ -6,11 +6,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
-import net.mrwooly357.medievalstuff.block.util.MedievalStuffMultiblockConstructionBlueprints;
+import net.mrwooly357.medievalstuff.block.util.multiblock_construction_blueprint.MedievalStuffMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityTypes;
 import net.mrwooly357.medievalstuff.item.custom.*;
+import net.mrwooly357.medievalstuff.item.custom.equipment.accessory.ThermometerItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.misc.AshBucketItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FilledBlueprintItem;
+import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FlaskForSoulsItem;
 import net.mrwooly357.medievalstuff.item.custom.food_and_drinks.JarOfJellyItem;
 import net.mrwooly357.medievalstuff.item.custom.AdvancedSweepMeleeWeaponItem;
 import net.mrwooly357.medievalstuff.item.custom.food_and_drinks.PieceOfJellyItem;
@@ -23,7 +25,7 @@ import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.Tw
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.advanced_bows.short_bows.ShortBowItem;
 import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
 import net.mrwooly357.wool.config.custom.WoolConfig;
-import net.mrwooly357.wool.registry.ItemRegistryHelper;
+import net.mrwooly357.wool.registry.helper.ItemRegistryHelper;
 
 public class MedievalStuffItems {
 
@@ -43,9 +45,10 @@ public class MedievalStuffItems {
                     new Item.Settings()
             )
     );
-    public static final Item SOULSTEEL_PLATE = register(
-            "soulsteel_plate", new Item(
+    public static final Item SOULSTEEL_INGOT = register(
+            "soulsteel_ingot", new Item(
                     new Item.Settings()
+                            .rarity(Rarity.RARE)
             )
     );
     public static final Item JAR = register(
@@ -54,44 +57,17 @@ public class MedievalStuffItems {
                             .maxCount(16)
             )
     );
-    public static final Item ASH_BUCKET_1 = register(
-            "ash_bucket_1", new AshBucketItem(
-                    MedievalStuffBlocks.ASH,1, new Item.Settings()
+    public static final Item SPAWNER_SHARDS = register(
+            "spawner_shards", new Item(
+                    new Item.Settings()
+                            .rarity(Rarity.UNCOMMON)
             )
     );
-    public static final Item ASH_BUCKET_2 = register(
-            "ash_bucket_2", new AshBucketItem(
-                    MedievalStuffBlocks.ASH,2, new Item.Settings()
-            )
-    );
-    public static final Item ASH_BUCKET_3 = register(
-            "ash_bucket_3", new AshBucketItem(
-                    MedievalStuffBlocks.ASH,3, new Item.Settings()
-            )
-    );
-    public static final Item ASH_BUCKET_4 = register(
-            "ash_bucket_4", new AshBucketItem(
-                    MedievalStuffBlocks.ASH,4, new Item.Settings()
-            )
-    );
-    public static final Item ASH_BUCKET_5 = register(
-            "ash_bucket_5", new AshBucketItem(
-                    MedievalStuffBlocks.ASH,5, new Item.Settings()
-            )
-    );
-    public static final Item ASH_BUCKET_6 = register(
-            "ash_bucket_6", new AshBucketItem(
-                    MedievalStuffBlocks.ASH,6, new Item.Settings()
-            )
-    );
-    public static final Item ASH_BUCKET_7 = register(
-            "ash_bucket_7", new AshBucketItem(
-                    MedievalStuffBlocks.ASH,7, new Item.Settings()
-            )
-    );
-    public static final Item ASH_BUCKET_8 = register(
-            "ash_bucket_8", new AshBucketItem(
-                    MedievalStuffBlocks.ASH, 8, new Item.Settings()
+    public static final Item REDSTONE_SPAWNER_CORE = register(
+            "redstone_spawner_core", new Item(
+                    new Item.Settings()
+                            .maxCount(1)
+                            .rarity(Rarity.RARE)
             )
     );
 
@@ -262,30 +238,6 @@ public class MedievalStuffItems {
                     )
             )
     );
-    public static final Item SOULSTEEL_HELMET = register(
-            "soulsteel_helmet", new ArmorItem(
-                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.HELMET, new Item.Settings()
-                    .maxDamage(ArmorItem.Type.HELMET.getMaxDamage(16))
-            )
-    );
-    public static final Item SOULSTEEL_CHESTPLATE = register(
-            "soulsteel_chestplate", new ArmorItem(
-                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.CHESTPLATE, new Item.Settings()
-                    .maxDamage(ArmorItem.Type.CHESTPLATE.getMaxDamage(16))
-            )
-    );
-    public static final Item SOULSTEEL_LEGGINGS = register(
-            "soulsteel_leggings", new ArmorItem(
-                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.LEGGINGS, new Item.Settings()
-                    .maxDamage(ArmorItem.Type.LEGGINGS.getMaxDamage(16))
-            )
-    );
-    public static final Item SOULSTEEL_BOOTS = register(
-            "soulsteel_boots", new ArmorItem(
-                    MedievalStuffArmorMaterials.SOULSTEEL, ArmorItem.Type.BOOTS, new Item.Settings()
-                    .maxDamage(ArmorItem.Type.BOOTS.getMaxDamage(16))
-            )
-    );
 
     public static final Item COPPERSTONE_FORGE_BLUEPRINT = register(
             "copperstone_forge_blueprint", new FilledBlueprintItem(
@@ -294,6 +246,57 @@ public class MedievalStuffItems {
             )
                     .tooltipKey("medievalstuff.copperstone_forge_blueprint.tooltip")
     );
+    public static final Item ASH_BUCKET_1 = register(
+            "ash_bucket_1", new AshBucketItem(
+                    MedievalStuffBlocks.ASH,1, new Item.Settings()
+            )
+    );
+    public static final Item ASH_BUCKET_2 = register(
+            "ash_bucket_2", new AshBucketItem(
+                    MedievalStuffBlocks.ASH,2, new Item.Settings()
+            )
+    );
+    public static final Item ASH_BUCKET_3 = register(
+            "ash_bucket_3", new AshBucketItem(
+                    MedievalStuffBlocks.ASH,3, new Item.Settings()
+            )
+    );
+    public static final Item ASH_BUCKET_4 = register(
+            "ash_bucket_4", new AshBucketItem(
+                    MedievalStuffBlocks.ASH,4, new Item.Settings()
+            )
+    );
+    public static final Item ASH_BUCKET_5 = register(
+            "ash_bucket_5", new AshBucketItem(
+                    MedievalStuffBlocks.ASH,5, new Item.Settings()
+            )
+    );
+    public static final Item ASH_BUCKET_6 = register(
+            "ash_bucket_6", new AshBucketItem(
+                    MedievalStuffBlocks.ASH,6, new Item.Settings()
+            )
+    );
+    public static final Item ASH_BUCKET_7 = register(
+            "ash_bucket_7", new AshBucketItem(
+                    MedievalStuffBlocks.ASH,7, new Item.Settings()
+            )
+    );
+    public static final Item ASH_BUCKET_8 = register(
+            "ash_bucket_8", new AshBucketItem(
+                    MedievalStuffBlocks.ASH, 8, new Item.Settings()
+            )
+    );
+    public static final Item FLASK_FOR_SOULS = register(
+            "flask_for_souls", new FlaskForSoulsItem(
+                    new Item.Settings()
+                            .maxCount(1)
+                            .rarity(Rarity.UNCOMMON)
+            )
+    );
+    public static final Item THERMOMETER = register("thermometer", new ThermometerItem(
+            new Item.Settings()
+                    .maxCount(1)
+    ));
 
 
     // Spawn items
@@ -314,7 +317,7 @@ public class MedievalStuffItems {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode)
+        if (true)
             MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " items");
     }
 }

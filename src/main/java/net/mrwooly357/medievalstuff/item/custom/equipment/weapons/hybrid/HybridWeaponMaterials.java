@@ -38,7 +38,7 @@ public class HybridWeaponMaterials {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode)
+        if (true)
             MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " hybrid weapon materials");
     }
 }

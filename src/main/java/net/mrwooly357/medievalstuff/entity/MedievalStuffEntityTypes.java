@@ -9,7 +9,7 @@ import net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight.FallenKnigh
 import net.mrwooly357.medievalstuff.entity.mob.passive.jelly.JellyEntity;
 import net.mrwooly357.medievalstuff.entity.projectile.khopesh.ThrownCopperKhopeshEntity;
 import net.mrwooly357.wool.config.custom.WoolConfig;
-import net.mrwooly357.wool.registry.EntityTypeRegistryHelper;
+import net.mrwooly357.wool.registry.helper.EntityTypeRegistryHelper;
 
 public class MedievalStuffEntityTypes {
 
@@ -35,7 +35,7 @@ public class MedievalStuffEntityTypes {
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode)
+        if (true)
             MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " entity types");
     }
 }

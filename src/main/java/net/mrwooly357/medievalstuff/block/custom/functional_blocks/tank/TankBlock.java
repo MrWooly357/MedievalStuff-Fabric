@@ -32,7 +32,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntities;
+import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
 import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.tank.TankBlockEntity;
 import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
@@ -267,7 +267,7 @@ public abstract class TankBlock extends BlockWithEntity {
                 if (neighborPos.getY() + 1 == pos.getY()) {
 
                     if (neighborState.getBlock() instanceof TankBlock && !state.get(BOTTOM_BLOCKED) && !neighborState.get(TOP_BLOCKED)) {
-                        world.setBlockState(neighborPos, neighborState.with(TOP_CONNECTED, true), Block.NOTIFY_ALL);
+                        world.setBlockState(neighborPos, neighborState.with(TOP_CONNECTED, true), net.minecraft.block.Block.NOTIFY_ALL);
 
                         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos).with(BOTTOM_CONNECTED, true).with(BOTTOM_BLOCKED, false);
 
@@ -281,7 +281,7 @@ public abstract class TankBlock extends BlockWithEntity {
                 } else if (neighborPos.getY() - 1 == pos.getY()) {
 
                     if (neighborState.getBlock() instanceof TankBlock && !state.get(TOP_BLOCKED) && !neighborState.get(BOTTOM_BLOCKED)) {
-                        world.setBlockState(neighborPos, neighborState.with(BOTTOM_CONNECTED, true), Block.NOTIFY_ALL);
+                        world.setBlockState(neighborPos, neighborState.with(BOTTOM_CONNECTED, true), net.minecraft.block.Block.NOTIFY_ALL);
 
                         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos).with(TOP_CONNECTED, true).with(TOP_BLOCKED, false);
 
@@ -379,7 +379,7 @@ public abstract class TankBlock extends BlockWithEntity {
                         world.breakBlock(pos, true);
                     }
 
-                    return world.setBlockState(pos, fluid.getDefaultState().getBlockState(), Block.NOTIFY_ALL_AND_REDRAW) || blockState.getFluidState().isStill();
+                    return world.setBlockState(pos, fluid.getDefaultState().getBlockState(), net.minecraft.block.Block.NOTIFY_ALL_AND_REDRAW) || blockState.getFluidState().isStill();
                 }
             }
 
@@ -401,7 +401,7 @@ public abstract class TankBlock extends BlockWithEntity {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, MedievalStuffBlockEntities.COPPER_TANK, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
+        return validateTicker(type, MedievalStuffBlockEntityTypes.COPPER_TANK, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 
     public static boolean tryInsert(World world, BlockPos pos, Fluid fluid, long amount, @Nullable SoundEvent sound) {

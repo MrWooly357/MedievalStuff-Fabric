@@ -17,7 +17,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.entity.damage.ModDamageTypes;
+import net.mrwooly357.medievalstuff.entity.damage.MedievalStuffDamageTypes;
 
 
 import java.util.List;
@@ -98,7 +98,7 @@ public class WeightlessDaggerTier2Item extends AdvancedSweepMeleeWeaponItem {
         if(!world.isClient) {
             user.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 150, 0, true , true));
             user.getStackInHand(hand).damage(1, user, getEquipmentSlot(hand));
-            user.damage(user.getDamageSources().create(ModDamageTypes.PRICKLE), 2.5F);
+            user.damage(user.getDamageSources().create(MedievalStuffDamageTypes.PRICKLE), 2.5F);
 
         }
 

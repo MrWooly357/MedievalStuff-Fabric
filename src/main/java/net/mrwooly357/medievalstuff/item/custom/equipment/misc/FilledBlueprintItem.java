@@ -7,23 +7,18 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprint;
-import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprintHolder;
-import net.mrwooly357.wool.block.util.MultiblockConstructionBuilding;
-import org.jetbrains.annotations.Nullable;
+import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionBlueprint;
+import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionBlueprintHolder;
+import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionProvider;
 
 import java.util.List;
 
 public class FilledBlueprintItem extends Item implements MultiblockConstructionBlueprintHolder {
 
-    private final @Nullable MultiblockConstructionBlueprint blueprint;
+    private final MultiblockConstructionBlueprint blueprint;
     private String tooltipKey;
 
-    public FilledBlueprintItem(Settings settings) {
-        this(settings, null);
-    }
-
-    public FilledBlueprintItem(Settings settings, @Nullable MultiblockConstructionBlueprint blueprint) {
+    public FilledBlueprintItem(Settings settings, MultiblockConstructionBlueprint blueprint) {
         super(settings);
 
         this.blueprint = blueprint;
@@ -31,7 +26,7 @@ public class FilledBlueprintItem extends Item implements MultiblockConstructionB
 
 
     @Override
-    public @Nullable MultiblockConstructionBlueprint getBlueprint() {
+    public MultiblockConstructionBlueprint getBlueprint() {
         return blueprint;
     }
 
@@ -50,7 +45,7 @@ public class FilledBlueprintItem extends Item implements MultiblockConstructionB
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        if (context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof MultiblockConstructionBuilding && context.getPlayer() != null) {
+        if (context.getWorld().getBlockState(context.getBlockPos()).getBlock() instanceof MultiblockConstructionProvider && context.getPlayer() != null) {
             context.getStack().damage(1, context.getPlayer(), EquipmentSlot.MAINHAND);
 
             return ActionResult.SUCCESS;

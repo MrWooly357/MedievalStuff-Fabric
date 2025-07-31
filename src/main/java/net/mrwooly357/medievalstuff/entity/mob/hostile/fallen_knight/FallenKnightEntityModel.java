@@ -1,129 +1,162 @@
 package net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.model.*;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.entity.model.ArmorEntityModel;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.util.Arm;
+import net.mrwooly357.medievalstuff.entity.client.render.feature.HumanoidArmorProvider;
 
-public class FallenKnightEntityModel<T extends HostileEntity> extends BipedEntityModel<T> {
+import java.util.Map;
 
-    private static final Dilation ARMOR_DILATION = new Dilation(1.0F);
-    private static final Dilation HAT_DILATION = new Dilation(0.5F);
-    public ModelPart soulInner;
-    public ModelPart soulOuter;
+@Environment(EnvType.CLIENT)
+public class FallenKnightEntityModel extends SinglePartEntityModel<FallenKnightEntity> implements ModelWithHead, ModelWithArms, HumanoidArmorProvider<FallenKnightEntity> {
+
+    private final ModelPart root;
+    private final ModelPart head;
+    private final ModelPart body;
+    private final ModelPart rightArm;
+    private final ModelPart leftArm;
+    private final ModelPart rightLeg;
+    private final ModelPart leftLeg;
+    private final ModelPart soulInner;
+    private final ModelPart soulOuter;
 
     public FallenKnightEntityModel(ModelPart root) {
-        super(root);
+        super(RenderLayer::getEntityCutoutNoCull);
 
-        soulInner = getTexturedModelData().createModel().getChild("soul_inner");
-        soulOuter = getTexturedModelData().createModel().getChild("soul_outer");
+        this.root = root;
+        head = root.getChild("head");
+        body = root.getChild("body");
+        rightArm = root.getChild("right_arm");
+        leftArm = root.getChild("left_arm");
+        rightLeg = root.getChild("right_leg");
+        leftLeg = root.getChild("left_leg");
+        soulInner = root.getChild("soul_inner");
+        soulOuter = root.getChild("soul_outer");
     }
 
 
     public static TexturedModelData getTexturedModelData() {
-        ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
-        ModelPartData modelPartData = modelData.getRoot();
+        ModelData data = new ModelData();
+        ModelPartData partData = data.getRoot();
 
-        addLimbs(modelPartData);
-        addSoulInner(modelPartData);
-        addSoulOuter(modelPartData);
+        partData.addChild("head", ModelPartBuilder.create()
+                .uv(0, 0)
+                .cuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+        partData.addChild("body", ModelPartBuilder.create()
+                .uv(0, 16)
+                .cuboid(-4.0F, -12.0F, -2.0F, 8.0F, 12.0F, 4.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 12.0F, 0.0F));
+        partData.addChild("right_arm", ModelPartBuilder.create()
+                .uv(0, 32)
+                .cuboid(-2.0F, -1.0F, -1.0F, 2.0F, 12.0F, 2.0F, new Dilation(0.0F)), ModelTransform.pivot(-4.0F, 1.0F, 0.0F));
+        partData.addChild("left_arm", ModelPartBuilder.create()
+                .uv(32, 0)
+                .cuboid(0.0F, -1.0F, -1.0F, 2.0F, 12.0F, 2.0F, new Dilation(0.0F)), ModelTransform.pivot(4.0F, 1.0F, 0.0F));
+        partData.addChild("right_leg", ModelPartBuilder.create()
+                .uv(24, 16)
+                .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new Dilation(0.0F)), ModelTransform.pivot(-2.0F, 12.0F, 0.0F));
+        partData.addChild("left_leg", ModelPartBuilder.create()
+                .uv(24, 30)
+                .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, new Dilation(0.0F)), ModelTransform.pivot(2.0F, 12.0F, 0.0F));
+        partData.addChild("soul_inner", ModelPartBuilder.create()
+                .uv(32, 14)
+                .cuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 4.0F, 0.0F));
+        partData.addChild("soul_outer", ModelPartBuilder.create()
+                .uv(8, 32)
+                .cuboid(-1.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 4.0F, 0.0F));
 
-        return TexturedModelData.of(modelData, 64, 32);
-    }
-
-    public static TexturedModelData getInnerArmorTexturedModelData() {
-        return TexturedModelData.of(ArmorEntityModel.getModelData(ARMOR_DILATION), 64, 32);
-    }
-
-    public static TexturedModelData getOuterArmorTexturedModelData() {
-        return TexturedModelData.of(ArmorEntityModel.getModelData(HAT_DILATION), 64, 32);
-    }
-
-    protected static void addLimbs(ModelPartData modelPartData) {
-        modelPartData.addChild(
-                EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create()
-                        .uv(40, 16)
-                        .cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F),
-                ModelTransform.pivot(-5.0F, 2.0F, 0.0F)
-        );
-        modelPartData.addChild(
-                EntityModelPartNames.LEFT_ARM, ModelPartBuilder.create()
-                        .uv(40, 16)
-                        .mirrored()
-                        .cuboid(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F),
-                ModelTransform.pivot(5.0F, 2.0F, 0.0F)
-        );
-        modelPartData.addChild(
-                EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create()
-                        .uv(0, 16)
-                        .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F),
-                ModelTransform.pivot(-2.0F, 12.0F, 0.0F)
-        );
-        modelPartData.addChild(
-                EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create()
-                        .uv(0, 16)
-                        .mirrored()
-                        .cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F),
-                ModelTransform.pivot(2.0F, 12.0F, 0.0F)
-        );
-    }
-
-    protected static void addSoulInner(ModelPartData modelPartData) {
-        ModelPartData soul_inner = modelPartData.addChild(
-                "soul_inner", ModelPartBuilder.create()
-                        .uv(60, 30)
-                        .cuboid(-0.5F, -0.5F, -0.5F, 1.0F, 1.0F, 1.0F, Dilation.NONE),
-                ModelTransform.pivot(0.0F, 4.0F, 0.0F)
-        );
-    }
-
-    protected static void addSoulOuter(ModelPartData modelPartData) {
-        ModelPartData soul_outer = modelPartData.addChild(
-                "soul_outer", ModelPartBuilder.create()
-                        .uv(56, 26)
-                        .cuboid(-1.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F, Dilation.NONE),
-                ModelTransform.pivot(0.0F, 4.0F, 0.0F)
-        );
+        return TexturedModelData.of(data, 64, 64);
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        super.render(matrices, vertices, light, overlay, color);
+    public ModelPart getPart() {
+        return root;
     }
 
-    public void renderSoul(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
-        soulInner.yaw = head.yaw;
-        soulInner.pitch = head.pitch;
-        soulInner.roll = head.roll;
-        soulInner.render(matrices, vertices, light, overlay);
-        soulOuter.yaw = head.yaw;
-        soulOuter.pitch = head.pitch;
-        soulOuter.roll = head.roll;
-        soulOuter.render(matrices, vertices, light, overlay);
+    @Override
+    public ModelPart getHead() {
+        return head;
     }
 
-    public void renderBodyWithTranslucency(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
-        head.render(matrices, vertices, light, overlay);
-        hat.render(matrices, vertices, light, overlay);
-        body.render(matrices, vertices, light, overlay);
-        rightArm.render(matrices, vertices, light, overlay);
-        leftArm.render(matrices, vertices, light, overlay);
-        rightLeg.render(matrices, vertices, light, overlay);
-        leftLeg.render(matrices, vertices, light, overlay);
+    @Override
+    public void animateModel(FallenKnightEntity fallenKnight, float limbAngle, float limbDistance, float tickDelta) {
+        root.traverse().forEach(ModelPart::resetTransform);
+
+        int age = fallenKnight.age;
+        soulInner.pivotY += (float) Math.sin((age + tickDelta) / 7.5F) * 1.5F;
+        soulOuter.pivotY += (float) Math.sin((age + tickDelta) / 7.5F) * 1.5F;
+    }
+
+    @Override
+    public void setAngles(FallenKnightEntity fallenKnight, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+        head.pitch = (float) Math.toRadians(headPitch);
+        head.yaw = (float) Math.toRadians(headYaw);
+
+        animateMovement(FallenKnightAnimations.WALK, limbAngle, limbDistance, 2.5F, 7.0F);
+        updateAnimation(fallenKnight.idleAnimationState, FallenKnightAnimations.IDLE, animationProgress);
+        updateAnimation(fallenKnight.attackAnimationState, FallenKnightAnimations.ATTACK, animationProgress);
+        updateAnimation(fallenKnight.prepareForChargeAnimationState, FallenKnightAnimations.PREPARE_FOR_CHARGE, animationProgress);
     }
 
     @Override
     public void setArmAngle(Arm arm, MatrixStack matrices) {
-        float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
-        ModelPart modelPart = getArm(arm);
-        modelPart.pivotX += f;
+        getArm(arm).rotate(matrices);
+    }
 
-        modelPart.rotate(matrices);
+    private ModelPart getArm(Arm arm) {
+        return arm == Arm.LEFT ? leftArm : rightArm;
+    }
 
-        modelPart.pivotX -= f;
+    @Override
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+        head.render(matrices, vertexConsumer, light, overlay, color);
+        body.render(matrices, vertexConsumer, light, overlay, color);
+        rightArm.render(matrices, vertexConsumer, light, overlay, color);
+        leftArm.render(matrices, vertexConsumer, light, overlay, color);
+        rightLeg.render(matrices, vertexConsumer, light, overlay, color);
+        leftLeg.render(matrices, vertexConsumer, light, overlay, color);
+    }
+
+    public void renderSoul(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay) {
+        soulInner.pitch = head.pitch;
+        soulInner.yaw = head.yaw;
+        soulInner.roll = head.roll;
+        soulOuter.pitch = head.pitch;
+        soulOuter.yaw = head.yaw;
+        soulOuter.roll = head.roll;
+
+        soulInner.render(matrices, vertexConsumer, light, overlay);
+        soulOuter.render(matrices, vertexConsumer, light, overlay);
+    }
+
+    @Override
+    public Map<String, ModelPart> getHumanoidParts() {
+        return Map.of(
+                "head", head,
+                "body", body,
+                "right_arm", rightArm,
+                "left_arm", leftArm,
+                "right_leg", rightLeg,
+                "left_leg", leftLeg
+        );
+    }
+
+    @Override
+    public void copyStateToArmor(BipedEntityModel<FallenKnightEntity> armorModel) {
+        HumanoidArmorProvider.super.copyStateToArmor(armorModel);
+
+        armorModel.body.pivotY -= 12.0F;
+    }
+
+    public static TexturedModelData getInnerArmorTexturedModelData() {
+        return TexturedModelData.of(ArmorEntityModel.getModelData(new Dilation(0.5F)), 64, 32);
+    }
+
+    public static TexturedModelData getOuterArmorTexturedModelData() {
+        return TexturedModelData.of(ArmorEntityModel.getModelData(new Dilation(1.0F)), 64, 32);
     }
 }

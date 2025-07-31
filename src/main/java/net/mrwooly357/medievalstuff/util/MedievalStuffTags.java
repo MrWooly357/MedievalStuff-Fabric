@@ -14,7 +14,6 @@ public class MedievalStuffTags {
 
     public static class Items {
 
-        public static final TagKey<Item> BYPASSES_DEFAULT_INTERACTION = create("bypasses_default_interaction");
         public static final TagKey<Item> CUSTOM_BOWS = create("custom_bows");
         public static final TagKey<Item> HEATER_ARSONISTS = create("heater_arsonists");
         public static final TagKey<Item> HEATER_CRAFTING_RECIPE_FUEL = create("heater_crafting_recipe_fuel");
@@ -41,8 +40,8 @@ public class MedievalStuffTags {
 
     public static class EntityTypes {
 
-        public static final TagKey<EntityType<?>> SOULFUL = create("soulful");
         public static final TagKey<EntityType<?>> SOULLESS = create("soulless");
+        public static final TagKey<EntityType<?>> SOUL_MOBS = create("soul_mobs");
         public static final TagKey<EntityType<?>> CAN_WALK_ON_ASH = create("can_walk_on_ash");
 
 

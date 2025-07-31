@@ -24,6 +24,7 @@ import java.util.List;
 public class AshBucketItem extends BlockItem implements FluidModificationItem {
 
     private final int placeLayers;
+
     public static final SoundEvent PLACE_SOUND = SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW;
 
     public AshBucketItem(Block block, int placeLayers, Settings settings) {

@@ -3,7 +3,6 @@ package net.mrwooly357.medievalstuff.recipe.custom;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.Ingredient;
@@ -11,7 +10,7 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.mrwooly357.medievalstuff.recipe.MedievalStuffRecipeSerializers;
 import net.mrwooly357.medievalstuff.recipe.MedievalStuffRecipeTypes;
 
-public class CopperstoneForgeControllerMeltingRecipe extends ForgeControllerMeltingRecipe<CopperstoneForgeControllerMeltingRecipeInput> {
+public final class CopperstoneForgeControllerMeltingRecipe extends ForgeControllerMeltingRecipe<CopperstoneForgeControllerMeltingRecipeInput> {
 
 
     public CopperstoneForgeControllerMeltingRecipe(float minTemperature, float maxTemperature, boolean invertTemperatures, Ingredient ingredient, int meltingTime, String result, long amount) {
@@ -25,13 +24,13 @@ public class CopperstoneForgeControllerMeltingRecipe extends ForgeControllerMelt
     }
 
 
-    public static class Serializer implements RecipeSerializer<CopperstoneForgeControllerMeltingRecipe> {
+    public static final class Serializer implements RecipeSerializer<CopperstoneForgeControllerMeltingRecipe> {
 
         public static final MapCodec<CopperstoneForgeControllerMeltingRecipe> CODEC = RecordCodecBuilder.mapCodec(
                 instance -> instance.group(
                         Codec.FLOAT.fieldOf("minTemperature").forGetter(CopperstoneForgeControllerMeltingRecipe::getMinTemperature),
                         Codec.FLOAT.fieldOf("maxTemperature").forGetter(CopperstoneForgeControllerMeltingRecipe::getMaxTemperature),
-                        Codec.BOOL.fieldOf("invertTemperatures").forGetter(CopperstoneForgeControllerMeltingRecipe::isInvertTemperatures),
+                        Codec.BOOL.fieldOf("invertTemperature").forGetter(CopperstoneForgeControllerMeltingRecipe::isInvertTemperature),
                         Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(CopperstoneForgeControllerMeltingRecipe::getIngredient),
                         Codec.INT.fieldOf("meltingTime").forGetter(CopperstoneForgeControllerMeltingRecipe::getMeltingTime),
                         Codec.STRING.fieldOf("result").forGetter(CopperstoneForgeControllerMeltingRecipe::getResultFluid),
@@ -54,7 +53,7 @@ public class CopperstoneForgeControllerMeltingRecipe extends ForgeControllerMelt
         private static void writer(RegistryByteBuf buf, CopperstoneForgeControllerMeltingRecipe recipe) {
             buf.writeFloat(recipe.getMinTemperature());
             buf.writeFloat(recipe.getMaxTemperature());
-            buf.writeBoolean(recipe.isInvertTemperatures());
+            buf.writeBoolean(recipe.isInvertTemperature());
             Ingredient.PACKET_CODEC.encode(buf, recipe.getIngredient());
             buf.writeInt(recipe.getMeltingTime());
             buf.writeString(recipe.getResultFluid());

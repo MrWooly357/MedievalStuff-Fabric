@@ -27,7 +27,7 @@ public class TwobowItem extends RangedWeaponItem {
     public static float MIN_PROJECTILE_DIVERGENCE = 0.75F;
     public static float MAX_PROJECTILE_DIVERGENCE = 1.0F;
     public static float PROJECTILE_DIVERGENCE = MathHelper.nextFloat(Random.create(), MIN_PROJECTILE_DIVERGENCE, MAX_PROJECTILE_DIVERGENCE);
-    public static float ADDITIONAL_PROJECTILE_SPEED_MULTIPLIER = 3.5F;
+    public static float ADDITIONAL_PROJECTILE_SPEED_MULTIPLIER = 4.0F;
     public static float MIN_ADDITIONAL_PROJECTILE_DIVERGENCE = 0.5F;
     public static float MAX_ADDITIONAL_PROJECTILE_DIVERGENCE = 0.75F;
     public static float ADDITIONAL_PROJECTILE_DIVERGENCE = MathHelper.nextFloat(Random.create(), MIN_ADDITIONAL_PROJECTILE_DIVERGENCE, MAX_ADDITIONAL_PROJECTILE_DIVERGENCE);
@@ -91,16 +91,7 @@ public class TwobowItem extends RangedWeaponItem {
                             float additionalProjectileDivergence = ADDITIONAL_PROJECTILE_DIVERGENCE - pullProgress / 2;
 
 
-                            shootAdditional(
-                                    serverWorld,
-                                    player,
-                                    stack,
-                                    projectileItemStack,
-                                    additionalProjectileSpeed,
-                                    additionalProjectileDivergence,
-                                    -ADDITIONAL_PROJECTILE_ADDITIONAL_PITCH,
-                                    0,
-                                    pullProgress == 1.0F);
+                            shootAdditional(serverWorld, player, stack, projectileItemStack, additionalProjectileSpeed, additionalProjectileDivergence, -ADDITIONAL_PROJECTILE_ADDITIONAL_PITCH, 0, pullProgress == 1.0F);
                         }
                     }
 

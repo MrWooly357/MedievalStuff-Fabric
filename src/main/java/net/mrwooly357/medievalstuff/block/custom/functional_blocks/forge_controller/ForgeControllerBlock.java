@@ -22,9 +22,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.forge_controller.ForgeControllerBlockEntity;
+import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FilledBlueprintItem;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
-import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprint;
-import net.mrwooly357.wool.block.util.MultiblockConstructionBlueprintHolder;
+import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionBlueprint;
+import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionBlueprintHolder;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ForgeControllerBlock extends BlockWithEntity {
@@ -43,34 +44,29 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
         Hand hand = player.getActiveHand();
         ItemStack stackInHand = player.getStackInHand(hand);
 
-        if (!stackInHand.isIn(MedievalStuffTags.Items.BYPASSES_DEFAULT_INTERACTION) || stackInHand.isEmpty()) {
+        if (stackInHand.getItem() instanceof FilledBlueprintItem && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity forgeControllerBlockEntity) {
 
-            if (world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity forgeControllerBlockEntity) {
+            if (player.isSneaking()) {
+                float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+                float soundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
 
-                if (player.isSneaking()) {
-                    float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
-                    float soundPitch = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
+                world.setBlockState(pos, state.cycle(OPEN));
 
-                    world.setBlockState(pos, state.cycle(OPEN));
+                if (state.get(OPEN)) {
+                    world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_OPEN, SoundCategory.BLOCKS, soundVolume, soundPitch);
+                } else
+                    world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, soundVolume, soundPitch);
 
-                    if (state.get(OPEN)) {
-                        world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_OPEN, SoundCategory.BLOCKS, soundVolume, soundPitch);
-                    } else {
-                        world.playSound(null, pos, SoundEvents.BLOCK_COPPER_TRAPDOOR_CLOSE, SoundCategory.BLOCKS, soundVolume, soundPitch);
-                    }
+                return ActionResult.SUCCESS;
+            } else if (state.get(OPEN)) {
 
-                    return ActionResult.SUCCESS;
-                } else if (state.get(OPEN)) {
+                if (!world.isClient && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity && entity.isBuilt())
+                    player.openHandledScreen(forgeControllerBlockEntity);
 
-                    if (!world.isClient && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity && entity.isBuilt()) {
-                        player.openHandledScreen(forgeControllerBlockEntity);
-                    }
+                return ActionResult.SUCCESS;
+            } else if (!state.get(OPEN))
+                return ActionResult.PASS;
 
-                    return ActionResult.SUCCESS;
-                } else if (!state.get(OPEN)) {
-                    return ActionResult.PASS;
-                }
-            }
         }
 
         return ActionResult.PASS;
@@ -85,7 +81,7 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
             stack.damage(1, player, EquipmentSlot.MAINHAND);
         }
 
-        return bl ? ItemActionResult.SUCCESS : !stack.isIn(MedievalStuffTags.Items.BYPASSES_DEFAULT_INTERACTION) ? ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemActionResult.FAIL;
+        return bl ? ItemActionResult.SUCCESS : ItemActionResult.FAIL;
     }
 
     @Override

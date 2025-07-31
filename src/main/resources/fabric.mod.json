@@ -15,19 +15,19 @@
 	"icon": "assets/medievalstuff/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
+		"wool": [
 			"net.mrwooly357.medievalstuff.MedievalStuff"
 		],
-		"fabric-datagen": [
-			"net.mrwooly357.medievalstuff.MedievalStuffDataGenerator"
+		"main": [
+			"net.mrwooly357.medievalstuff.MedievalStuff"
 		],
 		"client": [
 			"net.mrwooly357.medievalstuff.MedievalStuffClient"
 		],
-		"terrablender": [
-			"net.mrwooly357.medievalstuff.MedievalStuff"
+		"fabric-datagen": [
+			"net.mrwooly357.medievalstuff.MedievalStuffDataGenerator"
 		],
-		"wool": [
+		"terrablender": [
 			"net.mrwooly357.medievalstuff.MedievalStuff"
 		]
 	},

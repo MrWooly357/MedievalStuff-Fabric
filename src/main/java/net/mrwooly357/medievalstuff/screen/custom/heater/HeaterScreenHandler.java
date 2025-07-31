@@ -118,7 +118,7 @@ public abstract class HeaterScreenHandler extends ScreenHandler {
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return HeaterBlockEntity.vanillaFuelBurnTimes.containsKey(stack.getItem()) || HeaterBlockEntity.createCustomFuelTimesMap().containsKey(stack.getItem());
+            return HeaterBlockEntity.VANILLA_FUEL_BURN_TIMES.containsKey(stack.getItem()) || HeaterBlockEntity.createCustomFuelTimesMap().containsKey(stack.getItem());
         }
     }
 }

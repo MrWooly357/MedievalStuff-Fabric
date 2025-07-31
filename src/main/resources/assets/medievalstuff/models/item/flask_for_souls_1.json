@@ -1,0 +1,6 @@
+{
+  "parent": "medievalstuff:item/flask_for_souls",
+  "textures": {
+    "layer0": "medievalstuff:item/flask_for_souls_1"
+  }
+}

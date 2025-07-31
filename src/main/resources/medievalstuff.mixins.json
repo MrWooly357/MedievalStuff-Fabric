@@ -1,12 +1,17 @@
 {
-	"required": true,
-	"package": "net.mrwooly357.medievalstuff.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"AbstractClientPlayerEntityMixin",
-		"PlayerEntityMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "required": true,
+  "package": "net.mrwooly357.medievalstuff.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "AbstractClientPlayerEntityCustomZoomItemsMixin",
+    "PlayerEntityAttackMixin",
+    "PlayerEntityOnKillEntityMixin",
+    "ServerPlayerEntityExtensionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "ClientPlayerEntityExtensionMixin"
+  ]
 }

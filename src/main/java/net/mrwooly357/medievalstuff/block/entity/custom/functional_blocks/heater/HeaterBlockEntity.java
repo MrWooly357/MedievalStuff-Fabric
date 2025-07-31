@@ -2,7 +2,6 @@ package net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heate
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -12,7 +11,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
@@ -22,16 +20,18 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.MedievalStuff;
-import net.mrwooly357.wool.config.custom.WoolConfig;
+import net.mrwooly357.medievalstuff.temperature.TemperatureData;
+import net.mrwooly357.medievalstuff.temperature.TemperatureDataHolder;
+import net.mrwooly357.wool.block_entity_inventory.ImplementedInventory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public abstract class HeaterBlockEntity extends BlockEntity implements Inventory, ExtendedScreenHandlerFactory<BlockPos> {
+public abstract class HeaterBlockEntity extends BlockEntity implements ImplementedInventory, ExtendedScreenHandlerFactory<BlockPos>, TemperatureDataHolder {
 
     protected float temperature;
     protected float minTemperature;
@@ -43,10 +43,11 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
     protected int ashAmount;
     protected int maxAshAmount;
     protected int ashResistance;
-    public static final Map<Item, Integer> vanillaFuelBurnTimes = AbstractFurnaceBlockEntity.createFuelTimeMap();
-    public static final Map<Item, Integer> customFuelBurnTimes = new HashMap<>();
-    public static final Map<Identifier, Fuel> fuels = new HashMap<>();
-    public static final Map<Item, ItemStack> fuelExchangeStacks = new HashMap<>();
+
+    public static final Map<Item, Integer> VANILLA_FUEL_BURN_TIMES = AbstractFurnaceBlockEntity.createFuelTimeMap();
+    public static final Map<Item, Integer> CUSTOM_FUEL_BURN_TIMES = new HashMap<>();
+    public static final Map<Identifier, Fuel> FUELS = new HashMap<>();
+    public static final Map<Item, ItemStack> FUEL_EXCHANGE_STACKS = new HashMap<>();
 
     public HeaterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, float fuelEfficiency, float minTemperature, float maxTemperature, int maxAshAmount, int ashResistance) {
         super(type, pos, state);
@@ -61,7 +62,6 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
 
 
     public void tick(World world, BlockPos pos, BlockState state) {
-        boolean shouldMarkDirty = false;
         boolean isBurning = isBurning();
         ItemStack stackInSlot = ItemStack.EMPTY;
         int slot = 0;
@@ -70,26 +70,25 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
             stackInSlot = getInventory().get(a);
             slot = a;
 
-            if (!stackInSlot.isEmpty()) {
+            if (!stackInSlot.isEmpty())
                 break;
-            }
         }
 
         if (!stackInSlot.isEmpty()) {
             fuel = createFuelsMap().get(Registries.ITEM.getId(stackInSlot.getItem()));
-        } else {
+        } else
             fuel = Fuel.EMPTY;
-        }
 
         if (isBurning()) {
             decreaseBurnTime();
             tryIncreaseTemperature();
-        } else tryDecreaseTemperature();
+
+        } else
+            tryDecreaseTemperature();
 
         if (!isBurning() && state.get(Properties.LIT) && ashAmount < maxAshAmount && !stackInSlot.isEmpty() && (ashAmount + createFuelsMap().get(Registries.ITEM.getId(stackInSlot.getItem())).ashAmount()) <= maxAshAmount) {
             boolean shouldLeaveExchangeStack = createFuelExchangeStacksMap().containsKey(stackInSlot.getItem());
             ItemStack exchangeStack = createFuelExchangeStacksMap().get(stackInSlot.getItem());
-            shouldMarkDirty = true;
             burnTime = getFuelBurnTime(stackInSlot);
             maxBurnTime = getFuelBurnTime(stackInSlot);
 
@@ -97,31 +96,27 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
 
             if (shouldLeaveExchangeStack) {
 
-                if (getInventory().get(slot).isEmpty()) {
-                    getInventory().set(slot, exchangeStack);
-                } else if (WoolConfig.developerMode) MedievalStuff.LOGGER.error("Can't set exchange stack in slot {}. Slot is occupied!", slot);
+                if (getStack(slot).isEmpty())
+                    setStack(slot, exchangeStack);
             }
 
             tryIncreaseAshAmount();
         }
 
-        if (isBurning != isBurning()) {
-            shouldMarkDirty = true;
-
+        if (isBurning != isBurning())
             world.setBlockState(pos, state.with(Properties.LIT, isBurning()));
-        }
 
-        if (shouldMarkDirty) {
-            markDirty(world, pos, state);
-        }
+        markDirty(world, pos, state);
     }
 
-    public float getTemperature() {
-        return temperature;
+    @Override
+    public TemperatureData get() {
+        return new TemperatureData(temperature);
     }
 
-    public void setTemperature(float temperature) {
-        this.temperature = temperature;
+    @Override
+    public void set(TemperatureData data) {
+        temperature = data.getTemperature();
     }
 
     public void tryIncreaseTemperature() {
@@ -136,10 +131,6 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
         }
     }
 
-    public void tryIncreaseTemperature(int times) {
-        for (int a = 0; a < times; a++) tryIncreaseTemperature();
-    }
-
     public void tryDecreaseTemperature() {
         if (temperature > minTemperature) {
             float decrease = ((maxTemperature - temperature) / 500 + 0.01F) * 2;
@@ -150,14 +141,6 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
                 temperature = minTemperature;
             }
         }
-    }
-
-    public void tryDecreaseTemperature(int times) {
-        for (int a = 0; a < times; a++) tryDecreaseTemperature();
-    }
-
-    public void setFuel(Fuel fuel) {
-        this.fuel = fuel;
     }
 
     public int getBurnTime() {
@@ -227,24 +210,24 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
     }
 
     public static Map<Item, Integer> createCustomFuelTimesMap() {
-        return customFuelBurnTimes;
+        return CUSTOM_FUEL_BURN_TIMES;
     }
 
     public static Map<Identifier, Fuel> createFuelsMap() {
         addEmptyFuel();
-        addVanillaFuel(Items.LAVA_BUCKET, "lava_bucket", 16);
-        addVanillaFuel(Blocks.COAL_BLOCK, "coal_block", 8);
-        addVanillaFuel(Items.BLAZE_ROD, "blaze_rod", 1);
-        addVanillaFuel(Items.COAL, "coal", 1);
-        addVanillaFuel(Items.CHARCOAL, "charcoal", 1);
+        addVanillaFuel(net.minecraft.item.Items.LAVA_BUCKET, "lava_bucket", 16);
+        addVanillaFuel(net.minecraft.block.Blocks.COAL_BLOCK, "coal_block", 8);
+        addVanillaFuel(net.minecraft.item.Items.BLAZE_ROD, "blaze_rod", 1);
+        addVanillaFuel(net.minecraft.item.Items.COAL, "coal", 1);
+        addVanillaFuel(net.minecraft.item.Items.CHARCOAL, "charcoal", 1);
         addVanillaFuel(ItemTags.LOGS, "logs", 1);
         addVanillaFuel(ItemTags.BAMBOO_BLOCKS, "bamboo_blocks", 1);
         addVanillaFuel(ItemTags.PLANKS, "planks", 1);
-        addVanillaFuel(Blocks.BAMBOO_MOSAIC, "bamboo_mosaic", 1);
+        addVanillaFuel(net.minecraft.block.Blocks.BAMBOO_MOSAIC, "bamboo_mosaic", 1);
         addVanillaFuel(ItemTags.WOODEN_STAIRS, "wooden_stairs", 1);
-        addVanillaFuel(Blocks.BAMBOO_MOSAIC_STAIRS, "bamboo_mosaic_stairs", 1);
+        addVanillaFuel(net.minecraft.block.Blocks.BAMBOO_MOSAIC_STAIRS, "bamboo_mosaic_stairs", 1);
         addVanillaFuel(ItemTags.WOODEN_SLABS, "wooden_slabs", 1);
-        addVanillaFuel(Blocks.BAMBOO_MOSAIC_SLAB, "bamboo_mosaic_slab", 1);
+        addVanillaFuel(net.minecraft.block.Blocks.BAMBOO_MOSAIC_SLAB, "bamboo_mosaic_slab", 1);
         /*addFuel(ItemTags.WOODEN_TRAPDOORS, );
         addFuel(ItemTags.WOODEN_PRESSURE_PLATES, );
         addFuel(ItemTags.WOODEN_FENCES, );
@@ -292,15 +275,11 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
         addFuel(Blocks.FLOWERING_AZALEA, );
         addFuel(Blocks.MANGROVE_ROOTS, );*/
 
-        return fuels;
+        return FUELS;
     }
 
     private static void addEmptyFuel() {
-        fuels.put(Fuel.EMPTY.id(), Fuel.EMPTY);
-    }
-
-    private static void addFuel(ItemConvertible item, String name, int ashAmount) {
-        addFuel(item, Identifier.of(MedievalStuff.MOD_ID, name), ashAmount);
+        FUELS.put(Fuel.EMPTY.id(), Fuel.EMPTY);
     }
 
     private static void addVanillaFuel(ItemConvertible item, String name, int ashAmount) {
@@ -308,11 +287,7 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
     }
 
     public static void addFuel(ItemConvertible item, Identifier id, int ashAmount) {
-        fuels.put(Registries.ITEM.getId(item.asItem()), new Fuel(id, ashAmount));
-    }
-
-    private static void addFuel(TagKey<Item> tag, String name, int ashAmount) {
-        addFuel(tag, Identifier.of(MedievalStuff.MOD_ID, name), ashAmount);
+        FUELS.put(Registries.ITEM.getId(item.asItem()), new Fuel(id, ashAmount));
     }
 
     private static void addVanillaFuel(TagKey<Item> tag, String name, int ashAmount) {
@@ -321,14 +296,14 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
 
     public static void addFuel(TagKey<Item> tag, Identifier id, int ashAmount) {
         for (RegistryEntry<Item> entry : Registries.ITEM.iterateEntries(tag)) {
-            fuels.put(Registries.ITEM.getId(entry.value().asItem()), new Fuel(id, ashAmount));
+            FUELS.put(Registries.ITEM.getId(entry.value().asItem()), new Fuel(id, ashAmount));
         }
     }
 
     public static Map<Item, ItemStack> createFuelExchangeStacksMap() {
-        addFuelExchangeStack(Items.LAVA_BUCKET, Items.BUCKET);
+        addFuelExchangeStack(net.minecraft.item.Items.LAVA_BUCKET, net.minecraft.item.Items.BUCKET);
 
-        return fuelExchangeStacks;
+        return FUEL_EXCHANGE_STACKS;
     }
 
     public static void addFuelExchangeStack(Item item, Item exchangeItem) {
@@ -336,28 +311,23 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
     }
 
     public static void addFuelExchangeStack(Item item, ItemStack exchangeStack) {
-        fuelExchangeStacks.put(item, exchangeStack);
+        FUEL_EXCHANGE_STACKS.put(item, exchangeStack);
     }
 
-    public static void addFuelExchangeStack(TagKey<Item> tag, Item exchangeItem) {
-        addFuelExchangeStack(tag, new ItemStack(exchangeItem));
-    }
+    protected int getFuelBurnTime(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return 0;
+        } else {
+            Item item = stack.getItem();
+            int fuelBurnTime;
 
-    public static void addFuelExchangeStack(TagKey<Item> tag, ItemStack exchangeStack) {
-        for (RegistryEntry<Item> entry : Registries.ITEM.iterateEntries(tag)) {
-            fuelExchangeStacks.put(Registries.ITEM.get(Registries.ITEM.getId(entry.value().asItem())), exchangeStack);
+            if (VANILLA_FUEL_BURN_TIMES.containsKey(item)) {
+                fuelBurnTime = VANILLA_FUEL_BURN_TIMES.getOrDefault(item, 0);
+            } else
+                fuelBurnTime = createCustomFuelTimesMap().getOrDefault(item, 0);
+
+            return (int) (fuelBurnTime * fuelEfficiency);
         }
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (int slot = 0; slot < size(); slot++) {
-            ItemStack itemStack = getStack(slot);
-
-            if (!itemStack.isEmpty()) return false;
-        }
-
-        return true;
     }
 
     @Override
@@ -370,48 +340,15 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
         return pos;
     }
 
-    protected int getFuelBurnTime(ItemStack stack) {
-        if (stack.isEmpty()) {
-            return 0;
-        } else {
-            Item item = stack.getItem();
-            int fuelBurnTime;
-
-            if (vanillaFuelBurnTimes.containsKey(item)) {
-                fuelBurnTime = vanillaFuelBurnTimes.getOrDefault(item, 0);
-            } else if (createCustomFuelTimesMap().containsKey(item)) {
-                fuelBurnTime = createCustomFuelTimesMap().get(item);
-            } else {
-                fuelBurnTime = 0;
-
-                if (WoolConfig.developerMode) MedievalStuff.LOGGER.error("Item {} isn't a stack!", item);
-            }
-
-            return (int) (fuelBurnTime * fuelEfficiency);
-        }
-    }
-
-    public abstract DefaultedList<ItemStack> getInventory();
-
     @Override
-    public int size() {
-        return getInventory().size();
-    }
-
-    @Override
-    public ItemStack getStack(int slot) {
+    public ItemStack removeStack(int slot) {
         markDirty();
 
-        return getInventory().get(slot);
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int amount) {
         return Inventories.removeStack(getInventory(), slot);
     }
 
     @Override
-    public ItemStack removeStack(int slot) {
+    public ItemStack removeStack(int slot, int amount) {
         markDirty();
 
         return Inventories.removeStack(getInventory(), slot);
@@ -421,11 +358,6 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
     public void setStack(int slot, ItemStack stack) {
         markDirty();
         getInventory().set(slot, stack);
-    }
-
-    @Override
-    public void clear() {
-        getInventory().clear();
     }
 
     @Override
@@ -447,13 +379,7 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
 
         Inventories.writeNbt(nbt, getInventory(), registryLookup);
         nbt.putFloat("Temperature", temperature);
-
-        if (fuel == null) {
-            nbt.putString("Fuel", Fuel.EMPTY.id().toString());
-        } else {
-            nbt.putString("Fuel", fuel.id().toString());
-        }
-
+        nbt.putString("Fuel", Objects.requireNonNullElse(fuel, Fuel.EMPTY).id().toString());
         nbt.putInt("BurnTime", burnTime);
         nbt.putInt("MaxBurnTime", maxBurnTime);
         nbt.putInt("AshAmount", ashAmount);
@@ -462,8 +388,8 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Inventory
 
     public record Fuel(Identifier id, int ashAmount) {
 
-        public static final Fuel EMPTY = new Fuel(
-                Identifier.of(MedievalStuff.MOD_ID, "empty"), 0
-        );
+        public static final Fuel EMPTY = new Fuel(Identifier.of(
+                MedievalStuff.MOD_ID, "empty"
+        ), 0);
     }
 }

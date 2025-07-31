@@ -2,6 +2,8 @@ package net.mrwooly357.medievalstuff.block;
 
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ColorCode;
@@ -12,9 +14,10 @@ import net.mrwooly357.medievalstuff.block.custom.functional_blocks.forge_control
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.heater.CopperstoneHeaterBlock;
 import net.mrwooly357.medievalstuff.block.custom.blocks.AshBlock;
 import net.mrwooly357.medievalstuff.block.custom.blocks.WildBlueberryBushBlock;
+import net.mrwooly357.medievalstuff.block.custom.functional_blocks.spawner.RedstoneSpawnerBlock;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.CopperTankBlock;
 import net.mrwooly357.wool.config.custom.WoolConfig;
-import net.mrwooly357.wool.registry.BlockRegistryHelper;
+import net.mrwooly357.wool.registry.helper.BlockRegistryHelper;
 
 import java.util.function.ToIntFunction;
 
@@ -24,7 +27,7 @@ public class MedievalStuffBlocks {
     public static final Block RAW_SILVER_BLOCK = register(
             "raw_silver_block", new Block(
                     AbstractBlock.Settings.create()
-                            .strength(4.5F, 3.0F)
+                            .strength(4.5F, 12.0F)
                             .requiresTool()
                             .sounds(BlockSoundGroup.STONE)
             )
@@ -32,7 +35,7 @@ public class MedievalStuffBlocks {
     public static final Block SILVER_BLOCK = register(
             "silver_block", new Block(
                     AbstractBlock.Settings.create()
-                            .strength(4.5F, 4.5F)
+                            .strength(4.5F, 16.0F)
                             .requiresTool()
                             .sounds(BlockSoundGroup.METAL)
             )
@@ -56,7 +59,7 @@ public class MedievalStuffBlocks {
     public static final Block COPPERSTONE_BRICKS = register(
             "copperstone_bricks", new Block(
                     AbstractBlock.Settings.create()
-                            .strength(2.5F, 3.0F)
+                            .strength(2.5F, 8.0F)
                             .requiresTool()
                             .sounds(BlockSoundGroup.STONE)
             )
@@ -73,7 +76,7 @@ public class MedievalStuffBlocks {
     );
     public static final Block ASH = registerWithoutItem(
             "ash", new AshBlock(
-                    new ColorCode(1781911911), AbstractBlock.Settings.create()
+                    new ColorCode(-8356741), AbstractBlock.Settings.create()
                     .strength(0.15F, 0.1F)
                     .mapColor(MapColor.LIGHT_GRAY)
                     .sounds(BlockSoundGroup.POWDER_SNOW)
@@ -84,7 +87,7 @@ public class MedievalStuffBlocks {
     public static final Block COPPERSTONE_HEATER = register(
             "copperstone_heater", new CopperstoneHeaterBlock(
                     AbstractBlock.Settings.create()
-                            .strength(3.5F, 4.5F)
+                            .strength(3.5F, 12.0F)
                             .requiresTool()
                             .luminance(createLightLevelFromLitBlockState(10))
                             .sounds(BlockSoundGroup.STONE)
@@ -93,21 +96,29 @@ public class MedievalStuffBlocks {
     public static final Block COPPER_TANK = register(
             "copper_tank", new CopperTankBlock(
                     AbstractBlock.Settings.create()
-                    .strength(2.5F, 3.5F)
+                    .strength(2.5F, 4.0F)
                     .requiresTool()
                     .luminance(state -> state.get(CopperTankBlock.LIGHT_LEVEL))
                     .sounds(BlockSoundGroup.COPPER)
                     .nonOpaque()
-                    .suffocates(Blocks::never)
+                    .suffocates(net.minecraft.block.Blocks::never)
             )
     );
     public static final Block COPPERSTONE_FORGE_CONTROLLER = register(
             "copperstone_forge_controller", new CopperstoneForgeControllerBlock(
                     AbstractBlock.Settings.create()
-                    .strength(4.0F, 5.0F)
+                    .strength(4.0F, 16.0F)
                     .requiresTool()
                     .luminance(createLightLevelFromLitBlockState(10))
                     .sounds(BlockSoundGroup.STONE)
+            )
+    );
+    public static final Block REDSTONE_SPAWNER = register(
+            "redstone_spawner" , new RedstoneSpawnerBlock(
+                    AbstractBlock.Settings.create()
+                            .strength(25.0F, 50.0F)
+                            .requiresTool()
+                            .sounds(BlockSoundGroup.TRIAL_SPAWNER)
             )
     );
 
@@ -117,7 +128,7 @@ public class MedievalStuffBlocks {
     }
 
     private static Block register(String name, Block block) {
-        registerBlockItem(name, block);
+        registerBlockItem(name, new BlockItem(block, new Item.Settings()));
 
         return BlockRegistryHelper.register(Identifier.of(MedievalStuff.MOD_ID, name), block);
     }
@@ -126,12 +137,12 @@ public class MedievalStuffBlocks {
         return BlockRegistryHelper.register(Identifier.of(MedievalStuff.MOD_ID,  name), block);
     }
 
-    private static void registerBlockItem(String name, Block block) {
-        BlockRegistryHelper.registerBlockItem(Identifier.of(MedievalStuff.MOD_ID, name), block);
+    private static void registerBlockItem(String name, BlockItem item) {
+        BlockRegistryHelper.registerBlockItem(Identifier.of(MedievalStuff.MOD_ID, name), item);
     }
 
     public static void initialize() {
-        if (WoolConfig.developerMode)
-            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " blocks");
+        if (true)
+            MedievalStuff.LOGGER.info("Initializing " + MedievalStuff.MOD_ID + " FUNCTIONAL_BLOCKS");
     }
 }

@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -13,17 +12,15 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.entity.custom.ImplementedInventory;
 import net.mrwooly357.medievalstuff.compound.Compound;
-import net.mrwooly357.medievalstuff.config.custom.MedievalStuffConfig;
-import net.mrwooly357.wool.block.util.MultiblockConstructionBuilding;
+import net.mrwooly357.wool.block_entity_inventory.ImplementedInventory;
+import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionProvider;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ForgeControllerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BlockPos>, ImplementedInventory, MultiblockConstructionBuilding {
+public abstract class ForgeControllerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BlockPos>, ImplementedInventory, MultiblockConstructionProvider {
 
     protected boolean built;
     protected boolean canCheck;
@@ -31,12 +28,13 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
     protected int temperature;
     protected int meltingProgress;
     protected int maxMeltingProgress;
-    protected int DEFAULT_MAX_MELTING_PROGRESS = MedievalStuffConfig.forgeControllerDefaultMaxMeltingProgress;
     protected Compound compound;
     protected int compoundAmount;
     protected int alloyingProgress;
     protected int maxAlloyingProgress;
-    protected int DEFAULT_MAX_ALLOYING_PROGRESS = MedievalStuffConfig.forgeControllerDefaultMaxAlloyingProgress;
+
+    protected int DEFAULT_MAX_MELTING_PROGRESS = 200;
+    protected int DEFAULT_MAX_ALLOYING_PROGRESS = 200;
 
     public ForgeControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -50,70 +48,70 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
                 boolean canTryCheck = false;
 
                 if (checkDelayTimer == 20) {
-                    resetCheckDelayTimer();
+                    checkDelayTimer = 0;
 
                     canTryCheck = true;
                 }
 
-                if (canTryCheck) {
-                    tryBuild(getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), state.get(Properties.HORIZONTAL_FACING));
-                }
+                if (canTryCheck)
+                    tryBuild(world, getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), state.get(Properties.HORIZONTAL_FACING));
 
-                increaseCheckDelayTimer();
+                checkDelayTimer++;
             }
 
             if (built) {
 
                 if (hasMeltingRecipe()) {
-                    increaseMeltingProgress();
+                    meltingProgress++;
                     markDirty(world, pos, state);
 
                     if (hasMeltingFinished()) {
+                        meltingProgress = 0;
+
                         melt();
-                        resetMeltingProgress();
                     }
-                } else if (meltingProgress > 0) decreaseMeltingProgress();
+                } else if (meltingProgress > 0)
+                    meltingProgress--;
 
                 if (hasAlloyingRecipe()) {
-                    increaseAlloyingProgress();
+                    alloyingProgress++;
+
                     markDirty(world, pos, state);
 
                     if (hasAlloyingFinished()) {
+                        alloyingProgress = 0;
+
                         alloy();
-                        resetAlloyingProgress();
                     }
-                } else if (alloyingProgress > 0) decreaseAlloyingProgress();
+                } else if (alloyingProgress > 0)
+                    alloyingProgress--;
             } else {
 
-                if (meltingProgress > 0) decreaseMeltingProgress();
+                if (meltingProgress > 0)
+                    meltingProgress--;
 
-                if (alloyingProgress > 0) decreaseAlloyingProgress();
-
-                if (meltingProgress == 0) resetMeltingProgress();
-
-                if (alloyingProgress == 0) resetAlloyingProgress();
+                if (alloyingProgress > 0)
+                    alloyingProgress--;
             }
 
             if (meltingProgress > 0 || alloyingProgress > 0) {
 
-                if (!state.get(Properties.LIT)) world.setBlockState(pos, state.with(Properties.LIT, true));
-            } else if (state.get(Properties.LIT)) world.setBlockState(pos, state.with(Properties.LIT, false));
+                if (!state.get(Properties.LIT))
+                    world.setBlockState(pos, state.with(Properties.LIT, true));
+            } else if (state.get(Properties.LIT))
+                world.setBlockState(pos, state.with(Properties.LIT, false));
         }
     }
 
     @Override
     public void onSuccess() {
-        setBuilt(true);
+        built = true;
     }
 
     @Override
     public void onFail() {
-        setBuilt(false);
-        setCanCheck(false);
-    }
-
-    protected void setBuilt(boolean built) {
-        this.built = built;
+        built = false;
+        canCheck = false;
     }
 
     public boolean isBuilt() {
@@ -124,30 +122,8 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
         this.canCheck = canCheck;
     }
 
-    protected void increaseCheckDelayTimer() {
-        checkDelayTimer++;
-    }
-
-    protected void resetCheckDelayTimer() {
-        checkDelayTimer = 0;
-    }
-
-    public abstract DefaultedList<ItemStack> getInventory();
-
-    public int getTemperature() {
-        return temperature;
-    }
-
-    protected void increaseTemperature() {
-        temperature++;
-    }
-
-    protected void decreaseTemperature() {
-        temperature--;
-    }
-
     protected boolean isTemperatureSufficient(float temperature, boolean invert) {
-        return !invert ? this.temperature >= temperature : this.temperature <= temperature;
+        return invert ? this.temperature <= temperature : this.temperature >= temperature;
     }
 
     public int getMeltingProgress() {
@@ -156,19 +132,6 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
 
     protected void setMeltingProgress(int meltingProgress) {
         this.meltingProgress = meltingProgress;
-    }
-
-    protected void increaseMeltingProgress() {
-        meltingProgress++;
-    }
-
-    protected void decreaseMeltingProgress() {
-        meltingProgress--;
-    }
-
-    protected void resetMeltingProgress() {
-        meltingProgress = 0;
-        maxMeltingProgress = DEFAULT_MAX_MELTING_PROGRESS;
     }
 
     protected abstract boolean hasMeltingRecipe();
@@ -195,29 +158,12 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
         this.compoundAmount = compoundAmount;
     }
 
-    protected void decreaseCompoundAmount() {
-        compoundAmount--;
-    }
-
     public int getAlloyingProgress() {
         return alloyingProgress;
     }
 
     protected void setAlloyingProgress(int alloyingProgress) {
         this.alloyingProgress = alloyingProgress;
-    }
-
-    protected void increaseAlloyingProgress() {
-        alloyingProgress++;
-    }
-
-    protected void decreaseAlloyingProgress() {
-        alloyingProgress--;
-    }
-
-    protected void resetAlloyingProgress() {
-        alloyingProgress = 0;
-        maxAlloyingProgress = DEFAULT_MAX_ALLOYING_PROGRESS;
     }
 
     protected abstract boolean hasAlloyingRecipe();

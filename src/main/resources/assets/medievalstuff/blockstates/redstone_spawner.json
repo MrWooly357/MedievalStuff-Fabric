@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "medievalstuff:block/redstone_spawner"
+    },
+    "powered=true": {
+      "model": "medievalstuff:block/redstone_spawner_powered"
+    }
+  }
+}

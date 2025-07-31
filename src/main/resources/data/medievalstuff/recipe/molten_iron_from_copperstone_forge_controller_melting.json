@@ -2,7 +2,7 @@
   "type": "medievalstuff:copperstone_forge_controller_melting",
   "minTemperature": 0.0,
   "maxTemperature": 120.0,
-  "invertTemperatures": false,
+  "invertTemperature": false,
   "ingredient": {
     "item": "minecraft:iron_ingot"
   },

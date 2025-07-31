@@ -3,33 +3,24 @@ package net.mrwooly357.medievalstuff.entity.effect.custom;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.SimpleParticleType;
 import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
+import net.mrwooly357.medievalstuff.particle.MedievalStuffParticleTypes;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
+import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
 
 public class SoulProtectionStatusEffect extends StatusEffect {
 
-    public SoulProtectionStatusEffect(StatusEffectCategory category, int color) {
-        super(category, color);
-    }
-
-    public SoulProtectionStatusEffect(StatusEffectCategory category, int color, ParticleEffect particleEffect) {
-        super(category, color, particleEffect);
+    public SoulProtectionStatusEffect() {
+        super(StatusEffectCategory.BENEFICIAL, MedievalStuffUtil.rgbToPackedInt(102, 205, 211), (SimpleParticleType) MedievalStuffParticleTypes.SOUL_PROTECTION);
     }
 
 
     @Override
-    public boolean applyUpdateEffect(LivingEntity livingEntity, int amplifier) {
-        if (livingEntity.hasStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY)) {
-            int soulDecayDuration = livingEntity.getStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY).getDuration();
-            int soulDecayAmplifier = livingEntity.getStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY).getAmplifier();
+    public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+        entity.removeStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY);
 
-            livingEntity.removeStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY);
-            livingEntity.addStatusEffect(new StatusEffectInstance(MedievalStuffStatusEffects.SOUL_DECAY, (int) (soulDecayDuration - (soulDecayDuration * 0.2 * amplifier) / 5), soulDecayAmplifier), null);
-        }
-
-        return livingEntity.getType().isIn(MedievalStuffTags.EntityTypes.SOULFUL) && !livingEntity.getType().isIn(MedievalStuffTags.EntityTypes.SOULLESS);
+        return !entity.getType().isIn(MedievalStuffTags.EntityTypes.SOULLESS);
     }
 
     @Override

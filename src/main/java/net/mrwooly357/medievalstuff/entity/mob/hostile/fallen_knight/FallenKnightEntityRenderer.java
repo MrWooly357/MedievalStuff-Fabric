@@ -1,86 +1,52 @@
 package net.mrwooly357.medievalstuff.entity.mob.hostile.fallen_knight;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.client.render.entity.MobEntityRenderer;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.util.Identifier;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityModelLayers;
+import net.mrwooly357.medievalstuff.entity.MedievalStuffRenderLayers;
+import net.mrwooly357.medievalstuff.entity.client.render.feature.custom.HumanoidArmorFeatureRenderer;
+import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
+import org.jetbrains.annotations.Nullable;
 
-public class FallenKnightEntityRenderer<T extends HostileEntity> extends BipedEntityRenderer<T, FallenKnightEntityModel<T>> {
+@Environment(EnvType.CLIENT)
+public class FallenKnightEntityRenderer extends MobEntityRenderer<FallenKnightEntity, FallenKnightEntityModel> {
 
-    private static final Identifier TEXTURE = Identifier.of(MedievalStuff.MOD_ID, "textures/entity/fallen_knight/fallen_knight.png");
-    private static final RenderLayer EMISSIVE_TRANSLUCENT = RenderLayer.of(
-            "emissive_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, RenderLayer.MultiPhaseParameters.builder()
-                    .program(new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeEntityTranslucentEmissiveProgram))
-                    .texture(new RenderPhase.Texture(TEXTURE, false, false))
-                    .transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
-                    .cull(RenderPhase.DISABLE_CULLING)
-                    .lightmap(RenderPhase.ENABLE_LIGHTMAP)
-                    .overlay(RenderPhase.ENABLE_OVERLAY_COLOR)
-                    .build(false)
-
-    );
+    public static final Identifier TEXTURE = Identifier.of(MedievalStuff.MOD_ID, "textures/entity/fallen_knight/fallen_knight.png");
 
     public FallenKnightEntityRenderer(EntityRendererFactory.Context context) {
-        this(context, MedievalStuffEntityModelLayers.FALLEN_KNIGHT, MedievalStuffEntityModelLayers.FALLEN_KNIGHT_OUTER_ARMOR, MedievalStuffEntityModelLayers.FALLEN_KNIGHT_INNER_ARMOR);
-    }
+        super(context, new FallenKnightEntityModel(context.getPart(MedievalStuffEntityModelLayers.FALLEN_KNIGHT)),0.5F);
 
-    public FallenKnightEntityRenderer(EntityRendererFactory.Context context, EntityModelLayer entityModelLayer, EntityModelLayer legArmorLayer, EntityModelLayer bodyArmorLayer) {
-        this(context, legArmorLayer, bodyArmorLayer, new FallenKnightEntityModel<>(context.getPart(entityModelLayer)));
-    }
+        HeldItemRenderer heldItemRenderer = context.getHeldItemRenderer();
 
-    public FallenKnightEntityRenderer(EntityRendererFactory.Context context, EntityModelLayer entityModelLayer, EntityModelLayer entityModelLayer1, FallenKnightEntityModel<T> fallenKnightEntityModel) {
-        super(context, fallenKnightEntityModel, 0.5F);
-
-        addFeature(
-                new ArmorFeatureRenderer<>(
-                        this, new FallenKnightEntityModel<>(context.getPart(entityModelLayer)), new FallenKnightEntityModel<>(context.getPart(entityModelLayer1)
-                ),
-                        context.getModelManager()
-                )
-        );
+        addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), heldItemRenderer));
+        addFeature(new HeldItemFeatureRenderer<>(this, heldItemRenderer));
+        addFeature(new HumanoidArmorFeatureRenderer<>(this, new FallenKnightEntityArmorModel(context.getPart(MedievalStuffEntityModelLayers.FALLEN_KNIGHT_INNER_ARMOR)),
+                new FallenKnightEntityArmorModel(context.getPart(MedievalStuffEntityModelLayers.FALLEN_KNIGHT_OUTER_ARMOR)), context.getModelManager()));
+        addFeature(new FallenKnightSoulFeatureRenderer(this));
+        addFeature(new FallenKnightSoulEnergyFeatureRenderer(this));
     }
 
 
     @Override
-    public Identifier getTexture(T entity) {
+    public Identifier getTexture(FallenKnightEntity fallenKnight) {
         return TEXTURE;
     }
 
     @Override
-    protected boolean isShaking(T entity) {
-        return entity instanceof FallenKnightEntity fallenKnightEntity && fallenKnightEntity.isShaking();
+    protected @Nullable RenderLayer getRenderLayer(FallenKnightEntity fallenKnight, boolean showBody, boolean translucent, boolean showOutline) {
+        return fallenKnight.getDataTracker().get(FallenKnightEntity.CHARGING) ? MedievalStuffRenderLayers.FALLEN_KNIGHT_TRANSLUCENT_EMISSIVE : super.getRenderLayer(fallenKnight, showBody, translucent, showOutline);
     }
 
     @Override
-    public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        if (entity instanceof FallenKnightEntity fallenKnightEntity) {
-            if (!fallenKnightEntity.isCharging()) {
-                super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
-            }
-
-            if (entity.isAlive()) {
-                matrices.push();
-                matrices.scale(1.0F, -1.0F, 1.0F);
-                matrices.translate(0.0F, -1.5F, 0.0F);
-                VertexConsumer vertexConsumer = vertexConsumers.getBuffer(EMISSIVE_TRANSLUCENT);
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                model.renderSoul(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
-
-                if (fallenKnightEntity.isCharging()) {
-                    model.renderBodyWithTranslucency(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
-                }
-
-                RenderSystem.disableBlend();
-                matrices.pop();
-            }
-        }
+    protected boolean isShaking(FallenKnightEntity fallenKnight) {
+        return fallenKnight.hasStatusEffect(MedievalStuffStatusEffects.SOUL_DECAY);
     }
 }

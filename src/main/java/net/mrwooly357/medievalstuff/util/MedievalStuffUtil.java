@@ -9,19 +9,11 @@ public class MedievalStuffUtil {
 
     /** Makes number opposite. For example:
      double a = 1;
-     double oppositeA = this.opposite(a);
+     double oppositeA = opposite(a);
      <p> And "oppositeA" will be equal to -1.
      */
-    public static double opposite(double numberToOpposite) {
-        double oppositeNumber;
-
-        if (numberToOpposite > 0 || numberToOpposite < 0) {
-            oppositeNumber = numberToOpposite - numberToOpposite * 2;
-        } else {
-            oppositeNumber = 0;
-        }
-
-        return oppositeNumber;
+    public static double opposite(double number) {
+        return number * -1;
     }
 
     /**
@@ -33,43 +25,41 @@ public class MedievalStuffUtil {
      * @param toY is y coordinates of "to" point.
      * @param toZ is z coordinates of "to" point.
      * @return the distance between "from" point and "to" point.
-     * <p> Note:
-     * <p> If you don't understand what this is, imagine a chicken and a cow on your farm, draw a line between them and measure its length.
      */
     public static double getDistanceBetween(double fromX, double fromY, double fromZ, double toX, double toY, double toZ) {
-        double rawXDistance = fromX - toX;
-        double rawYDistance = fromY - toY;
-        double rawZDistance = fromZ - toZ;
+        double rawXDistance = toX - fromX;
+        double rawYDistance = toY - fromY;
+        double rawZDistance = toZ - fromZ;
         double xDistance;
         double yDistance;
         double zDistance;
 
-        if (rawXDistance < 0 ) {
+        if (rawXDistance < 0) {
             xDistance = opposite(rawXDistance);
-        } else {
+        } else
             xDistance = rawXDistance;
-        }
 
-        if (rawYDistance < 0 ) {
+        if (rawYDistance < 0) {
             yDistance = opposite(rawYDistance);
-        } else {
+        } else
             yDistance = rawYDistance;
-        }
 
-        if (rawZDistance < 0 ) {
+        if (rawZDistance < 0) {
             zDistance = opposite(rawZDistance);
-        } else {
+        } else
             zDistance = rawZDistance;
-        }
 
         return MathHelper.sqrt((float) (xDistance * xDistance + yDistance * yDistance + zDistance * zDistance));
     }
 
+    /**
+     * Converts a rgb colour to packed int colour.
+     * @param red the red value of the colour.
+     * @param green the green value of the colour.
+     * @param blue the blue value of the colour.
+     * @return a packed int colour from rgb.
+     */
     public static int rgbToPackedInt(int red, int green, int blue) {
-        red = red & 0xFF;
-        green = green & 0xFF;
-        blue = blue & 0xFF;
-
         return (red << 16) | (green << 8) | blue;
     }
 

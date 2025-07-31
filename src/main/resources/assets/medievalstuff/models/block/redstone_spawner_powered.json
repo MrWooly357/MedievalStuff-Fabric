@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "medievalstuff:block/redstone_spawner_top_powered",
+    "north": "medievalstuff:block/redstone_spawner_side_powered",
+    "east": "medievalstuff:block/redstone_spawner_side_powered",
+    "south": "medievalstuff:block/redstone_spawner_side_powered",
+    "west": "medievalstuff:block/redstone_spawner_side_powered",
+    "down": "medievalstuff:block/redstone_spawner_bottom",
+    "particle": "medievalstuff:block/redstone_spawner_side_powered"
+  }
+}

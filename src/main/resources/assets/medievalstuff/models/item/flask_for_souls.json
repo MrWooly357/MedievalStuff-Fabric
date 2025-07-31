@@ -1,0 +1,80 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "medievalstuff:item/flask_for_souls_0"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.0833333
+      },
+      "model": "medievalstuff:item/flask_for_souls_1"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.1666666
+      },
+      "model": "medievalstuff:item/flask_for_souls_2"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.25
+      },
+      "model": "medievalstuff:item/flask_for_souls_3"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.3333333
+      },
+      "model": "medievalstuff:item/flask_for_souls_4"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.4166666
+      },
+      "model": "medievalstuff:item/flask_for_souls_5"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.5
+      },
+      "model": "medievalstuff:item/flask_for_souls_6"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.5833333
+      },
+      "model": "medievalstuff:item/flask_for_souls_7"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.6666666
+      },
+      "model": "medievalstuff:item/flask_for_souls_8"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.75
+      },
+      "model": "medievalstuff:item/flask_for_souls_9"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.8333333
+      },
+      "model": "medievalstuff:item/flask_for_souls_10"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 0.9166666
+      },
+      "model": "medievalstuff:item/flask_for_souls_11"
+    },
+    {
+      "predicate": {
+        "medievalstuff:souls": 1.0
+      },
+      "model": "medievalstuff:item/flask_for_souls_12"
+    }
+  ]
+}
