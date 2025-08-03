@@ -17,7 +17,7 @@ public class MedievalStuffBlockTagProvider extends FabricTagProvider.BlockTagPro
 
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+    protected void configure(RegistryWrapper.WrapperLookup lookup) {
         /* Mod */
         getOrCreateTagBuilder(MedievalStuffTags.Blocks.NEEDS_SILVER_TOOL);
 

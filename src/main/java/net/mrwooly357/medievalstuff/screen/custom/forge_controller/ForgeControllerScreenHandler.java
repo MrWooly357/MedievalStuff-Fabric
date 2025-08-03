@@ -16,19 +16,19 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ForgeControllerScreenHandler extends ScreenHandler {
 
     protected final Inventory inventory;
-    protected final PropertyDelegate delegate;
+    protected final PropertyDelegate propertyDelegate;
 
-    protected ForgeControllerScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate delegate, int inventorySize) {
+    protected ForgeControllerScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate propertyDelegate, int inventorySize) {
         super(type, syncId);
 
         checkSize((Inventory) entity, inventorySize);
 
         this.inventory = (Inventory) entity;
-        this.delegate = delegate;
+        this.propertyDelegate = propertyDelegate;
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
-        addProperties(delegate);
+        addProperties(propertyDelegate);
     }
 
 

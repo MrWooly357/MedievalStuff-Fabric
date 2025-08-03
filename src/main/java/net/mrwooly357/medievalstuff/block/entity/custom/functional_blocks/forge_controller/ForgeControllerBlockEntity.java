@@ -2,105 +2,197 @@ package net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.forge
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.mrwooly357.medievalstuff.block.custom.functional_blocks.heater.HeaterBlock;
+import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater.HeaterBlockEntity;
 import net.mrwooly357.medievalstuff.compound.Compound;
-import net.mrwooly357.wool.block_entity_inventory.ImplementedInventory;
+import net.mrwooly357.medievalstuff.registry.MedievalStuffRegistries;
+import net.mrwooly357.medievalstuff.temperature.TemperatureData;
+import net.mrwooly357.medievalstuff.temperature.TemperatureDataHolder;
+import net.mrwooly357.wool.block_util.entity.inventory.ExtendedBlockEntityWithInventory;
 import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionProvider;
+import net.mrwooly357.wool.util.misc.FloatData;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ForgeControllerBlockEntity extends BlockEntity implements ExtendedScreenHandlerFactory<BlockPos>, ImplementedInventory, MultiblockConstructionProvider {
+import java.util.Objects;
 
-    protected boolean built;
+public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWithInventory implements ExtendedScreenHandlerFactory<BlockPos>, MultiblockConstructionProvider, TemperatureDataHolder {
+
     protected boolean canCheck;
-    protected byte checkDelayTimer;
-    protected int temperature;
+    protected boolean built;
+    protected float temperature;
+    protected TemperatureData temperatureData = new TemperatureData();
+    protected final float minTemperature;
+    protected final float maxTemperature;
     protected int meltingProgress;
     protected int maxMeltingProgress;
+    @Nullable
     protected Compound compound;
-    protected int compoundAmount;
+    protected float compoundAmount;
+    protected final float defaultMaxCompoundAmount;
+    protected int compoundAmountSetter0;
+    protected int compoundAmountSetter1;
     protected int alloyingProgress;
     protected int maxAlloyingProgress;
 
-    protected int DEFAULT_MAX_MELTING_PROGRESS = 200;
-    protected int DEFAULT_MAX_ALLOYING_PROGRESS = 200;
+    protected static final int DEFAULT_MAX_MELTING_PROGRESS = 200;
+    protected static final int DEFAULT_MAX_ALLOYING_PROGRESS = 200;
 
-    public ForgeControllerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
+    public ForgeControllerBlockEntity(BlockEntityType<? extends ForgeControllerBlockEntity> type, BlockPos pos, BlockState state, int inventorySize, float minTemperature, float maxTemperature, float defaultMaxCompoundAmount) {
+        super(type, pos, state, inventorySize);
+
+        temperature = minTemperature;
+        this.minTemperature = minTemperature;
+        this.maxTemperature = maxTemperature;
+        this.defaultMaxCompoundAmount = defaultMaxCompoundAmount;
+
+        addData((nbt, lookup) -> nbt.putBoolean("CanCheck", canCheck), (nbt, lookup) -> canCheck = nbt.getBoolean("CanCheck"));
+        addData((nbt, lookup) -> nbt.putBoolean("Built", built), (nbt, lookup) -> built = nbt.getBoolean("Built"));
+        addData((nbt, lookup) -> nbt.putFloat("Temperature", temperature), (nbt, lookup) -> temperature = nbt.getFloat("Temperature"));
+        addData((nbt, lookup) -> nbt.putInt("MeltingProgress", meltingProgress), (nbt, lookup) -> meltingProgress = nbt.getInt("MeltingProgress"));
+        addData((nbt, lookup) -> nbt.putInt("MaxMeltingProgress", maxMeltingProgress), (nbt, lookup) -> maxMeltingProgress = nbt.getInt("MaxMeltingProgress"));
+        addData((nbt, lookup) -> nbt.putString("Compound", compound != null ? compound.toString() : ""),
+                (nbt, lookup) -> {
+            String id = nbt.getString("Compound");
+            compound = !Objects.equals(id, "") ? MedievalStuffRegistries.COMPOUND.get(Identifier.of(id)) : null;
+        });
+        addData((nbt, lookup) -> nbt.putFloat("CompoundAmount", compoundAmount), (nbt, lookup) -> compoundAmount = nbt.getFloat("CompoundAmount"));
+        addData((nbt, lookup) -> nbt.putInt("AlloyingProgress", alloyingProgress), (nbt, lookup) -> alloyingProgress = nbt.getInt("AlloyingProgress"));
+        addData((nbt, lookup) -> nbt.putInt("MaxAlloyingProgress", maxAlloyingProgress), (nbt, lookup) -> maxAlloyingProgress = nbt.getInt("MaxAlloyingProgress"));
     }
 
 
-    public void tick(World world, BlockPos pos, BlockState state) {
-        if (!world.isClient()) {
+    @Override
+    public boolean canTickServer(ServerWorld serverWorld, BlockPos pos, BlockState state) {
+        return true;
+    }
 
-            if (canCheck) {
-                boolean canTryCheck = false;
+    @Override
+    public void serverTick(ServerWorld serverWorld, BlockPos pos, BlockState state) {
+        boolean markDirty = false;
 
-                if (checkDelayTimer == 20) {
-                    checkDelayTimer = 0;
+        if (canCheck) {
+            boolean canTryCheck = serverWorld.getTime() % 20 == 0;
 
-                    canTryCheck = true;
+            if (canTryCheck)
+                tryBuild(serverWorld, getMultiblockConstructionBuilderStartPos(serverWorld, pos), getMultiblockConstructionBuilderEndPos(serverWorld, pos), state.get(Properties.HORIZONTAL_FACING));
+
+            markDirty = true;
+        }
+
+        boolean hasMeltingRecipe = hasMeltingRecipe();
+        boolean hasAlloyingRecipe = hasAlloyingRecipe();
+
+        if (built) {
+
+            if (hasMeltingRecipe) {
+                meltingProgress++;
+
+                if (hasMeltingFinished()) {
+                    meltingProgress = 0;
+
+                    melt();
                 }
 
-                if (canTryCheck)
-                    tryBuild(world, getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), state.get(Properties.HORIZONTAL_FACING));
+                if (!markDirty)
+                    markDirty = true;
+            } else if (meltingProgress > 0) {
+                meltingProgress--;
 
-                checkDelayTimer++;
+                if (!markDirty)
+                    markDirty = true;
             }
 
-            if (built) {
+            if (hasAlloyingRecipe) {
+                alloyingProgress++;
+                compoundAmount -= getCompoundAmountDecrease();
 
-                if (hasMeltingRecipe()) {
-                    meltingProgress++;
-                    markDirty(world, pos, state);
+                if (hasAlloyingFinished()) {
+                    alloyingProgress = 0;
 
-                    if (hasMeltingFinished()) {
-                        meltingProgress = 0;
+                    alloy();
+                }
 
-                        melt();
-                    }
-                } else if (meltingProgress > 0)
-                    meltingProgress--;
+                if (!markDirty)
+                    markDirty = true;
+            } else if (alloyingProgress > 0) {
+                alloyingProgress--;
 
-                if (hasAlloyingRecipe()) {
-                    alloyingProgress++;
+                if (!markDirty)
+                    markDirty = true;
+            }
+        } else {
 
-                    markDirty(world, pos, state);
+            if (meltingProgress > 0) {
+                meltingProgress--;
 
-                    if (hasAlloyingFinished()) {
-                        alloyingProgress = 0;
-
-                        alloy();
-                    }
-                } else if (alloyingProgress > 0)
-                    alloyingProgress--;
-            } else {
-
-                if (meltingProgress > 0)
-                    meltingProgress--;
-
-                if (alloyingProgress > 0)
-                    alloyingProgress--;
+                if (!markDirty)
+                    markDirty = true;
             }
 
-            if (meltingProgress > 0 || alloyingProgress > 0) {
+            if (alloyingProgress > 0) {
+                alloyingProgress--;
 
-                if (!state.get(Properties.LIT))
-                    world.setBlockState(pos, state.with(Properties.LIT, true));
-            } else if (state.get(Properties.LIT))
-                world.setBlockState(pos, state.with(Properties.LIT, false));
+                if (!markDirty)
+                    markDirty = true;
+            }
         }
+
+        if (!hasMeltingRecipe) {
+            maxMeltingProgress = DEFAULT_MAX_MELTING_PROGRESS;
+
+            if (!markDirty)
+                markDirty = true;
+        }
+
+        if (!hasAlloyingRecipe) {
+            maxAlloyingProgress = DEFAULT_MAX_ALLOYING_PROGRESS;
+
+            if (!markDirty)
+                markDirty = true;
+        }
+
+        boolean lit = state.get(Properties.LIT);
+
+        if (meltingProgress > 0 || alloyingProgress > 0) {
+
+            if (!lit)
+                serverWorld.setBlockState(pos, state.with(Properties.LIT, true));
+        } else if (lit)
+            serverWorld.setBlockState(pos, state.with(Properties.LIT, false));
+
+        if (state.get(HeaterBlock.OPEN) && temperature > minTemperature) {
+
+            if (temperature - 0.05F > minTemperature) {
+                temperature -= 0.05F;
+            } else
+                temperature = minTemperature;
+
+            markDirty = true;
+        }
+
+        if (temperature != temperatureData.getTemperature())
+            temperatureData = new TemperatureData(temperature);
+
+        if (markDirty)
+            markDirty(serverWorld, pos, state);
+    }
+
+    @Override
+    public void tryBuild(World world, BlockPos startPos, BlockPos endPos, Direction direction) {
+        MultiblockConstructionProvider.super.tryBuild(world, getMultiblockConstructionBuilderStartPos(world, pos), getMultiblockConstructionBuilderEndPos(world, pos), direction);
     }
 
     @Override
@@ -122,15 +214,42 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
         this.canCheck = canCheck;
     }
 
-    protected boolean isTemperatureSufficient(float temperature, boolean invert) {
-        return invert ? this.temperature <= temperature : this.temperature >= temperature;
+    protected void tryIncreaseTemperature(@Nullable HeaterBlockEntity heaterBlockEntity) {
+        if (temperature < maxTemperature) {
+            float f = heaterBlockEntity != null ? heaterBlockEntity.getTemperatureData().getTemperature() : temperature;
+            float increase = (maxTemperature - f) / 1000 + 0.01F;
+
+            if (temperature + increase <= maxTemperature) {
+                temperature += increase;
+            } else
+                temperature = maxTemperature;
+
+            System.out.println(0);
+        }
+    }
+
+    protected void tryDecreaseTemperature(@Nullable HeaterBlockEntity heaterBlockEntity) {
+        if (temperature > minTemperature) {
+            float f = heaterBlockEntity != null ? heaterBlockEntity.getTemperatureData().getTemperature() : temperature;
+            float decrease = ((maxTemperature - f) / 500 + 0.01F) * 2;
+
+            if (temperature - decrease >= minTemperature) {
+                temperature -= decrease;
+            } else
+                temperature = minTemperature;
+        }
+    }
+
+    @Override
+    public @Nullable TemperatureData getTemperatureData() {
+        return temperatureData;
     }
 
     public int getMeltingProgress() {
         return meltingProgress;
     }
 
-    protected void setMeltingProgress(int meltingProgress) {
+    public void setMeltingProgress(int meltingProgress) {
         this.meltingProgress = meltingProgress;
     }
 
@@ -146,23 +265,33 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
         return maxMeltingProgress;
     }
 
-    protected void setMaxMeltingProgress(int maxMeltingProgress) {
+    public void setMaxMeltingProgress(int maxMeltingProgress) {
         this.maxMeltingProgress = maxMeltingProgress;
     }
 
-    public int getCompoundAmount() {
-        return compoundAmount;
+    public int getCompoundAmount0() {
+        return new FloatData(compoundAmount, (byte) 2).packAndSplit()[0];
     }
 
-    protected void setCompoundAmount(int compoundAmount) {
-        this.compoundAmount = compoundAmount;
+    public int getCompoundAmount1() {
+        return new FloatData(compoundAmount, (byte) 2).packAndSplit()[1];
     }
+
+    public void setCompoundAmount0(int compoundAmount0) {
+        compoundAmountSetter0 = compoundAmount0;
+    }
+
+    public void setCompoundAmount1(int compoundAmount1) {
+        compoundAmountSetter1 = compoundAmount1;
+    }
+
+    protected abstract float getCompoundAmountDecrease();
 
     public int getAlloyingProgress() {
         return alloyingProgress;
     }
 
-    protected void setAlloyingProgress(int alloyingProgress) {
+    public void setAlloyingProgress(int alloyingProgress) {
         this.alloyingProgress = alloyingProgress;
     }
 
@@ -178,85 +307,13 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
         return maxAlloyingProgress;
     }
 
-    protected void setMaxAlloyingProgress(int maxAlloyingProgress) {
+    public void setMaxAlloyingProgress(int maxAlloyingProgress) {
         this.maxAlloyingProgress = maxAlloyingProgress;
     }
 
-    protected BlockPos getMultiblockConstructionBuilderStartPos(World world, BlockPos pos) {
-        int x = pos.getX();
-        int y = pos.getY() - 1;
-        int z = pos.getZ();
-        BlockState state = world.getBlockState(pos);
+    protected abstract BlockPos getMultiblockConstructionBuilderStartPos(World world, BlockPos pos);
 
-        if (state.get(Properties.HORIZONTAL_FACING) == Direction.NORTH) {
-            x++;
-            z += 2;
-        } else if (state.get(Properties.HORIZONTAL_FACING) == Direction.EAST) {
-            x -= 2;
-            z++;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.SOUTH) {
-            x--;
-            z -= 2;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.WEST) {
-            x += 2;
-            z--;
-        }
-
-        return new BlockPos(x, y, z);
-    }
-
-    protected BlockPos getMultiblockConstructionBuilderEndPos(World world, BlockPos pos) {
-        int x = pos.getX();
-        int y = pos.getY() + 1;
-        int z = pos.getZ();
-        BlockState state = world.getBlockState(pos);
-
-        if (state.get(Properties.HORIZONTAL_FACING) == Direction.NORTH) {
-            x--;
-        } else if (state.get(Properties.HORIZONTAL_FACING) == Direction.EAST) {
-            z--;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.SOUTH) {
-            x++;
-        } if (state.get(Properties.HORIZONTAL_FACING) == Direction.WEST) {
-            z++;
-        }
-
-        return new BlockPos(x, y, z);
-    }
-
-    @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-
-        nbt.putBoolean("Built", built);
-        nbt.putBoolean("CanCheck", canCheck);
-        nbt.putByte("CheckDelayTimer", checkDelayTimer);
-        Inventories.writeNbt(nbt, getInventory(), registryLookup);
-        nbt.putInt("Temperature", temperature);
-        nbt.putInt("MeltingProgress", meltingProgress);
-        nbt.putInt("MaxMeltingProgress", maxMeltingProgress);
-        nbt.putInt("AlloyingProgress", alloyingProgress);
-        nbt.putInt("MaxAlloyingProgress", maxAlloyingProgress);
-        nbt.putInt("CompoundAmount", compoundAmount);
-    }
-
-    @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-
-        built = nbt.getBoolean("Built");
-        canCheck = nbt.getBoolean("CanCheck");
-        checkDelayTimer = nbt.getByte("CheckDelayTimer");
-
-        Inventories.readNbt(nbt, getInventory(), registryLookup);
-
-        temperature = nbt.getInt("Temperature");
-        meltingProgress = nbt.getInt("MeltingProgress");
-        maxMeltingProgress = nbt.getInt("MaxMeltingProgress");
-        alloyingProgress = nbt.getInt("AlloyingProgress");
-        maxAlloyingProgress = nbt.getInt("MaxAlloyingProgress");
-        compoundAmount = nbt.getInt("CompoundAmount");
-    }
+    protected abstract BlockPos getMultiblockConstructionBuilderEndPos(World world, BlockPos pos);
 
     @Override
     public BlockPos getScreenOpeningData(ServerPlayerEntity serverPlayerEntity) {
@@ -266,5 +323,10 @@ public abstract class ForgeControllerBlockEntity extends BlockEntity implements 
     @Override
     public @Nullable Packet<ClientPlayPacketListener> toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
     }
 }

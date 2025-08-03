@@ -12,103 +12,89 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.TankBlock;
+import net.mrwooly357.wool.block_util.entity.ExtendedBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 import static net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.TankBlock.calculateLightLevel;
 
-public abstract class TankBlockEntity extends BlockEntity {
+public abstract class TankBlockEntity extends ExtendedBlockEntity {
 
-    SingleVariantStorage<FluidVariant> fluidStorage;
-    int currentTick;
+    protected final SingleVariantStorage<FluidVariant> fluidStorage;
 
-    public TankBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+    public TankBlockEntity(BlockEntityType<? extends TankBlockEntity> type, BlockPos pos, BlockState state, long capacity) {
         super(type, pos, state);
+
+        this.fluidStorage = new SingleVariantStorage<>() {
+
+
+            @Override
+            protected FluidVariant getBlankVariant() {
+                return FluidVariant.blank();
+            }
+
+            @Override
+            protected long getCapacity(FluidVariant variant) {
+                return capacity;
+            }
+
+            @Override
+            protected void onFinalCommit() {
+                markDirty();
+                getWorld().updateListeners(pos, getCachedState(), getCachedState(), 3);
+            }
+        };
+
+        addData((nbt, lookup) -> SingleVariantStorage.writeNbt(fluidStorage, FluidVariant.CODEC, nbt, lookup),
+                (nbt, lookup) -> SingleVariantStorage.readNbt(fluidStorage, FluidVariant.CODEC, FluidVariant::blank, nbt, lookup));
     }
 
 
     @Override
-    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-        return createNbt(registryLookup);
+    public boolean canTickServer(ServerWorld serverWorld, BlockPos pos, BlockState state) {
+        return true;
     }
 
     @Override
-    public @Nullable Packet<ClientPlayPacketListener> toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
+    public void serverTick(ServerWorld serverWorld, BlockPos pos, BlockState state) {
+        if (serverWorld.getTime() % 5 == 0 && state.get(TankBlock.BOTTOM_CONNECTED) && serverWorld.getBlockEntity(pos) instanceof TankBlockEntity tankBlockEntity) {
+            SingleVariantStorage<FluidVariant> fluidStorage = tankBlockEntity.getFluidStorage();
+            BlockPos pos1 = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
+            BlockState state1 = serverWorld.getBlockState(pos1);
 
-    @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-        SingleVariantStorage.readNbt(getFluidStorage(), FluidVariant.CODEC, FluidVariant::blank, nbt, registryLookup);
-        nbt.getInt("currentTick");
-    }
+            if (state1.getBlock() instanceof TankBlock && state1.get(TankBlock.TOP_CONNECTED)) {
+                BlockEntity entity1 = serverWorld.getBlockEntity(pos1);
 
-    @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-        SingleVariantStorage.writeNbt(getFluidStorage(), FluidVariant.CODEC, nbt, registryLookup);
-        nbt.putInt("currentTick", currentTick);
-    }
+                if (entity1 instanceof TankBlockEntity tankBlockEntity1) {
+                    SingleVariantStorage<FluidVariant> fluidStorage1 = tankBlockEntity1.getFluidStorage();
+                    long emptySpace = fluidStorage1.getCapacity() - fluidStorage1.getAmount();
+                    FluidVariant variant = fluidStorage.variant;
 
-    public SingleVariantStorage<FluidVariant> getFluidStorage() {
-        return fluidStorage;
-    }
+                    if (emptySpace > 0 && variant != FluidVariant.of(Fluids.EMPTY)) {
+                        long fluidTransferAmount = getFluidTransferAmount(fluidStorage, emptySpace);
 
-    public void setFluidStorage(SingleVariantStorage<FluidVariant> fluidStorage) {
-        this.fluidStorage = fluidStorage;
-    }
+                        try (Transaction transaction = Transaction.openOuter()) {
+                            fluidStorage.extract(variant, fluidTransferAmount, transaction);
+                            transaction.commit();
 
-    public void tick(World world, BlockPos pos, BlockState state) {
-        TankBlockEntity entity = (TankBlockEntity) world.getBlockEntity(pos);
+                            int lightLevel = calculateLightLevel(tankBlockEntity1, variant.getFluid());
 
-        if (entity.currentTick < 20) {
-            entity.currentTick++;
-        }
+                            serverWorld.setBlockState(pos, state.with(TankBlock.LIGHT_LEVEL, lightLevel));
+                        }
 
-        if (entity.currentTick == 5) {
+                        try (Transaction transaction = Transaction.openOuter()) {
+                            fluidStorage1.insert(variant, fluidTransferAmount, transaction);
+                            transaction.commit();
 
-            if (state.get(TankBlock.BOTTOM_CONNECTED)) {
-                SingleVariantStorage<FluidVariant> fluidStorage = entity.getFluidStorage();
-                BlockPos pos1 = new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ());
-                BlockState state1 = world.getBlockState(pos1);
+                            int lightLevel = calculateLightLevel(tankBlockEntity1, fluidStorage1.variant.getFluid());
 
-                if (state1.getBlock() instanceof TankBlock && state1.get(TankBlock.TOP_CONNECTED)) {
-                    BlockEntity entity1 = world.getBlockEntity(pos1);
-
-                    if (entity1 instanceof TankBlockEntity tankBlockEntity) {
-                        SingleVariantStorage<FluidVariant> fluidStorage1 = tankBlockEntity.getFluidStorage();
-                        long emptySpace = fluidStorage1.getCapacity() - fluidStorage1.getAmount();
-                        FluidVariant variant = fluidStorage.variant;
-
-                        if (emptySpace > 0 && variant != FluidVariant.of(Fluids.EMPTY)) {
-                            long fluidTransferAmount = getFluidTransferAmount(fluidStorage, emptySpace);
-
-                            try (Transaction transaction = Transaction.openOuter()) {
-                                fluidStorage.extract(variant, fluidTransferAmount, transaction);
-                                transaction.commit();
-
-                                int lightLevel = calculateLightLevel(tankBlockEntity, variant.getFluid());
-
-                                world.setBlockState(pos, state.with(TankBlock.LIGHT_LEVEL, lightLevel));
-                            }
-
-                            try (Transaction transaction = Transaction.openOuter()) {
-                                fluidStorage1.insert(variant, fluidTransferAmount, transaction);
-                                transaction.commit();
-
-                                int lightLevel = calculateLightLevel(tankBlockEntity, fluidStorage1.variant.getFluid());
-
-                                world.setBlockState(pos1, state1.with(TankBlock.LIGHT_LEVEL, lightLevel));
-                            }
+                            serverWorld.setBlockState(pos1, state1.with(TankBlock.LIGHT_LEVEL, lightLevel));
                         }
                     }
                 }
             }
-
-            entity.currentTick = 0;
         }
     }
 
@@ -126,5 +112,19 @@ public abstract class TankBlockEntity extends BlockEntity {
             }
         }
         return fluidTransferAmount;
+    }
+
+    public SingleVariantStorage<FluidVariant> getFluidStorage() {
+        return fluidStorage;
+    }
+
+    @Override
+    public @Nullable Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return createNbt(registryLookup);
     }
 }

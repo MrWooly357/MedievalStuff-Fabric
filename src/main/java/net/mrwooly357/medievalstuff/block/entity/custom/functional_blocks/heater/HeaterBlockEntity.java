@@ -3,68 +3,75 @@ package net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heate
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.property.Properties;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.heater.HeaterBlock;
 import net.mrwooly357.medievalstuff.temperature.TemperatureData;
 import net.mrwooly357.medievalstuff.temperature.TemperatureDataHolder;
-import net.mrwooly357.wool.block_entity_inventory.ImplementedInventory;
+import net.mrwooly357.wool.block_util.entity.inventory.ExtendedBlockEntityWithInventory;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public abstract class HeaterBlockEntity extends BlockEntity implements ImplementedInventory, ExtendedScreenHandlerFactory<BlockPos>, TemperatureDataHolder {
+public abstract class HeaterBlockEntity extends ExtendedBlockEntityWithInventory implements ExtendedScreenHandlerFactory<BlockPos>, TemperatureDataHolder {
 
     protected float temperature;
-    protected TemperatureData temperatureData;
-    protected float minTemperature;
-    protected float maxTemperature;
+    protected TemperatureData temperatureData = new TemperatureData();
+    protected final float minTemperature;
+    protected final float maxTemperature;
     protected Fuel fuel;
     protected int burnTime;
     protected int maxBurnTime;
     protected float fuelEfficiency;
-    protected int ashAmount;
-    protected int maxAshAmount;
-    protected int ashResistance;
+    protected short ashAmount;
+    protected short maxAshAmount;
+    protected short ashResistance;
 
-    public static final Map<Item, Integer> VANILLA_FUEL_BURN_TIMES = AbstractFurnaceBlockEntity.createFuelTimeMap();
-    public static final Map<Item, Integer> CUSTOM_FUEL_BURN_TIMES = new HashMap<>();
-    public static final Map<Identifier, Fuel> FUELS = new HashMap<>();
-    public static final Map<Item, ItemStack> FUEL_EXCHANGE_STACKS = new HashMap<>();
+    protected static final Map<Item, Fuel> FUEL = new HashMap<>();
 
-    protected HeaterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, float fuelEfficiency, float minTemperature, float maxTemperature, int maxAshAmount, int ashResistance) {
-        super(type, pos, state);
+    protected HeaterBlockEntity(BlockEntityType<? extends HeaterBlockEntity> type, BlockPos pos, BlockState state, int inventorySize,
+                                float fuelEfficiency, float minTemperature, float maxTemperature, short maxAshAmount, short ashResistance) {
+        super(type, pos, state, inventorySize);
 
         this.temperature = minTemperature;
-        this.temperatureData = new TemperatureData();
         this.minTemperature = minTemperature;
         this.maxTemperature = maxTemperature;
+        fuel = Fuel.EMPTY;
         this.fuelEfficiency = fuelEfficiency;
         this.maxAshAmount = maxAshAmount;
         this.ashResistance = ashResistance;
+
+        addData((nbt, lookup) -> nbt.putFloat("Temperature", temperature), (nbt, lookup) -> temperature = nbt.getFloat("Temperature"));
+        addData((nbt, lookup) -> nbt.putString("Fuel", fuel.id.toString()),
+                (nbt, lookup) -> fuel = createFuelMap().get(Registries.ITEM.get(Identifier.of(nbt.getString("Fuel")))));
+        addData((nbt, lookup) -> nbt.putInt("BurnTime", burnTime), (nbt, lookup) -> burnTime = nbt.getInt("BurnTime"));
+        addData((nbt, lookup) -> nbt.putInt("MaxBurnTime", maxBurnTime), (nbt, lookup) -> maxBurnTime = nbt.getInt("MaxBurnTime"));
+        addData((nbt, lookup) -> nbt.putShort("AshAmount", ashAmount), (nbt, lookup) -> ashAmount = nbt.getShort("AshAmount"));
     }
 
 
-    public void tick(World world, BlockPos pos, BlockState state) {
-        boolean isBurning = isBurning();
+    @Override
+    public boolean canTickServer(ServerWorld serverWorld, BlockPos pos, BlockState state) {
+        return true;
+    }
+
+    @Override
+    public void serverTick(ServerWorld serverWorld, BlockPos pos, BlockState state) {
         ItemStack stackInSlot = ItemStack.EMPTY;
         int slot = 0;
 
@@ -77,50 +84,46 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Implement
         }
 
         if (!stackInSlot.isEmpty()) {
-            fuel = createFuelsMap().get(Registries.ITEM.getId(stackInSlot.getItem()));
+            fuel = createFuelMap().get(stackInSlot.getItem());
         } else
             fuel = Fuel.EMPTY;
 
-        if (isBurning()) {
+        boolean lit = state.get(HeaterBlock.LIT);
+
+        if (lit && isBurning()) {
             decreaseBurnTime();
             tryIncreaseTemperature();
         } else
             tryDecreaseTemperature();
 
-        if (temperature > 10.0F && state.get(HeaterBlock.OPEN))
-            temperature -= 0.0375F;
+        if (state.get(HeaterBlock.OPEN))
+            tryDecreaseTemperatureFromOpen();
 
-        if (!isBurning() && state.get(Properties.LIT) && ashAmount < maxAshAmount && !stackInSlot.isEmpty() && (ashAmount + createFuelsMap().get(Registries.ITEM.getId(stackInSlot.getItem())).ashAmount()) <= maxAshAmount) {
-            boolean shouldLeaveExchangeStack = createFuelExchangeStacksMap().containsKey(stackInSlot.getItem());
-            ItemStack exchangeStack = createFuelExchangeStacksMap().get(stackInSlot.getItem());
+        if (lit && canUseFuel()) {
+            ItemStack exchangeStack = fuel.exchangeStack;
             burnTime = getFuelBurnTime(stackInSlot);
             maxBurnTime = getFuelBurnTime(stackInSlot);
 
             stackInSlot.decrement(1);
 
-            if (shouldLeaveExchangeStack) {
-
-                if (getStack(slot).isEmpty())
-                    setStack(slot, exchangeStack);
-            }
+            if (!exchangeStack.isEmpty())
+                setStack(slot, exchangeStack);
 
             tryIncreaseAshAmount();
         }
 
-        if (isBurning != isBurning())
-            world.setBlockState(pos, state.with(Properties.LIT, isBurning()));
+        if (isBurning()) {
+            serverWorld.setBlockState(pos, state.with(HeaterBlock.LIT, true));
+        } else
+            serverWorld.setBlockState(pos, state.with(HeaterBlock.LIT, false));
 
-        temperatureData = new TemperatureData(temperature);
+        if (temperature != temperatureData.getTemperature())
+            temperatureData = new TemperatureData(temperature);
 
-        markDirty(world, pos, state);
+        markDirty(serverWorld, pos, state);
     }
 
-    @Override
-    public TemperatureData getTemperatureData() {
-        return temperatureData;
-    }
-
-    public void tryIncreaseTemperature() {
+    protected void tryIncreaseTemperature() {
         if (temperature < maxTemperature) {
             float increase = (maxTemperature - temperature) / 1000 + 0.01F;
 
@@ -131,7 +134,7 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Implement
         }
     }
 
-    public void tryDecreaseTemperature() {
+    protected void tryDecreaseTemperature() {
         if (temperature > minTemperature) {
             float decrease = ((maxTemperature - temperature) / 500 + 0.01F) * 2;
 
@@ -140,6 +143,22 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Implement
             } else
                 temperature = minTemperature;
         }
+    }
+
+    protected void tryDecreaseTemperatureFromOpen() {
+        if (temperature - 0.0375F > minTemperature) {
+            temperature -= 0.0375F;
+        } else
+            temperature = minTemperature;
+    }
+
+    @Override
+    public TemperatureData getTemperatureData() {
+        return temperatureData;
+    }
+
+    public float getMinTemperature() {
+        return minTemperature;
     }
 
     public int getBurnTime() {
@@ -152,16 +171,16 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Implement
 
     public void decreaseBurnTime() {
         int ashDecreaseBonus = ashAmount / ashResistance;
+        int decrease = 1 + ashDecreaseBonus;
 
-        burnTime -= 1 + Math.max(ashDecreaseBonus, 0);
+        if ((burnTime - decrease) > 0) {
+            burnTime -= decrease;
+        } else
+            burnTime--;
     }
 
-    public boolean isBurning() {
+    protected boolean isBurning() {
         return burnTime > 0;
-    }
-
-    public void resetBurnTime() {
-        burnTime = 0;
     }
 
     public int getMaxBurnTime() {
@@ -172,98 +191,64 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Implement
         this.maxBurnTime = maxBurnTime;
     }
 
-    public void resetMaxBurnTime() {
-        maxBurnTime = 0;
-    }
-
     public int getAshAmount() {
         return ashAmount;
     }
 
-    public void setAshAmount(int ashAmount) {
+    public void setAshAmount(short ashAmount) {
         this.ashAmount = ashAmount;
     }
 
     public void tryIncreaseAshAmount() {
         if (ashAmount + fuel.ashAmount <= maxAshAmount) {
-            ashAmount += fuel.ashAmount();
+            ashAmount += fuel.ashAmount;
         } else
             ashAmount = maxAshAmount;
     }
 
-    public void tryDecreaseAshAmount(int ashAmount) {
-        if (this.ashAmount - ashAmount > 0) {
-            this.ashAmount -= ashAmount;
+    public void tryDecreaseAshAmount(short amount) {
+        if (ashAmount - amount > 0) {
+            ashAmount -= amount;
         } else
-            this.ashAmount = 0;
+            ashAmount = 0;
     }
 
-    public int getMaxAshAmount() {
+    public boolean canUseFuel() {
+        return fuel != Fuel.EMPTY && burnTime == 0 && ashAmount < maxAshAmount && (ashAmount + fuel.ashAmount) <= maxAshAmount;
+    }
+
+    public short getMaxAshAmount() {
         return maxAshAmount;
     }
 
-    public void setMaxAshAmount(int maxAshAmount) {
+    public void setMaxAshAmount(short maxAshAmount) {
         this.maxAshAmount = maxAshAmount;
     }
 
-    public static Map<Item, Integer> createCustomFuelTimesMap() {
-        return CUSTOM_FUEL_BURN_TIMES;
+    public static Map<Item, Fuel> createFuelMap() {
+        FUEL.put(Items.AIR, Fuel.EMPTY);
+        addFuel(Items.COAL, 1600, (short) 1);
+        addFuel(Items.CHARCOAL, 1600, (short) 1);
+        addFuel(Blocks.COAL_BLOCK, 16000, (short) 9);
+
+        return FUEL;
     }
 
-    public static Map<Identifier, Fuel> createFuelsMap() {
-        addEmptyFuel();
-        addVanillaFuel(Items.COAL, "coal", 1);
-        addVanillaFuel(Items.CHARCOAL, "charcoal", 1);
-        addVanillaFuel(Blocks.COAL_BLOCK, "coal_block", 9);
-
-        return FUELS;
+    public static void addFuel(ItemConvertible item, int burnTime, short ashAmount) {
+        addFuel(item, burnTime, ashAmount, ItemStack.EMPTY);
     }
 
-    private static void addEmptyFuel() {
-        FUELS.put(Fuel.EMPTY.id(), Fuel.EMPTY);
-    }
+    public static void addFuel(ItemConvertible item, int burnTime, short ashAmount, ItemStack exchangeStack) {
+        Item actualItem = item.asItem();
 
-    private static void addVanillaFuel(ItemConvertible item, String name, int ashAmount) {
-        addFuel(item, Identifier.ofVanilla(name), ashAmount);
-    }
-
-    public static void addFuel(ItemConvertible item, Identifier id, int ashAmount) {
-        FUELS.put(Registries.ITEM.getId(item.asItem()), new Fuel(id, ashAmount));
-    }
-
-    public static Map<Item, ItemStack> createFuelExchangeStacksMap() {
-        addFuelExchangeStack(net.minecraft.item.Items.LAVA_BUCKET, net.minecraft.item.Items.BUCKET);
-
-        return FUEL_EXCHANGE_STACKS;
-    }
-
-    public static void addFuelExchangeStack(Item item, Item exchangeItem) {
-        addFuelExchangeStack(item, new ItemStack(exchangeItem));
-    }
-
-    public static void addFuelExchangeStack(Item item, ItemStack exchangeStack) {
-        FUEL_EXCHANGE_STACKS.put(item, exchangeStack);
+        FUEL.put(actualItem, new Fuel(Registries.ITEM.getId(actualItem), burnTime, ashAmount, exchangeStack));
     }
 
     protected int getFuelBurnTime(ItemStack stack) {
         if (stack.isEmpty()) {
             return 0;
-        } else {
-            Item item = stack.getItem();
-            int fuelBurnTime;
-
-            if (VANILLA_FUEL_BURN_TIMES.containsKey(item)) {
-                fuelBurnTime = VANILLA_FUEL_BURN_TIMES.getOrDefault(item, 0);
-            } else
-                fuelBurnTime = createCustomFuelTimesMap().getOrDefault(item, 0);
-
-            return (int) (fuelBurnTime * fuelEfficiency);
-        }
-    }
-
-    @Override
-    public boolean canPlayerUse(PlayerEntity player) {
-        return Inventory.canPlayerUse(this, player);
+        } else
+            return (int) (fuel.burnTime * fuelEfficiency);
     }
 
     @Override
@@ -272,55 +257,34 @@ public abstract class HeaterBlockEntity extends BlockEntity implements Implement
     }
 
     @Override
-    public ItemStack removeStack(int slot) {
-        markDirty();
-
-        return Inventories.removeStack(getInventory(), slot);
+    public @Nullable Packet<ClientPlayPacketListener> toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
     }
 
     @Override
-    public ItemStack removeStack(int slot, int amount) {
-        markDirty();
-
-        return Inventories.removeStack(getInventory(), slot);
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        markDirty();
-        getInventory().set(slot, stack);
-    }
-
-    @Override
-    protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.readNbt(nbt, registryLookup);
-
-        Inventories.readNbt(nbt, getInventory(), registryLookup);
-
-        temperature = nbt.getFloat("Temperature");
-        fuel = createFuelsMap().get(Identifier.of(nbt.getString("Fuel")));
-        burnTime = nbt.getInt("BurnTime");
-        maxBurnTime = nbt.getInt("MaxBurnTime");
-        ashAmount = nbt.getInt("AshAmount");
-    }
-
-    @Override
-    protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
-        super.writeNbt(nbt, registryLookup);
-
-        Inventories.writeNbt(nbt, getInventory(), registryLookup);
-        nbt.putFloat("Temperature", temperature);
-        nbt.putString("Fuel", Objects.requireNonNullElse(fuel, Fuel.EMPTY).id().toString());
-        nbt.putInt("BurnTime", burnTime);
-        nbt.putInt("MaxBurnTime", maxBurnTime);
-        nbt.putInt("AshAmount", ashAmount);
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return createNbt(lookup);
     }
 
 
-    public record Fuel(Identifier id, int ashAmount) {
+    public static class Fuel {
 
-        public static final Fuel EMPTY = new Fuel(Identifier.of(
-                MedievalStuff.MOD_ID, "empty"
-        ), 0);
+        protected final Identifier id;
+        protected final int burnTime;
+        protected final short ashAmount;
+        protected final ItemStack exchangeStack;
+
+        public static Fuel EMPTY = new Fuel(Identifier.of(MedievalStuff.MOD_ID, "empty"), 0, (short) 0);
+
+        protected Fuel(Identifier id, int burnTime, short ashAmount) {
+            this(id, burnTime, ashAmount, ItemStack.EMPTY);
+        }
+
+        protected Fuel(Identifier id, int burnTime, short ashAmount, ItemStack exchangeStack) {
+            this.id = id;
+            this.burnTime = burnTime;
+            this.ashAmount = ashAmount;
+            this.exchangeStack = exchangeStack;
+        }
     }
 }

@@ -4,6 +4,4 @@ public interface CompoundHolder {
 
 
     Compound getCompound();
-
-    int getAmount();
 }

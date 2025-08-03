@@ -13,25 +13,17 @@ import net.mrwooly357.wool.registry.helper.BlockEntityTypeRegistryHelper;
 
 public class MedievalStuffBlockEntityTypes {
 
-    public static final BlockEntityType<CopperstoneHeaterBlockEntity> COPPERSTONE_HEATER = register(
-            "copperstone_heater", BlockEntityType.Builder.create(
-                    CopperstoneHeaterBlockEntity::new, MedievalStuffBlocks.COPPERSTONE_HEATER
-            ).build(null)
+    public static final BlockEntityType<CopperstoneHeaterBlockEntity> COPPERSTONE_HEATER = register("copperstone_heater", BlockEntityType.Builder.create(
+                    CopperstoneHeaterBlockEntity::new, MedievalStuffBlocks.COPPERSTONE_HEATER).build(null)
     );
-    public static final BlockEntityType<CopperTankBlockEntity> COPPER_TANK = register(
-            "copper_tank", BlockEntityType.Builder.create(
-                    CopperTankBlockEntity::new, MedievalStuffBlocks.COPPER_TANK
-            ).build(null)
+    public static final BlockEntityType<CopperTankBlockEntity> COPPER_TANK = register("copper_tank", BlockEntityType.Builder.create(
+                    CopperTankBlockEntity::new, MedievalStuffBlocks.COPPER_TANK).build(null)
     );
-    public static final BlockEntityType<CopperstoneForgeControllerBlockEntity> COPPERSTONE_FORGE_CONTROLLER = register(
-            "copperstone_forge_controller", BlockEntityType.Builder.create(
-                    CopperstoneForgeControllerBlockEntity::new, MedievalStuffBlocks.COPPERSTONE_FORGE_CONTROLLER
-            ).build(null)
+    public static final BlockEntityType<CopperstoneForgeControllerBlockEntity> COPPERSTONE_FORGE_CONTROLLER = register("copperstone_forge_controller", BlockEntityType.Builder.create(
+                    CopperstoneForgeControllerBlockEntity::new, MedievalStuffBlocks.COPPERSTONE_FORGE_CONTROLLER).build(null)
     );
-    public static final BlockEntityType<RedstoneSpawnerBlockEntity> REDSTONE_SPAWNER = register(
-            "redstone_spawner", BlockEntityType.Builder.create(
-                    RedstoneSpawnerBlockEntity::new, MedievalStuffBlocks.REDSTONE_SPAWNER
-            ).build(null)
+    public static final BlockEntityType<RedstoneSpawnerBlockEntity> REDSTONE_SPAWNER = register("redstone_spawner", BlockEntityType.Builder.create(
+                    RedstoneSpawnerBlockEntity::new, MedievalStuffBlocks.REDSTONE_SPAWNER).build(null)
     );
 
 

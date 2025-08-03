@@ -5,8 +5,6 @@ import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.FlowableFluid;
@@ -32,10 +30,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
 import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.tank.TankBlockEntity;
-import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
+import net.mrwooly357.wool.block_util.ExtendedBlockWithEntity;
+import net.mrwooly357.wool.util.misc.WoolUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ import java.util.List;
 
 import static net.mrwooly357.medievalstuff.util.ModMaps.TankBlocks.*;
 
-public abstract class TankBlock extends BlockWithEntity {
+public abstract class TankBlock extends ExtendedBlockWithEntity {
 
     public static final BooleanProperty BOTTOM_CONNECTED = BooleanProperty.of("bottom_connected");
     public static final BooleanProperty BOTTOM_BLOCKED = BooleanProperty.of("bottom_blocked");
@@ -393,17 +391,6 @@ public abstract class TankBlock extends BlockWithEntity {
         builder.add(BOTTOM_CONNECTED, BOTTOM_BLOCKED, TOP_CONNECTED, TOP_BLOCKED, LIGHT_LEVEL);
     }
 
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.MODEL;
-    }
-
-    @Nullable
-    @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, MedievalStuffBlockEntityTypes.COPPER_TANK, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
-    }
-
     public static boolean tryInsert(World world, BlockPos pos, Fluid fluid, long amount, @Nullable SoundEvent sound) {
         return tryInsert(world, pos, fluid, amount, sound, null, null, null);
     }
@@ -448,12 +435,12 @@ public abstract class TankBlock extends BlockWithEntity {
 
                                     if (useStack != null && exchangeStack != null) {
 
-                                        if (!MedievalStuffUtil.insertStack(useStack, exchangeStack, inventory, inventory.selectedSlot)) {
+                                        if (!WoolUtil.insertStack(useStack, exchangeStack, inventory, inventory.selectedSlot))
                                             player.dropItem(exchangeStack, false);
-                                        }
                                     }
 
-                                    if (sound != null) world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
+                                    if (sound != null)
+                                        world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
                                 }
 
                                 bl = true;
@@ -512,12 +499,12 @@ public abstract class TankBlock extends BlockWithEntity {
 
                                 if (useStack != null && exchangeStack != null) {
 
-                                    if (!MedievalStuffUtil.insertStack(useStack, exchangeStack, inventory, inventory.selectedSlot)) {
+                                    if (!WoolUtil.insertStack(useStack, exchangeStack, inventory, inventory.selectedSlot))
                                         player.dropItem(exchangeStack, false);
-                                    }
                                 }
 
-                                if (sound != null) world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
+                                if (sound != null)
+                                    world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), sound, SoundCategory.PLAYERS, useSoundVolume, useSoundPitch);
                             }
 
                             bl = true;
@@ -545,9 +532,8 @@ public abstract class TankBlock extends BlockWithEntity {
 
             if (stateBelow.get(BOTTOM_CONNECTED)) {
                 boolean shouldContinue = true;
-                BlockEntity entity = world.getBlockEntity(posBelow);
 
-                if (entity instanceof TankBlockEntity) {
+                if (world.getBlockEntity(posBelow) instanceof TankBlockEntity) {
 
                     for (int b = posBelow.getY(); b > world.getBottomY(); b--) {
                         BlockPos posToCheck1 = new BlockPos(posBelow.getX(), b, posBelow.getZ());
@@ -562,31 +548,23 @@ public abstract class TankBlock extends BlockWithEntity {
                                     SingleVariantStorage<FluidVariant> fluidStorage = tankBlockEntity1.getFluidStorage();
                                     FluidVariant variant = fluidStorage.variant;
 
-                                    if (variant != empty) {
+                                    if (variant != empty)
                                         variantBelow = variant;
-                                    }
 
-                                    if (!stateToCheck1.get(BOTTOM_CONNECTED)) {
+                                    if (!stateToCheck1.get(BOTTOM_CONNECTED))
                                         shouldContinue = false;
-                                    }
                                 }
                             }
-                        } else {
+                        } else
                             shouldContinue = false;
-                        }
 
-                        if (!shouldContinue) {
+                        if (!shouldContinue)
                             break;
-                        }
                     }
                 }
-            } else {
-                BlockEntity entity = world.getBlockEntity(posBelow);
-
-                if (entity instanceof TankBlockEntity tankBlockEntity) {
-                    SingleVariantStorage<FluidVariant> fluidStorage = tankBlockEntity.getFluidStorage();
-                    variantBelow = fluidStorage.variant;
-                }
+            } else if (world.getBlockEntity(posBelow) instanceof TankBlockEntity tankBlockEntity) {
+                SingleVariantStorage<FluidVariant> fluidStorage = tankBlockEntity.getFluidStorage();
+                variantBelow = fluidStorage.variant;
             }
         }
 
@@ -594,9 +572,8 @@ public abstract class TankBlock extends BlockWithEntity {
 
             if (stateAbove.get(TOP_CONNECTED)) {
                 boolean shouldContinue = true;
-                BlockEntity entity = world.getBlockEntity(posAbove);
 
-                if (entity instanceof TankBlockEntity) {
+                if (world.getBlockEntity(posAbove) instanceof TankBlockEntity) {
 
                     for (int b = posAbove.getY(); b < world.getTopY(); b++) {
                         BlockPos posToCheck1 = new BlockPos(posAbove.getX(), b, posAbove.getZ());
@@ -611,31 +588,23 @@ public abstract class TankBlock extends BlockWithEntity {
                                     SingleVariantStorage<FluidVariant> fluidStorage = tankBlockEntity1.getFluidStorage();
                                     FluidVariant variant = fluidStorage.variant;
 
-                                    if (variant != empty) {
+                                    if (variant != empty)
                                         variantAbove = variant;
-                                    }
 
-                                    if (!stateToCheck1.get(TOP_CONNECTED)) {
+                                    if (!stateToCheck1.get(TOP_CONNECTED))
                                         shouldContinue = false;
-                                    }
                                 }
                             }
-                        } else {
+                        } else
                             shouldContinue = false;
-                        }
 
-                        if (!shouldContinue) {
+                        if (!shouldContinue)
                             break;
-                        }
                     }
                 }
-            } else {
-                BlockEntity entity = world.getBlockEntity(posAbove);
-
-                if (entity instanceof TankBlockEntity tankBlockEntity) {
-                    SingleVariantStorage<FluidVariant> fluidStorage = tankBlockEntity.getFluidStorage();
-                    variantAbove = fluidStorage.variant;
-                }
+            } else if (world.getBlockEntity(posAbove) instanceof TankBlockEntity tankBlockEntity) {
+                SingleVariantStorage<FluidVariant> fluidStorage = tankBlockEntity.getFluidStorage();
+                variantAbove = fluidStorage.variant;
             }
         }
 
@@ -736,9 +705,8 @@ public abstract class TankBlock extends BlockWithEntity {
                                     if (stateToCheck1.get(BOTTOM_CONNECTED) || stateToCheck1.get(TOP_CONNECTED)) {
                                         multiblockConstruction.add(posToCheck1);
 
-                                        if (!stateToCheck1.get(TOP_CONNECTED)) {
+                                        if (!stateToCheck1.get(TOP_CONNECTED))
                                             shouldContinue = false;
-                                        }
                                     }
                                 } else {
                                     shouldContinue = false;
@@ -746,26 +714,26 @@ public abstract class TankBlock extends BlockWithEntity {
                                     break;
                                 }
 
-                                if (!shouldContinue) {
+                                if (!shouldContinue)
                                     break;
-                                }
                             }
                         }
-                    } else {
+                    } else
                         break;
-                    }
-                } else {
+                } else
                     break;
-                }
 
-                if (!shouldContinue) {
+                if (!shouldContinue)
                     break;
-                }
             }
-        } else {
+        } else
             multiblockConstruction.add(startPos);
-        }
 
         return multiblockConstruction;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 }

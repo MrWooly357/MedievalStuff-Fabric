@@ -9,12 +9,12 @@ import net.mrwooly357.medievalstuff.entity.damage.MedievalStuffDamageTypes;
 import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
 import net.mrwooly357.medievalstuff.particle.MedievalStuffParticleTypes;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
-import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
+import net.mrwooly357.wool.util.misc.WoolUtil;
 
 public class SoulDecayStatusEffect extends StatusEffect {
 
     public SoulDecayStatusEffect() {
-        super(StatusEffectCategory.HARMFUL, MedievalStuffUtil.rgbToPackedInt(127, 189, 193), (SimpleParticleType) MedievalStuffParticleTypes.SOUL_DECAY);
+        super(StatusEffectCategory.HARMFUL, WoolUtil.rgbToPackedInt(127, 189, 193), (SimpleParticleType) MedievalStuffParticleTypes.SOUL_DECAY);
     }
 
 

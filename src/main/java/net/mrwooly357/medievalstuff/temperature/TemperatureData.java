@@ -9,7 +9,7 @@ import java.text.DecimalFormat;
 public final class TemperatureData {
 
     private final boolean empty;
-    private float temperature;
+    private float temperature = 0.0F;
 
     public static final PacketCodec<PacketByteBuf, TemperatureData> PACKET_CODEC = new PacketCodec<>() {
 

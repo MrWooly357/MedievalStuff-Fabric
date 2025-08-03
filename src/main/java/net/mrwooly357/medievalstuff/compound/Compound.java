@@ -1,30 +1,34 @@
 package net.mrwooly357.medievalstuff.compound;
 
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
-import net.mrwooly357.medievalstuff.registry.MedievalStuffRegistries;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.Identifier;
 
-public class Compound {
+public abstract class Compound {
 
-    private int weight;
+    protected final Type type;
+    protected final Identifier id;
 
-    public Compound() {}
-
-
-    public Text getName() {
-        return Text.translatable(getTranslationKey());
-    }
-
-    public @Nullable String getTranslationKey() {
-
-        return Util.createTranslationKey("compound", MedievalStuffRegistries.COMPOUND.getId(this));
+    public Compound(Type type, Identifier id) {
+        this.type = type;
+        this.id = id;
     }
 
 
-    public Compound weight(int weight) {
-        this.weight = weight;
+    public String getTranslationKey() {
+        return "compound." + type.getId().getNamespace() + "." + id.getPath();
+    }
 
-        return this;
+    public String toString() {
+        return id.toString();
+    }
+
+
+    public interface Type {
+
+
+        Identifier getId();
+
+        default String getTranslationKey() {
+            return "compound_type." + getId().getNamespace() + "." + getId().getPath();
+        }
     }
 }

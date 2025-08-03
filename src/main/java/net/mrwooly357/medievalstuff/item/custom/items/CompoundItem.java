@@ -22,7 +22,6 @@ public class CompoundItem extends Item implements CompoundHolder {
         return compound;
     }
 
-    @Override
     public int getAmount() {
         return amount;
     }

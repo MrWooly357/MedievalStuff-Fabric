@@ -5,7 +5,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
@@ -16,33 +15,30 @@ import org.jetbrains.annotations.Nullable;
 public abstract class HeaterScreenHandler extends ScreenHandler {
 
     protected final Inventory inventory;
-    protected final PropertyDelegate delegate;
-    protected final int INPUT_START_SLOT;
-    protected final int INPUT_END_SLOT;
-    protected final int INVENTORY_START_SLOT;
-    protected final int INVENTORY_END_SLOT;
-    protected final int HOTBAR_START_SLOT;
-    protected final int HOTBAR_END_SLOT;
+    protected final PropertyDelegate propertyDelegate;
+    protected final short inventoryEndSlot;
+    protected final short inputStartSlot;
+    protected final short inputEndSlot;
 
-    protected HeaterScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockEntity entity, PropertyDelegate delegate, int inventorySize) {
+    protected final short HOTBAR_START_SLOT = 0;
+    protected final short HOTBAR_END_SLOT = 8;
+    protected final short INVENTORY_START_SLOT = 9;
+
+    protected HeaterScreenHandler(@Nullable ScreenHandlerType<?> type, int syncId, PlayerInventory playerInventory, BlockEntity blockEntity, PropertyDelegate propertyDelegate, short inventorySize) {
         super(type, syncId);
 
-        int playerInventoryMainSize = playerInventory.main.size();
+        checkSize((Inventory) blockEntity, inventorySize);
 
-        checkSize((Inventory) entity, inventorySize);
+        short playerInventoryMainSize = (short) playerInventory.main.size();
+        inventory = (Inventory) blockEntity;
+        this.propertyDelegate = propertyDelegate;
+        inputStartSlot = playerInventoryMainSize;
+        inputEndSlot = (short) (inputStartSlot + inventorySize - 1);
+        inventoryEndSlot = (short) (playerInventoryMainSize - 1);
 
-        this.inventory = (Inventory) entity;
-        this.delegate = delegate;
-        INPUT_START_SLOT = playerInventoryMainSize;
-        INPUT_END_SLOT = playerInventoryMainSize + inventorySize - 1;
-        INVENTORY_START_SLOT = 0;
-        INVENTORY_END_SLOT = playerInventoryMainSize - 10;
-        HOTBAR_START_SLOT = playerInventoryMainSize - 9;
-        HOTBAR_END_SLOT = playerInventoryMainSize - 1;
-
-        addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
-        addProperties(delegate);
+        addPlayerInventory(playerInventory);
+        addProperties(propertyDelegate);
     }
 
 
@@ -53,24 +49,37 @@ public abstract class HeaterScreenHandler extends ScreenHandler {
 
         if (actualSlot.hasStack()) {
             ItemStack stackInSlot = actualSlot.getStack();
+            boolean inventoryHasSpace = false;
             stack = stackInSlot.copy();
 
-            if (actualSlot instanceof FuelSlot) {
+            for (int i = 0; i < inventory.size(); i++) {
 
-                if (!insertItem(stackInSlot, INVENTORY_START_SLOT, HOTBAR_END_SLOT + 1, false))
-                    return ItemStack.EMPTY;
-            } else if (HeaterBlockEntity.createFuelsMap().containsKey(Registries.ITEM.getId(stackInSlot.getItem())) && inventory.isEmpty()) {
+                if (inventory.getStack(i).isEmpty()) {
+                    inventoryHasSpace = true;
 
-                if (!insertItem(stackInSlot, INPUT_START_SLOT, INPUT_END_SLOT + 1, false)) {
+                    break;
+                }
+            }
+
+            if (slot >= inputStartSlot && slot <= inputEndSlot) {
+
+                if (!insertItem(stackInSlot, INVENTORY_START_SLOT, inventoryEndSlot + 1, false)) {
+
+                    if (!insertItem(stackInSlot, HOTBAR_START_SLOT, HOTBAR_END_SLOT + 1, false))
+                        return ItemStack.EMPTY;
+                }
+
+            } else if (HeaterBlockEntity.createFuelMap().containsKey(stackInSlot.getItem()) && inventoryHasSpace) {
+
+                if (!insertItem(stackInSlot, inputStartSlot, inputEndSlot + 1, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (slot >= INVENTORY_START_SLOT && slot <= INVENTORY_END_SLOT) {
+            } else if (slot >= INVENTORY_START_SLOT && slot <= inventoryEndSlot) {
 
                 if (!insertItem(stackInSlot, HOTBAR_START_SLOT, HOTBAR_END_SLOT + 1, false))
                     return ItemStack.EMPTY;
-            } else if (slot >= HOTBAR_START_SLOT && slot <= HOTBAR_END_SLOT && !insertItem(stackInSlot, INVENTORY_START_SLOT, INVENTORY_END_SLOT + 1, false)) {
+            } else if (slot >= HOTBAR_START_SLOT && slot <= HOTBAR_END_SLOT && !insertItem(stackInSlot, INVENTORY_START_SLOT, inventoryEndSlot + 1, false))
                 return ItemStack.EMPTY;
-            }
 
             if (stackInSlot.isEmpty())
                 actualSlot.setStack(ItemStack.EMPTY);
@@ -118,7 +127,7 @@ public abstract class HeaterScreenHandler extends ScreenHandler {
 
         @Override
         public boolean canInsert(ItemStack stack) {
-            return HeaterBlockEntity.VANILLA_FUEL_BURN_TIMES.containsKey(stack.getItem()) || HeaterBlockEntity.createCustomFuelTimesMap().containsKey(stack.getItem());
+            return HeaterBlockEntity.createFuelMap().containsKey(stack.getItem());
         }
     }
 }

@@ -13,8 +13,8 @@ import net.mrwooly357.medievalstuff.recipe.MedievalStuffRecipeTypes;
 public final class CopperstoneForgeControllerMeltingRecipe extends ForgeControllerMeltingRecipe<CopperstoneForgeControllerMeltingRecipeInput> {
 
 
-    public CopperstoneForgeControllerMeltingRecipe(float minTemperature, float maxTemperature, boolean invertTemperatures, Ingredient ingredient, int meltingTime, String result, long amount) {
-        super(MedievalStuffRecipeTypes.COPPERSTONE_FORGE_CONTROLLER_MELTING, minTemperature, maxTemperature, invertTemperatures, ingredient, meltingTime, result, amount);
+    public CopperstoneForgeControllerMeltingRecipe(float minTemperature, float maxTemperature, Ingredient ingredient, int meltingTime, String result, long amount) {
+        super(MedievalStuffRecipeTypes.COPPERSTONE_FORGE_CONTROLLER_MELTING, minTemperature, maxTemperature, ingredient, meltingTime, result, amount);
     }
 
 
@@ -30,7 +30,6 @@ public final class CopperstoneForgeControllerMeltingRecipe extends ForgeControll
                 instance -> instance.group(
                         Codec.FLOAT.fieldOf("minTemperature").forGetter(CopperstoneForgeControllerMeltingRecipe::getMinTemperature),
                         Codec.FLOAT.fieldOf("maxTemperature").forGetter(CopperstoneForgeControllerMeltingRecipe::getMaxTemperature),
-                        Codec.BOOL.fieldOf("invertTemperature").forGetter(CopperstoneForgeControllerMeltingRecipe::isInvertTemperature),
                         Ingredient.DISALLOW_EMPTY_CODEC.fieldOf("ingredient").forGetter(CopperstoneForgeControllerMeltingRecipe::getIngredient),
                         Codec.INT.fieldOf("meltingTime").forGetter(CopperstoneForgeControllerMeltingRecipe::getMeltingTime),
                         Codec.STRING.fieldOf("result").forGetter(CopperstoneForgeControllerMeltingRecipe::getResultFluid),
@@ -53,7 +52,6 @@ public final class CopperstoneForgeControllerMeltingRecipe extends ForgeControll
         private static void writer(RegistryByteBuf buf, CopperstoneForgeControllerMeltingRecipe recipe) {
             buf.writeFloat(recipe.getMinTemperature());
             buf.writeFloat(recipe.getMaxTemperature());
-            buf.writeBoolean(recipe.isInvertTemperature());
             Ingredient.PACKET_CODEC.encode(buf, recipe.getIngredient());
             buf.writeInt(recipe.getMeltingTime());
             buf.writeString(recipe.getResultFluid());
@@ -63,13 +61,12 @@ public final class CopperstoneForgeControllerMeltingRecipe extends ForgeControll
         private static CopperstoneForgeControllerMeltingRecipe reader(RegistryByteBuf buf) {
             float minTemperature = buf.readFloat();
             float maxTemperature = buf.readFloat();
-            boolean invertTemperatures = buf.readBoolean();
             Ingredient ingredient = Ingredient.PACKET_CODEC.decode(buf);
             int meltingTime = buf.readInt();
             String result = buf.readString();
             long amount = buf.readLong();
 
-            return new CopperstoneForgeControllerMeltingRecipe(minTemperature, maxTemperature, invertTemperatures, ingredient, meltingTime, result, amount);
+            return new CopperstoneForgeControllerMeltingRecipe(minTemperature, maxTemperature, ingredient, meltingTime, result, amount);
         }
     }
 }

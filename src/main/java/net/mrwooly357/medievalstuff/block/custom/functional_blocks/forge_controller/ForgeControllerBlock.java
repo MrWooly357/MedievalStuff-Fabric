@@ -3,9 +3,8 @@ package net.mrwooly357.medievalstuff.block.custom.functional_blocks.forge_contro
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -22,13 +21,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.forge_controller.ForgeControllerBlockEntity;
-import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FilledBlueprintItem;
-import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
+import net.mrwooly357.medievalstuff.block.util.FilledBlueprintInteractable;
+import net.mrwooly357.wool.block_util.ExtendedBlockWithEntityWithInventory;
+import net.mrwooly357.wool.block_util.entity.ExtendedBlockEntity;
 import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionBlueprint;
 import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionBlueprintHolder;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class ForgeControllerBlock extends BlockWithEntity {
+public abstract class ForgeControllerBlock extends ExtendedBlockWithEntityWithInventory implements FilledBlueprintInteractable {
 
     public static final BooleanProperty OPEN = Properties.OPEN;
     public static final BooleanProperty LIT = Properties.LIT;
@@ -41,10 +41,7 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
 
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        Hand hand = player.getActiveHand();
-        ItemStack stackInHand = player.getStackInHand(hand);
-
-        if (stackInHand.getItem() instanceof FilledBlueprintItem && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity forgeControllerBlockEntity) {
+        if (world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity forgeControllerBlockEntity) {
 
             if (player.isSneaking()) {
                 float soundVolume = MathHelper.nextFloat(Random.create(), 0.9F, 1.1F);
@@ -60,29 +57,17 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
                 return ActionResult.SUCCESS;
             } else if (state.get(OPEN)) {
 
-                if (!world.isClient && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity && entity.isBuilt())
+                if (!world.isClient)
                     player.openHandledScreen(forgeControllerBlockEntity);
 
                 return ActionResult.SUCCESS;
             } else if (!state.get(OPEN))
                 return ActionResult.PASS;
-
         }
 
-        return ActionResult.PASS;
+        return super.onUse(state, world, pos, player, hit);
     }
 
-    @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        boolean bl = stack.getItem() instanceof MultiblockConstructionBlueprintHolder holder && holder.getBlueprint() == getRequiredBlueprint();
-
-        if (bl && world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity entity && !entity.isBuilt()) {
-            entity.setCanCheck(true);
-            stack.damage(1, player, EquipmentSlot.MAINHAND);
-        }
-
-        return bl ? ItemActionResult.SUCCESS : ItemActionResult.FAIL;
-    }
 
     @Override
     protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
@@ -121,6 +106,21 @@ public abstract class ForgeControllerBlock extends BlockWithEntity {
     @Override
     protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public ActionResult interact(World world, ItemStack stack, BlockPos pos, BlockState state) {
+        boolean bl = false;
+
+        if (world.getBlockEntity(pos) instanceof ForgeControllerBlockEntity forgeControllerBlockEntity) {
+            bl = stack.getItem() instanceof MultiblockConstructionBlueprintHolder holder && holder.getBlueprint() == getRequiredBlueprint() && !forgeControllerBlockEntity.isBuilt();
+            System.out.println(bl);
+
+            if (bl)
+                forgeControllerBlockEntity.setCanCheck(true);
+        }
+
+        return bl ? ActionResult.SUCCESS : ActionResult.PASS;
     }
 
     protected abstract MultiblockConstructionBlueprint getRequiredBlueprint();

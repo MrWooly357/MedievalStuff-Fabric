@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.ExtendedHybridWeaponItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponClasses;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponMaterial;
-import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
+import net.mrwooly357.wool.util.misc.WoolUtil;
 
 public abstract class KhopeshItem extends ExtendedHybridWeaponItem {
 
@@ -56,7 +56,7 @@ public abstract class KhopeshItem extends ExtendedHybridWeaponItem {
 
     @Override
     public float getBonusAttackDamage(PlayerEntity attacker, Entity target) {
-        float distance = (float) MedievalStuffUtil.getDistanceBetween(target.getX(), target.getY(), target.getZ(), attacker.getX(), attacker.getY(), attacker.getZ());
+        float distance = (float) WoolUtil.getDistanceBetween(target.getX(), target.getY(), target.getZ(), attacker.getX(), attacker.getY(), attacker.getZ());
 
         if (distance < maxBonusDamage + 1.5F) {
             float damage = maxBonusDamage - distance + 1.5F;

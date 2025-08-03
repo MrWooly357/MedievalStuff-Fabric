@@ -2,12 +2,12 @@ package net.mrwooly357.medievalstuff.block.custom.functional_blocks.spawner;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
@@ -23,9 +23,12 @@ import net.minecraft.world.World;
 import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
 import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.spawner.RedstoneSpawnerBlockEntity;
 import net.mrwooly357.medievalstuff.item.custom.equipment.misc.FlaskForSoulsItem;
+import net.mrwooly357.wool.block_util.ExtendedBlockWithEntityWithInventory;
+import net.mrwooly357.wool.block_util.entity.ExtendedBlockEntity;
+import net.mrwooly357.wool.block_util.entity.inventory.ExtendedBlockEntityWithInventory;
 import org.jetbrains.annotations.Nullable;
 
-public class RedstoneSpawnerBlock extends BlockWithEntity {
+public class RedstoneSpawnerBlock extends ExtendedBlockWithEntityWithInventory {
 
     public static final MapCodec<RedstoneSpawnerBlock> CODEC = createCodec(RedstoneSpawnerBlock::new);
     public static final BooleanProperty POWERED = Properties.POWERED;
@@ -41,13 +44,18 @@ public class RedstoneSpawnerBlock extends BlockWithEntity {
     }
 
     @Override
-    public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+    protected BlockEntityType<? extends ExtendedBlockEntity> getExpectedBlockEntityType() {
+        return MedievalStuffBlockEntityTypes.REDSTONE_SPAWNER;
+    }
+
+    @Override
+    protected ExtendedBlockEntityWithInventory createExtendedBlockEntityWithInventory(BlockPos pos, BlockState state) {
         return new RedstoneSpawnerBlockEntity(pos, state);
     }
 
     @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return validateTicker(type, MedievalStuffBlockEntityTypes.REDSTONE_SPAWNER, (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos));
+    protected BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     @Override
@@ -75,7 +83,7 @@ public class RedstoneSpawnerBlock extends BlockWithEntity {
         if (state.getBlock() != newState.getBlock()) {
 
             if (world.getBlockEntity(pos) instanceof RedstoneSpawnerBlockEntity blockEntity) {
-                ItemScatterer.spawn(world, pos, blockEntity);
+                ItemScatterer.spawn(world, pos, (Inventory) blockEntity);
                 world.updateComparators(pos, this);
             }
 

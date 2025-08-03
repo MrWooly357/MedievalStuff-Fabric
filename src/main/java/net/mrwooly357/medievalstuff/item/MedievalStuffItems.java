@@ -23,9 +23,8 @@ import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.sword_l
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.RangedWeaponMaterials;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.TwobowItem;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.ranged.bows.advanced_bows.short_bows.ShortBowItem;
-import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
-import net.mrwooly357.wool.config.custom.WoolConfig;
 import net.mrwooly357.wool.registry.helper.ItemRegistryHelper;
+import net.mrwooly357.wool.util.misc.WoolUtil;
 
 public class MedievalStuffItems {
 
@@ -239,12 +238,11 @@ public class MedievalStuffItems {
             )
     );
 
-    public static final Item COPPERSTONE_FORGE_BLUEPRINT = register(
-            "copperstone_forge_blueprint", new FilledBlueprintItem(
-                    new Item.Settings()
-                            .maxDamage(4), MedievalStuffMultiblockConstructionBlueprints.COPPERSTONE_FORGE
+    public static final Item COPPERSTONE_FORGE_BLUEPRINT = register("copperstone_forge_blueprint", new FilledBlueprintItem(
+            new Item.Settings()
+                    .maxDamage(4), MedievalStuffMultiblockConstructionBlueprints.COPPERSTONE_FORGE
             )
-                    .tooltipKey("medievalstuff.copperstone_forge_blueprint.tooltip")
+            .tooltipKey(MedievalStuff.MOD_ID + ".copperstone_forge_blueprint.tooltip")
     );
     public static final Item ASH_BUCKET_1 = register(
             "ash_bucket_1", new AshBucketItem(
@@ -307,7 +305,7 @@ public class MedievalStuffItems {
     );
     public static final Item FALLEN_KNIGHT_SPAWN_EGG = register(
             "fallen_knight_spawn_egg", new SpawnEggItem(
-                    MedievalStuffEntityTypes.FALLEN_KNIGHT, MedievalStuffUtil.rgbToPackedInt(151, 151, 151), MedievalStuffUtil.rgbToPackedInt(27, 121, 193), new Item.Settings()
+                    MedievalStuffEntityTypes.FALLEN_KNIGHT, WoolUtil.rgbToPackedInt(151, 151, 151), WoolUtil.rgbToPackedInt(27, 121, 193), new Item.Settings()
             )
     );
 

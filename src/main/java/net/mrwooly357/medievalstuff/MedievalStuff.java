@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRe
 import net.mrwooly357.medievalstuff.block.MedievalStuffBlocks;
 import net.mrwooly357.medievalstuff.block.util.multiblock_construction_blueprint.MedievalStuffMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
+import net.mrwooly357.medievalstuff.compound.MedievalStuffCompounds;
 import net.mrwooly357.medievalstuff.entity.MedievalStuffEntityTypes;
 import net.mrwooly357.medievalstuff.entity.effect.MedievalStuffStatusEffects;
 import net.mrwooly357.medievalstuff.entity.mob.ai.brain.memory.MedievalStuffMemoryModuleTypes;
@@ -18,7 +19,6 @@ import net.mrwooly357.medievalstuff.event.MedievalStuffPlayerBlockBreakEvents;
 import net.mrwooly357.medievalstuff.item.MedievalStuffArmorMaterials;
 import net.mrwooly357.medievalstuff.item.MedievalStuffItemGroups;
 import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
-import net.mrwooly357.medievalstuff.compound.Compounds;
 import net.mrwooly357.medievalstuff.component.MedievalStuffDataComponentTypes;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponClasses;
 import net.mrwooly357.medievalstuff.item.custom.equipment.weapons.hybrid.HybridWeaponFamilies;
@@ -45,6 +45,7 @@ public class MedievalStuff implements ModInitializer {
 		MedievalStuffItems.initialize();
 		MedievalStuffDataComponentTypes.initialize();
 		MedievalStuffItemGroups.initialize();
+		MedievalStuffCompounds.initialize();
 		HybridWeaponMaterials.initialize();
 		HybridWeaponFamilies.registerHybridWeaponFamilies();
 		HybridWeaponClasses.registerHybridWeaponClasses();
@@ -68,7 +69,6 @@ public class MedievalStuff implements ModInitializer {
 		MedievalStuffMemoryModuleTypes.initialize();
 		MedievalStuffSensorTypes.initialize();
 		MedievalStuffEntitySpawns.addSpawns();
-		Compounds.initialize();
 		MedievalStuffParticleTypes.initialize();
     }
 

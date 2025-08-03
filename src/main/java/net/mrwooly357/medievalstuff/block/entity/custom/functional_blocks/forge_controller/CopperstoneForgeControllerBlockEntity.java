@@ -4,7 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeManager;
@@ -12,15 +11,18 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+import net.mrwooly357.medievalstuff.MedievalStuff;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.forge_controller.CopperstoneForgeControllerBlock;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.CopperTankBlock;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.TankBlock;
+import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater.HeaterBlockEntity;
 import net.mrwooly357.medievalstuff.block.util.multiblock_construction_blueprint.MedievalStuffMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
 import net.mrwooly357.medievalstuff.recipe.MedievalStuffRecipeTypes;
@@ -34,8 +36,7 @@ import java.util.Optional;
 
 public final class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockEntity {
 
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(2, ItemStack.EMPTY);
-    private final PropertyDelegate delegate = new PropertyDelegate() {
+    private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 
 
         @Override
@@ -43,9 +44,10 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
             return switch (index) {
                 case 0 -> getMeltingProgress();
                 case 1 -> getMaxMeltingProgress();
-                case 2 -> getCompoundAmount();
-                case 3 -> getAlloyingProgress();
-                case 4 -> getMaxAlloyingProgress();
+                case 2 -> getCompoundAmount0();
+                case 3 -> getCompoundAmount1();
+                case 4 -> getAlloyingProgress();
+                case 5 -> getMaxAlloyingProgress();
                 default -> 0;
             };
         }
@@ -55,26 +57,46 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
             switch (index) {
                 case 0: setMeltingProgress(value);
                 case 1: setMaxMeltingProgress(value);
-                case 2: setCompoundAmount(value);
-                case 3: setAlloyingProgress(value);
-                case 4: setMaxAlloyingProgress(value);
+                case 2: setCompoundAmount0(value);
+                case 3: setCompoundAmount1(value);
+                case 4: setAlloyingProgress(value);
+                case 5: setMaxAlloyingProgress(value);
             }
         }
 
         @Override
         public int size() {
-            return 5;
+            return 6;
         }
     };
-    private static final int MELTING_INGREDIENT_SLOT = 0;
-    private static final int COMPOUND_SLOT = 1;
     private BlockPos ingredientTankPos;
     private BlockPos resultTankPos;
 
+    private static final int MELTING_INGREDIENT_SLOT = 0;
+    private static final int COMPOUND_SLOT = 1;
+
     public CopperstoneForgeControllerBlockEntity(BlockPos pos, BlockState state) {
-        super(MedievalStuffBlockEntityTypes.COPPERSTONE_FORGE_CONTROLLER, pos, state);
+        super(MedievalStuffBlockEntityTypes.COPPERSTONE_FORGE_CONTROLLER, pos, state, 2, 10.0F, 225.0F,20.0F);
     }
 
+
+    @Override
+    public void serverTick(ServerWorld serverWorld, BlockPos pos, BlockState state) {
+        if (serverWorld.getBlockEntity(new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ())) instanceof HeaterBlockEntity heaterBlockEntity) {
+            float heaterTemperature = heaterBlockEntity.getTemperatureData().getTemperature();
+
+            if (heaterTemperature > heaterBlockEntity.getMinTemperature() && heaterTemperature > temperature) {
+                tryIncreaseTemperature(heaterBlockEntity);
+            } else
+                tryDecreaseTemperature(heaterBlockEntity);
+        } else
+            tryDecreaseTemperature(null);
+
+        if (temperature != temperatureData.getTemperature())
+            markDirty(serverWorld, pos, state);
+
+        super.serverTick(serverWorld, pos, state);
+    }
 
     @Override
     public void onSuccess() {
@@ -92,26 +114,26 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
 
     @Override
     public Text getDisplayName() {
-        return Text.translatable("gui.medievalstuff.copperstone_forge_controller");
+        return Text.translatable("gui." + MedievalStuff.MOD_ID + ".copperstone_forge_controller");
     }
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new CopperstoneForgeControllerScreenHandler(syncId, playerInventory, this, delegate);
+        return new CopperstoneForgeControllerScreenHandler(syncId, playerInventory, this, propertyDelegate);
     }
 
     @Override
     protected boolean hasMeltingRecipe() {
         Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> recipe = getMeltingRecipe();
 
-        if (recipe.isEmpty()) return false;
+        if (recipe.isPresent()) {
+            long amount = recipe.get().value().getAmount();
+            float temperature = recipe.get().value().getMinTemperature();
+            maxMeltingProgress = recipe.get().value().getMeltingTime();
 
-        long amount = recipe.get().value().getAmount();
-        float temperature = recipe.get().value().getMinTemperature();
-        boolean invertTemperature = recipe.get().value().isInvertTemperature();
-        maxMeltingProgress = recipe.get().value().getMeltingTime();
-
-        return canInsertIntoIngredientTank(amount) && isTemperatureSufficient(temperature, invertTemperature);
+            return canInsertIntoIngredientTank(amount) && this.temperature >= temperature;
+        } else
+            return false;
     }
 
     private Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> getMeltingRecipe() {
@@ -145,6 +167,11 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
     }
 
     @Override
+    protected float getCompoundAmountDecrease() {
+        return 0;
+    }
+
+    @Override
     protected boolean hasAlloyingRecipe() {
         return false;
     }
@@ -153,8 +180,48 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
     protected void alloy() {}
 
     @Override
-    public DefaultedList<ItemStack> getInventory() {
-        return inventory;
+    protected BlockPos getMultiblockConstructionBuilderStartPos(World world, BlockPos pos) {
+        int x = pos.getX();
+        int y = pos.getY() - 1;
+        int z = pos.getZ();
+        BlockState state = world.getBlockState(pos);
+        Direction facing = state.get(Properties.HORIZONTAL_FACING);
+
+        if (facing == Direction.NORTH) {
+            x++;
+            z += 2;
+        } else if (facing == Direction.EAST) {
+            x -= 2;
+            z++;
+        } else if (facing == Direction.SOUTH) {
+            x--;
+            z -= 2;
+        } else if (facing == Direction.WEST) {
+            x += 2;
+            z--;
+        }
+
+        return new BlockPos(x, y, z);
+    }
+
+    @Override
+    protected BlockPos getMultiblockConstructionBuilderEndPos(World world, BlockPos pos) {
+        int x = pos.getX();
+        int y = pos.getY() + 1;
+        int z = pos.getZ();
+        BlockState state = world.getBlockState(pos);
+        Direction facing = state.get(Properties.HORIZONTAL_FACING);
+
+        if (facing == Direction.NORTH) {
+            x--;
+        } else if (facing == Direction.EAST) {
+            z--;
+        } else if (facing == Direction.SOUTH) {
+            x++;
+        } else if (facing == Direction.WEST)
+            z++;
+
+        return new BlockPos(x, y, z);
     }
 
     private BlockPos calculateIngredientTankPos(Direction direction) {

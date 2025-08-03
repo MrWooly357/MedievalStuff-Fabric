@@ -1,6 +1,7 @@
 package net.mrwooly357.medievalstuff.util;
 
 import com.google.common.collect.Maps;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
@@ -11,6 +12,7 @@ import net.minecraft.sound.SoundEvents;
 import java.util.Map;
 
 public class ModMaps {
+
 
     public static class TankBlocks {
 
@@ -26,8 +28,8 @@ public class ModMaps {
         public static Map<Item, Long> createItemFluidAmountMap() {
             Map<Item, Long> map = Maps.newLinkedHashMap();
 
-            map.put(Items.WATER_BUCKET, 81000L);
-            map.put(Items.LAVA_BUCKET, 81000L);
+            map.put(Items.WATER_BUCKET, FluidConstants.BUCKET);
+            map.put(Items.LAVA_BUCKET, FluidConstants.BUCKET);
 
             return map;
         }

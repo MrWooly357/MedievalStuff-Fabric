@@ -33,10 +33,11 @@ import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater
 import net.mrwooly357.medievalstuff.item.MedievalStuffItems;
 import net.mrwooly357.medievalstuff.item.custom.equipment.misc.AshBucketItem;
 import net.mrwooly357.medievalstuff.util.MedievalStuffTags;
-import net.mrwooly357.medievalstuff.util.MedievalStuffUtil;
+import net.mrwooly357.wool.block_util.ExtendedBlockWithEntityWithInventory;
+import net.mrwooly357.wool.util.misc.WoolUtil;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class HeaterBlock extends BlockWithEntity {
+public abstract class HeaterBlock extends ExtendedBlockWithEntityWithInventory {
 
     public static final BooleanProperty OPEN = Properties.OPEN;
     public static final BooleanProperty LIT = Properties.LIT;
@@ -113,26 +114,20 @@ public abstract class HeaterBlock extends BlockWithEntity {
             for (int a = 0; a < heaterBlockEntity.getInventory().size(); a++) {
                 ItemStack stackInSlot = heaterBlockEntity.getStack(a);
 
-                if (HeaterBlockEntity.createFuelsMap().containsKey(Registries.ITEM.getId(stackInSlot.getItem())))
+                if (HeaterBlockEntity.createFuelMap().containsKey(stackInSlot.getItem()))
                     stackInHeater = stackInSlot;
             }
 
-            if (!state.get(LIT) && stack.isIn(MedievalStuffTags.Items.HEATER_ARSONISTS) && heaterBlockEntity.getAshAmount() < heaterBlockEntity.getMaxAshAmount() && !stackInHeater.isEmpty()) {
+            if (!state.get(LIT) && stack.isIn(MedievalStuffTags.Items.HEATER_ARSONISTS) && heaterBlockEntity.canUseFuel() && !stackInHeater.isEmpty()) {
+                world.setBlockState(pos, state.with(LIT, true));
+                world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.PLAYERS, soundVolume, soundPitch);
 
-                for (int slot = 0; slot < heaterBlockEntity.size(); slot++) {
+                if (stack.isDamageable()) {
+                    stack.damage(1, player, EquipmentSlot.MAINHAND);
+                } else
+                    stack.decrementUnlessCreative(1, player);
 
-                    if (HeaterBlockEntity.createFuelsMap().containsKey(Registries.ITEM.getId(heaterBlockEntity.getStack(slot).getItem()))) {
-                        world.setBlockState(pos, state.with(LIT, true));
-                        world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.PLAYERS, soundVolume, soundPitch);
-
-                        if (stack.isDamageable()) {
-                            stack.damage(1, player, EquipmentSlot.MAINHAND);
-                        } else
-                            stack.decrementUnlessCreative(1, player);
-
-                        return ItemActionResult.SUCCESS;
-                    }
-                }
+                return ItemActionResult.SUCCESS;
             } else if (stack.isIn(ItemTags.SHOVELS)) {
 
                 if (state.get(LIT)) {
@@ -145,8 +140,8 @@ public abstract class HeaterBlock extends BlockWithEntity {
                     world.setBlockState(pos, state.with(LIT, false));
                     stack.damage(1, player, EquipmentSlot.MAINHAND);
                     world.playSound(player, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.PLAYERS, soundVolume - 0.4F, soundPitch * 2);
-                    heaterBlockEntity.resetBurnTime();
-                    heaterBlockEntity.resetMaxBurnTime();
+                    heaterBlockEntity.setBurnTime(0);
+                    heaterBlockEntity.setMaxBurnTime(0);
 
                     for (int a = 0; a < particleAmount; a++) {
                         double velocityX = MathHelper.nextDouble(Random.create(), -0.03, 0.03);
@@ -171,7 +166,7 @@ public abstract class HeaterBlock extends BlockWithEntity {
                         )
                 ) {
                     boolean success = false;
-                    int ashDecrease = Math.min(heaterBlockEntity.getAshAmount(), Math.min((int) player.getBlockBreakingSpeed(MedievalStuffBlocks.ASH.getDefaultState()), 8));
+                    short ashDecrease = (short) Math.min(heaterBlockEntity.getAshAmount(), Math.min((int) player.getBlockBreakingSpeed(MedievalStuffBlocks.ASH.getDefaultState()), 8));
                     Item ashBucketItem;
 
                     if (stackInOffHand.isOf(Items.BUCKET)) {
@@ -180,7 +175,7 @@ public abstract class HeaterBlock extends BlockWithEntity {
                         System.out.println(ashBucketItem);
                     } else if (stackInOffHand.getItem() instanceof AshBucketItem ashBucket) {
                         int placeLayers = ashBucket.getPlaceLayers();
-                        ashDecrease = 8 - placeLayers;
+                        ashDecrease = (short) (8 - placeLayers);
 
                         if (placeLayers + ashDecrease <= 8 && ashDecrease > 0) {
                             success = true;
@@ -196,7 +191,7 @@ public abstract class HeaterBlock extends BlockWithEntity {
                     heaterBlockEntity.tryDecreaseAshAmount(ashDecrease);
                     world.playSound(null, pos, SoundEvents.ITEM_BUCKET_FILL_POWDER_SNOW , SoundCategory.BLOCKS);
 
-                    if (!MedievalStuffUtil.insertStack(stackInOffHand, ashBucketStack, player.getInventory(), PlayerInventory.OFF_HAND_SLOT))
+                    if (!WoolUtil.insertStack(stackInOffHand, ashBucketStack, player.getInventory(), PlayerInventory.OFF_HAND_SLOT))
                         player.dropItem(ashBucketStack, false);
 
                     return success ? ItemActionResult.SUCCESS : super.onUseWithItem(stack, state, world, pos, player, hand, hit);
