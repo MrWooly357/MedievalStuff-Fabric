@@ -7,6 +7,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -15,9 +19,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.mrwooly357.medievalstuff.block.custom.functional_blocks.heater.HeaterBlock;
+import net.mrwooly357.medievalstuff.block.custom.functional_blocks.forge_controller.ForgeControllerBlock;
 import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater.HeaterBlockEntity;
 import net.mrwooly357.medievalstuff.compound.Compound;
+import net.mrwooly357.medievalstuff.recipe.custom.forge_controller.melting.ForgeControllerMeltingRecipe;
 import net.mrwooly357.medievalstuff.registry.MedievalStuffRegistries;
 import net.mrwooly357.medievalstuff.temperature.TemperatureData;
 import net.mrwooly357.medievalstuff.temperature.TemperatureDataHolder;
@@ -28,25 +33,37 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWithInventory implements ExtendedScreenHandlerFactory<BlockPos>, MultiblockConstructionProvider, TemperatureDataHolder {
+public abstract class ForgeControllerBlockEntity<I extends RecipeInput, M extends ForgeControllerMeltingRecipe<I>> extends ExtendedBlockEntityWithInventory
+        implements ExtendedScreenHandlerFactory<BlockPos>, MultiblockConstructionProvider, TemperatureDataHolder {
 
-    protected boolean canCheck;
-    protected boolean built;
+    protected boolean canCheck = false;
+    protected boolean built = false;
     protected float temperature;
     protected TemperatureData temperatureData = new TemperatureData();
     protected final float minTemperature;
     protected final float maxTemperature;
-    protected int meltingProgress;
-    protected int maxMeltingProgress;
+    protected int meltingProgress = 0;
+    protected int maxMeltingProgress = 0;
+    protected long meltingResultAmountDecrease = 0L;
     @Nullable
-    protected Compound compound;
-    protected float compoundAmount;
+    protected Compound compound = null;
+    protected float compoundAmount = 0.0F;
     protected final float defaultMaxCompoundAmount;
-    protected int compoundAmountSetter0;
-    protected int compoundAmountSetter1;
-    protected int alloyingProgress;
-    protected int maxAlloyingProgress;
+    protected int compoundAmountSetter0 = 0;
+    protected int compoundAmountSetter1 = 0;
+    protected int alloyingProgress = 0;
+    protected int maxAlloyingProgress = 0;
 
+    protected static final String CAN_CHECK_KEY = "CanCheck";
+    protected static final String BUILT_KEY = "Built";
+    protected static final String TEMPERATURE_KEY = "Temperature";
+    protected static final String MELTING_PROGRESS_KEY = "MeltingProgress";
+    protected static final String MAX_MELTING_PROGRESS_KEY = "MaxMeltingProgress";
+    protected static final String MELTING_RESULT_AMOUNT_DECREASE_KEY = "MeltingResultAmountDecrease";
+    protected static final String COMPOUND_KEY = "Compound";
+    protected static final String COMPOUND_AMOUNT_KEY = "CompoundAmount";
+    protected static final String ALLOYING_PROGRESS_KEY = "AlloyingProgress";
+    protected static final String MAX_ALLOYING_PROGRESS_KEY = "MaxAlloyingProgress";
     protected static final int DEFAULT_MAX_MELTING_PROGRESS = 200;
     protected static final int DEFAULT_MAX_ALLOYING_PROGRESS = 200;
 
@@ -58,19 +75,21 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
         this.maxTemperature = maxTemperature;
         this.defaultMaxCompoundAmount = defaultMaxCompoundAmount;
 
-        addData((nbt, lookup) -> nbt.putBoolean("CanCheck", canCheck), (nbt, lookup) -> canCheck = nbt.getBoolean("CanCheck"));
-        addData((nbt, lookup) -> nbt.putBoolean("Built", built), (nbt, lookup) -> built = nbt.getBoolean("Built"));
-        addData((nbt, lookup) -> nbt.putFloat("Temperature", temperature), (nbt, lookup) -> temperature = nbt.getFloat("Temperature"));
-        addData((nbt, lookup) -> nbt.putInt("MeltingProgress", meltingProgress), (nbt, lookup) -> meltingProgress = nbt.getInt("MeltingProgress"));
-        addData((nbt, lookup) -> nbt.putInt("MaxMeltingProgress", maxMeltingProgress), (nbt, lookup) -> maxMeltingProgress = nbt.getInt("MaxMeltingProgress"));
-        addData((nbt, lookup) -> nbt.putString("Compound", compound != null ? compound.toString() : ""),
+        addData((nbt, lookup) -> nbt.putBoolean(CAN_CHECK_KEY, canCheck), (nbt, lookup) -> canCheck = nbt.getBoolean(CAN_CHECK_KEY));
+        addData((nbt, lookup) -> nbt.putBoolean(BUILT_KEY, built), (nbt, lookup) -> built = nbt.getBoolean(BUILT_KEY));
+        addData((nbt, lookup) -> nbt.putFloat(TEMPERATURE_KEY, temperature), (nbt, lookup) -> temperature = nbt.getFloat(TEMPERATURE_KEY));
+        addData((nbt, lookup) -> nbt.putInt(MELTING_PROGRESS_KEY, meltingProgress), (nbt, lookup) -> meltingProgress = nbt.getInt(MELTING_PROGRESS_KEY));
+        addData((nbt, lookup) -> nbt.putInt(MAX_MELTING_PROGRESS_KEY, maxMeltingProgress), (nbt, lookup) -> maxMeltingProgress = nbt.getInt(MAX_MELTING_PROGRESS_KEY));
+        addData((nbt, lookup) -> nbt.putLong(MELTING_RESULT_AMOUNT_DECREASE_KEY, meltingResultAmountDecrease),
+                (nbt, lookup) -> meltingResultAmountDecrease = nbt.getLong(MELTING_RESULT_AMOUNT_DECREASE_KEY));
+        addData((nbt, lookup) -> nbt.putString(COMPOUND_KEY, compound != null ? compound.toString() : ""),
                 (nbt, lookup) -> {
-            String id = nbt.getString("Compound");
+            String id = nbt.getString(COMPOUND_KEY);
             compound = !Objects.equals(id, "") ? MedievalStuffRegistries.COMPOUND.get(Identifier.of(id)) : null;
         });
-        addData((nbt, lookup) -> nbt.putFloat("CompoundAmount", compoundAmount), (nbt, lookup) -> compoundAmount = nbt.getFloat("CompoundAmount"));
-        addData((nbt, lookup) -> nbt.putInt("AlloyingProgress", alloyingProgress), (nbt, lookup) -> alloyingProgress = nbt.getInt("AlloyingProgress"));
-        addData((nbt, lookup) -> nbt.putInt("MaxAlloyingProgress", maxAlloyingProgress), (nbt, lookup) -> maxAlloyingProgress = nbt.getInt("MaxAlloyingProgress"));
+        addData((nbt, lookup) -> nbt.putFloat(COMPOUND_AMOUNT_KEY, compoundAmount), (nbt, lookup) -> compoundAmount = nbt.getFloat(COMPOUND_AMOUNT_KEY));
+        addData((nbt, lookup) -> nbt.putInt(ALLOYING_PROGRESS_KEY, alloyingProgress), (nbt, lookup) -> alloyingProgress = nbt.getInt(ALLOYING_PROGRESS_KEY));
+        addData((nbt, lookup) -> nbt.putInt(MAX_ALLOYING_PROGRESS_KEY, maxAlloyingProgress), (nbt, lookup) -> maxAlloyingProgress = nbt.getInt(MAX_ALLOYING_PROGRESS_KEY));
     }
 
 
@@ -87,24 +106,28 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
             boolean canTryCheck = serverWorld.getTime() % 20 == 0;
 
             if (canTryCheck)
-                tryBuild(serverWorld, getMultiblockConstructionBuilderStartPos(serverWorld, pos), getMultiblockConstructionBuilderEndPos(serverWorld, pos), state.get(Properties.HORIZONTAL_FACING));
+                tryBuild(serverWorld, getMultiblockConstructionBuilderStartPos(serverWorld, pos), getMultiblockConstructionBuilderEndPos(serverWorld, pos), state.get(ForgeControllerBlock.FACING));
 
             markDirty = true;
         }
 
-        boolean hasMeltingRecipe = hasMeltingRecipe();
-        boolean hasAlloyingRecipe = hasAlloyingRecipe();
-
         if (built) {
 
-            if (hasMeltingRecipe) {
-                meltingProgress++;
+            if (hasMeltingRecipe()) {
+                meltingProgress += getMeltingProgressIncrease();
+                M recipe = getMeltingRecipe();
+                float minRecipeTemperature = recipe.getMinTemperature();
+                float maxRecipeTemperature = recipe.getMaxTemperature();
+                int recipeMeltingTime = recipe.getMeltingTime();
 
-                if (hasMeltingFinished()) {
-                    meltingProgress = 0;
+                if (maxMeltingProgress != recipeMeltingTime)
+                    maxMeltingProgress = recipeMeltingTime;
 
+                if (temperature > maxRecipeTemperature)
+                    meltingResultAmountDecrease += (long) (((temperature - maxRecipeTemperature) / ((maxRecipeTemperature - minRecipeTemperature) * 0.1F)) * recipe.getAmount() * 0.001F / 20);
+
+                if (hasMeltingFinished())
                     melt();
-                }
 
                 if (!markDirty)
                     markDirty = true;
@@ -115,7 +138,7 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
                     markDirty = true;
             }
 
-            if (hasAlloyingRecipe) {
+            if (hasAlloyingRecipe()) {
                 alloyingProgress++;
                 compoundAmount -= getCompoundAmountDecrease();
 
@@ -150,14 +173,15 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
             }
         }
 
-        if (!hasMeltingRecipe) {
+        if (!hasMeltingRecipe()) {
             maxMeltingProgress = DEFAULT_MAX_MELTING_PROGRESS;
+            meltingResultAmountDecrease = 0L;
 
             if (!markDirty)
                 markDirty = true;
         }
 
-        if (!hasAlloyingRecipe) {
+        if (!hasAlloyingRecipe()) {
             maxAlloyingProgress = DEFAULT_MAX_ALLOYING_PROGRESS;
 
             if (!markDirty)
@@ -173,15 +197,8 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
         } else if (lit)
             serverWorld.setBlockState(pos, state.with(Properties.LIT, false));
 
-        if (state.get(HeaterBlock.OPEN) && temperature > minTemperature) {
-
-            if (temperature - 0.05F > minTemperature) {
-                temperature -= 0.05F;
-            } else
-                temperature = minTemperature;
-
-            markDirty = true;
-        }
+        if (state.get(ForgeControllerBlock.OPEN))
+            markDirty = tryDecreaseTemperatureFromOpen();
 
         if (temperature != temperatureData.getTemperature())
             temperatureData = new TemperatureData(temperature);
@@ -216,22 +233,21 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
 
     protected void tryIncreaseTemperature(@Nullable HeaterBlockEntity heaterBlockEntity) {
         if (temperature < maxTemperature) {
-            float f = heaterBlockEntity != null ? heaterBlockEntity.getTemperatureData().getTemperature() : temperature;
-            float increase = (maxTemperature - f) / 1000 + 0.01F;
+            float f = heaterBlockEntity != null ? heaterBlockEntity.getTemperatureData().getTemperature() / 25000.0F : 0.0F;
+            float increase = ((maxTemperature - temperature) / 1500.0F + 0.01F + f) / 2.0F;
 
             if (temperature + increase <= maxTemperature) {
                 temperature += increase;
             } else
                 temperature = maxTemperature;
-
-            System.out.println(0);
         }
     }
 
     protected void tryDecreaseTemperature(@Nullable HeaterBlockEntity heaterBlockEntity) {
         if (temperature > minTemperature) {
             float f = heaterBlockEntity != null ? heaterBlockEntity.getTemperatureData().getTemperature() : temperature;
-            float decrease = ((maxTemperature - f) / 500 + 0.01F) * 2;
+            float g = heaterBlockEntity != null ? heaterBlockEntity.getMaxTemperature() : maxTemperature;
+            float decrease = ((g - f) / 500 + 0.01F) * 2;
 
             if (temperature - decrease >= minTemperature) {
                 temperature -= decrease;
@@ -240,8 +256,23 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
         }
     }
 
+    protected boolean tryDecreaseTemperatureFromOpen() {
+        if (temperature > minTemperature) {
+
+            if (temperature - 0.1F > minTemperature) {
+                temperature -= 0.1F;
+            } else
+                temperature = minTemperature;
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
-    public @Nullable TemperatureData getTemperatureData() {
+    @Nullable
+    public TemperatureData getTemperatureData() {
         return temperatureData;
     }
 
@@ -253,13 +284,36 @@ public abstract class ForgeControllerBlockEntity extends ExtendedBlockEntityWith
         this.meltingProgress = meltingProgress;
     }
 
+    protected abstract RecipeType<M> getMeltingRecipeType();
+
+    protected abstract I createMeltingRecipeInput();
+
+    @Nullable
+    protected M getMeltingRecipe() {
+        if (world != null) {
+            RecipeManager manager = world.getRecipeManager();
+            RecipeEntry<M> recipeEntry = manager.getFirstMatch(getMeltingRecipeType(), createMeltingRecipeInput(), world).orElse(null);
+
+            if (recipeEntry != null)
+                return recipeEntry.value();
+        }
+
+        return null;
+    }
+
     protected abstract boolean hasMeltingRecipe();
+
+    protected abstract int getMeltingProgressIncrease();
 
     protected boolean hasMeltingFinished() {
         return meltingProgress == maxMeltingProgress;
     }
 
-    protected abstract void melt();
+    protected void melt() {
+        meltingProgress = 0;
+        maxMeltingProgress = DEFAULT_MAX_MELTING_PROGRESS;
+        meltingResultAmountDecrease = 0L;
+    }
 
     public int getMaxMeltingProgress() {
         return maxMeltingProgress;

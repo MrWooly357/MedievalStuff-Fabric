@@ -146,10 +146,13 @@ public abstract class HeaterBlockEntity extends ExtendedBlockEntityWithInventory
     }
 
     protected void tryDecreaseTemperatureFromOpen() {
-        if (temperature - 0.0375F > minTemperature) {
-            temperature -= 0.0375F;
-        } else
-            temperature = minTemperature;
+        if (temperature > minTemperature) {
+
+            if (temperature - 0.075F > minTemperature) {
+                temperature -= 0.075F;
+            } else
+                temperature = minTemperature;
+        }
     }
 
     @Override
@@ -159,6 +162,10 @@ public abstract class HeaterBlockEntity extends ExtendedBlockEntityWithInventory
 
     public float getMinTemperature() {
         return minTemperature;
+    }
+
+    public float getMaxTemperature() {
+        return maxTemperature;
     }
 
     public int getBurnTime() {

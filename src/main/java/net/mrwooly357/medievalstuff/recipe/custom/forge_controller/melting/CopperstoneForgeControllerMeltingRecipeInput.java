@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.recipe.custom;
+package net.mrwooly357.medievalstuff.recipe.custom.forge_controller.melting;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.input.RecipeInput;

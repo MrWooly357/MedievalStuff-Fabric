@@ -5,8 +5,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.PropertyDelegate;
@@ -26,15 +25,13 @@ import net.mrwooly357.medievalstuff.block.entity.custom.functional_blocks.heater
 import net.mrwooly357.medievalstuff.block.util.multiblock_construction_blueprint.MedievalStuffMultiblockConstructionBlueprints;
 import net.mrwooly357.medievalstuff.block.entity.MedievalStuffBlockEntityTypes;
 import net.mrwooly357.medievalstuff.recipe.MedievalStuffRecipeTypes;
-import net.mrwooly357.medievalstuff.recipe.custom.CopperstoneForgeControllerMeltingRecipe;
-import net.mrwooly357.medievalstuff.recipe.custom.CopperstoneForgeControllerMeltingRecipeInput;
+import net.mrwooly357.medievalstuff.recipe.custom.forge_controller.melting.CopperstoneForgeControllerMeltingRecipe;
+import net.mrwooly357.medievalstuff.recipe.custom.forge_controller.melting.CopperstoneForgeControllerMeltingRecipeInput;
 import net.mrwooly357.medievalstuff.screen.custom.forge_controller.CopperstoneForgeControllerScreenHandler;
 import net.mrwooly357.wool.multiblock_construction.MultiblockConstructionBlueprint;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
-public final class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockEntity {
+public final class CopperstoneForgeControllerBlockEntity extends ForgeControllerBlockEntity<CopperstoneForgeControllerMeltingRecipeInput, CopperstoneForgeControllerMeltingRecipe> {
 
     private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 
@@ -69,7 +66,9 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
             return 6;
         }
     };
+    @Nullable
     private BlockPos ingredientTankPos;
+    @Nullable
     private BlockPos resultTankPos;
 
     private static final int MELTING_INGREDIENT_SLOT = 0;
@@ -85,7 +84,7 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
         if (serverWorld.getBlockEntity(new BlockPos(pos.getX(), pos.getY() - 1, pos.getZ())) instanceof HeaterBlockEntity heaterBlockEntity) {
             float heaterTemperature = heaterBlockEntity.getTemperatureData().getTemperature();
 
-            if (heaterTemperature > heaterBlockEntity.getMinTemperature() && heaterTemperature > temperature) {
+            if (heaterTemperature > heaterBlockEntity.getMinTemperature() && heaterTemperature >= temperature) {
                 tryIncreaseTemperature(heaterBlockEntity);
             } else
                 tryDecreaseTemperature(heaterBlockEntity);
@@ -123,37 +122,41 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
     }
 
     @Override
-    protected boolean hasMeltingRecipe() {
-        Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> recipe = getMeltingRecipe();
-
-        if (recipe.isPresent()) {
-            long amount = recipe.get().value().getAmount();
-            float temperature = recipe.get().value().getMinTemperature();
-            maxMeltingProgress = recipe.get().value().getMeltingTime();
-
-            return canInsertIntoIngredientTank(amount) && this.temperature >= temperature;
-        } else
-            return false;
+    protected RecipeType<CopperstoneForgeControllerMeltingRecipe> getMeltingRecipeType() {
+        return MedievalStuffRecipeTypes.COPPERSTONE_FORGE_CONTROLLER_MELTING;
     }
 
-    private Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> getMeltingRecipe() {
-        if (world != null) {
-            RecipeManager manager = world.getRecipeManager();
+    @Override
+    protected CopperstoneForgeControllerMeltingRecipeInput createMeltingRecipeInput() {
+        return new CopperstoneForgeControllerMeltingRecipeInput(inventory.getFirst());
+    }
 
-            if (manager != null)
-                return manager.getFirstMatch(MedievalStuffRecipeTypes.COPPERSTONE_FORGE_CONTROLLER_MELTING, new CopperstoneForgeControllerMeltingRecipeInput(inventory.getFirst()), world);
-        }
+    @Override
+    protected boolean hasMeltingRecipe() {
+        CopperstoneForgeControllerMeltingRecipe recipe = getMeltingRecipe();
 
-        return Optional.empty();
+        return recipe != null && temperature >= recipe.getMinTemperature() && canInsertIntoIngredientTank(recipe.getAmount());
+    }
+
+    @Override
+    protected int getMeltingProgressIncrease() {
+        CopperstoneForgeControllerMeltingRecipe recipe = getMeltingRecipe();
+
+        if (recipe != null) {
+            float recipeMinTemperature = recipe.getMinTemperature();
+
+            return Math.max((int) ((temperature - recipeMinTemperature) / 25.0F), 1);
+        } else
+            return 1;
     }
 
     @Override
     protected void melt() {
-        Optional<RecipeEntry<CopperstoneForgeControllerMeltingRecipe>> recipe = getMeltingRecipe();
+        CopperstoneForgeControllerMeltingRecipe recipe = getMeltingRecipe();
 
-        if (recipe.isPresent()) {
-            String fluid = recipe.get().value().getResultFluid();
-            long amount = recipe.get().value().getAmount();
+        if (recipe != null) {
+            String fluid = recipe.getResultFluid();
+            long amount = recipe.getAmount() - meltingResultAmountDecrease;
 
             removeStack(MELTING_INGREDIENT_SLOT, 1);
 
@@ -161,9 +164,11 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
                 BlockState state = world.getBlockState(ingredientTankPos);
 
                 if (state.getBlock() instanceof CopperTankBlock)
-                    TankBlock.tryInsert(world, ingredientTankPos, Registries.FLUID.get(Identifier.of(fluid)), amount, null);
+                    TankBlock.tryInsert(world, ingredientTankPos, Registries.FLUID.get(Identifier.of(fluid)), Math.max(amount, 0), null);
             }
         }
+
+        super.melt();
     }
 
     @Override
@@ -242,7 +247,7 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
 
     private boolean canInsertIntoIngredientTank(long amount) {
         if (world != null) {
-            return world.getBlockState(ingredientTankPos).getBlock() instanceof CopperTankBlock && TankBlock.canInsert(amount, world, ingredientTankPos);
+            return ingredientTankPos != null && world.getBlockState(ingredientTankPos).getBlock() instanceof CopperTankBlock && TankBlock.canInsert(amount, world, ingredientTankPos);
         } else
             return false;
     }
@@ -265,10 +270,9 @@ public final class CopperstoneForgeControllerBlockEntity extends ForgeController
 
     private boolean canInsertIntoResultTank(long amount) {
         if (world != null) {
-            return world.getBlockState(resultTankPos).getBlock() instanceof CopperTankBlock && TankBlock.canInsert(amount, world, ingredientTankPos);
-        } else {
+            return resultTankPos != null && world.getBlockState(resultTankPos).getBlock() instanceof CopperTankBlock && TankBlock.canInsert(amount, world, ingredientTankPos);
+        } else
             return false;
-        }
     }
 
     @Override

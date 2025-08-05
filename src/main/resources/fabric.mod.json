@@ -15,9 +15,6 @@
 	"icon": "assets/medievalstuff/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"wool": [
-			"net.mrwooly357.medievalstuff.MedievalStuff"
-		],
 		"main": [
 			"net.mrwooly357.medievalstuff.MedievalStuff"
 		],
@@ -26,9 +23,6 @@
 		],
 		"fabric-datagen": [
 			"net.mrwooly357.medievalstuff.MedievalStuffDataGenerator"
-		],
-		"terrablender": [
-			"net.mrwooly357.medievalstuff.MedievalStuff"
 		]
 	},
 	"mixins": [

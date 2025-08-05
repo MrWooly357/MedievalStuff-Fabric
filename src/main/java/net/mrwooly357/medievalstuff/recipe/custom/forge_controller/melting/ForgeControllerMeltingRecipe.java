@@ -1,4 +1,4 @@
-package net.mrwooly357.medievalstuff.recipe.custom;
+package net.mrwooly357.medievalstuff.recipe.custom.forge_controller.melting;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
@@ -41,9 +41,8 @@ public abstract class ForgeControllerMeltingRecipe<I extends RecipeInput> implem
 
     @Override
     public boolean matches(I input, World world) {
-        if (world.isClient) {
+        if (world.isClient)
             return false;
-        }
 
         return ingredient.test(input.getStackInSlot(0));
     }
@@ -75,7 +74,7 @@ public abstract class ForgeControllerMeltingRecipe<I extends RecipeInput> implem
     }
 
     @Override
-    public ItemStack getResult(RegistryWrapper.WrapperLookup registriesLookup) {
+    public ItemStack getResult(RegistryWrapper.WrapperLookup lookup) {
         return ItemStack.EMPTY;
     }
 

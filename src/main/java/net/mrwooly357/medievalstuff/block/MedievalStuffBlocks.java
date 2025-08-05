@@ -16,7 +16,6 @@ import net.mrwooly357.medievalstuff.block.custom.blocks.AshBlock;
 import net.mrwooly357.medievalstuff.block.custom.blocks.WildBlueberryBushBlock;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.spawner.RedstoneSpawnerBlock;
 import net.mrwooly357.medievalstuff.block.custom.functional_blocks.tank.CopperTankBlock;
-import net.mrwooly357.wool.config.custom.WoolConfig;
 import net.mrwooly357.wool.registry.helper.BlockRegistryHelper;
 
 import java.util.function.ToIntFunction;
@@ -87,7 +86,7 @@ public class MedievalStuffBlocks {
     public static final Block COPPERSTONE_HEATER = register(
             "copperstone_heater", new CopperstoneHeaterBlock(
                     AbstractBlock.Settings.create()
-                            .strength(3.5F, 12.0F)
+                            .strength(3.5F, 8.0F)
                             .requiresTool()
                             .luminance(createLightLevelFromLitBlockState(10))
                             .sounds(BlockSoundGroup.STONE)
@@ -107,7 +106,7 @@ public class MedievalStuffBlocks {
     public static final Block COPPERSTONE_FORGE_CONTROLLER = register(
             "copperstone_forge_controller", new CopperstoneForgeControllerBlock(
                     AbstractBlock.Settings.create()
-                    .strength(4.0F, 16.0F)
+                    .strength(4.0F, 12.0F)
                     .requiresTool()
                     .luminance(createLightLevelFromLitBlockState(10))
                     .sounds(BlockSoundGroup.STONE)
